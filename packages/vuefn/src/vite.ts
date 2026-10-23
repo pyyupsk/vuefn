@@ -1,7 +1,8 @@
 import { resolve } from "node:path";
 import { tanstackStart } from "@tanstack/vue-start/plugin/vite";
 import type { PluginOption } from "vite";
-import { generateRoutes, routeFileFor } from "#lib/generate";
+import { generateRoute, generateRoutes, removeRoute, routeFileFor } from "#lib/generate";
+import type { RoutePaths } from "#lib/generate";
 import { fileRoutePath, findRouteBlock, pageModule } from "#utils/sfc";
 
 const ROUTES_DIR = ".vuefn/routes";
@@ -9,7 +10,7 @@ const ROUTES_DIR = ".vuefn/routes";
 export function vuefn(): PluginOption {
   let pagesDir = "";
   let routesDir = "";
-  let paths: ReturnType<typeof generateRoutes> = new Map();
+  let paths: RoutePaths = new Map();
   return [
     {
       name: "vuefn",
@@ -19,6 +20,22 @@ export function vuefn(): PluginOption {
         pagesDir = resolve(src, "pages");
         routesDir = resolve(src, ROUTES_DIR);
         paths = generateRoutes(pagesDir, routesDir);
+      },
+      configureServer(server) {
+        const isPage = (file: string) => file.startsWith(`${pagesDir}/`) && file.endsWith(".vue");
+        const update = (file: string) => {
+          if (!isPage(file)) return;
+          try {
+            generateRoute(pagesDir, routesDir, file, paths);
+          } catch (error) {
+            server.config.logger.error(String(error instanceof Error ? error.message : error));
+          }
+        };
+        server.watcher.on("add", update);
+        server.watcher.on("change", update);
+        server.watcher.on("unlink", (file) => {
+          if (isPage(file)) removeRoute(pagesDir, routesDir, file, paths);
+        });
       },
       transform(code, id) {
         const written = paths.get(id);
