@@ -1,16 +1,32 @@
 {
   "name": "vuefn",
   "version": "0.0.0",
-  "private": true,
+  "description": "One .vue file per route for TanStack Vue Start on Cloudflare Workers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pyyupsk/vuefn.git",
+    "directory": "packages/vuefn"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "imports": {
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./vite": "./src/vite.ts"
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.mts",
+      "import": "./dist/vite.mjs"
+    }
   },
   "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -19,12 +35,14 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "tsdown": "^0.23.1",
     "typescript": "^6.0.3",
     "vue": "^3.5.44"
   },
   "peerDependencies": {
     "@tanstack/vue-router": "^1.170.42",
     "@tanstack/vue-start": "^1.169.4",
-    "vite": "^8.3.5"
+    "vite": "^8.0.0",
+    "vue": "^3.5.0"
   }
 }

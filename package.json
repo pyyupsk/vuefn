@@ -7,11 +7,13 @@
   ],
   "type": "module",
   "scripts": {
+    "build": "bun run --filter vuefn build",
+    "dev": "bun run build && bun run --filter '*' dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "test": "vitest run",
-    "typecheck": "bun run --filter '*' typecheck"
+    "typecheck": "bun run build && bun run --filter '*' typecheck"
   },
   "devDependencies": {
     "@types/bun": "latest",
