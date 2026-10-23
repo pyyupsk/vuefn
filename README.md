@@ -161,6 +161,21 @@ The rest of the [TanStack file conventions](https://tanstack.com/router/latest/d
 | `posts.{-$category}.vue`  | `/posts/{-$category}`, an optional segment    |
 | `-components/Badge.vue`   | not a route, import it from a page            |
 
+## Plugins
+
+Vue Start creates the Vue app itself, so `app.use()` has no place to run. Call `useAppPlugins` in the setup of `src/pages/__root.vue` instead, and the plugin reaches the server render and the browser:
+
+```vue
+<script setup lang="ts">
+import { useAppPlugins } from '@vuefn/core';
+import { createPinia } from 'pinia';
+
+useAppPlugins(createPinia());
+</script>
+```
+
+Every request builds a new app, so a plugin created in this call belongs to that request.
+
 vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite dev` and `vite build`. Add both to `.gitignore`, and run `vue-tsc --noEmit` after one of those commands.
 
 ## API
@@ -171,6 +186,7 @@ vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite
 | `defineRoute(path, options)`                  | `@vuefn/core`      | The route of a page. `path` must match the file name                    |
 | `defineRootRoute(options)`                    | `@vuefn/core`      | The route of `src/pages/__root.vue`, which has no path                  |
 | `defineRootRouteWithContext<Context>()(opts)` | `@vuefn/core`      | The root route with a typed router context                              |
+| `useAppPlugins(...plugins)`                   | `@vuefn/core`      | Installs Vue plugins on the app that Vue Start creates                  |
 
 `vuefn(options)` takes the `tanstackStart()` options, such as `spa`, `prerender` and `srcDirectory`. vuefn sets `router.routesDirectory` itself.
 
@@ -182,7 +198,7 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
 - The page reaches its route data through `<script setup>`. A page without it still renders its template, but cannot read the loader
 - Tested with flat and folder routes, layouts and pathless layouts on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev)
-- Vue Start creates the Vue app itself, so `app.use()` for Pinia or vue-i18n needs a custom entry
+- Vue Start creates the Vue app itself, so `app.use()` goes through `useAppPlugins` in `__root.vue`. A plugin that needs the client entry rather than the app still needs `client.entry`
 - Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support
 
 ## Why?

@@ -113,3 +113,5 @@ export const defineRootRoute: typeof createRootRoute = createRootRoute;
  */
 export const defineRootRouteWithContext: typeof createRootRouteWithContext =
   createRootRouteWithContext;
+
+export { useAppPlugins } from '#plugins';

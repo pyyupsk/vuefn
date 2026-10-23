@@ -71,3 +71,14 @@ test('hydrates every page without console errors', async ({ page }) => {
   await page.waitForLoadState('networkidle');
   expect(errors).toEqual([]);
 });
+
+test('installs a Vue plugin on the server and in the browser', async ({ page, request }) => {
+  const html = await (await request.get('/posts')).text();
+  expect(html).toContain('Count 0');
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/posts');
+  await page.getByTestId('increment').click();
+  await expect(page.getByTestId('increment')).toHaveText('Count 1');
+  expect(errors).toEqual([]);
+});

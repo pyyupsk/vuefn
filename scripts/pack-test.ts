@@ -14,13 +14,14 @@ try {
 
   await Bun.write(
     join(dir, 'check.mjs'),
-    `import { defineRootRoute, defineRootRouteWithContext, defineRoute } from "@vuefn/core";
+    `import { defineRootRoute, defineRootRouteWithContext, defineRoute, useAppPlugins } from "@vuefn/core";
 import { vuefn } from "@vuefn/core/vite";
 if (typeof defineRootRoute({}).options !== "object") throw new Error("defineRootRoute");
 if (typeof defineRootRouteWithContext()({}).options !== "object") throw new Error("defineRootRouteWithContext");
 let message = "";
 try { defineRoute("/a"); } catch (error) { message = error.message; }
 if (!message.includes("only works in src/pages")) throw new Error("defineRoute");
+if (typeof useAppPlugins !== "function") throw new Error("useAppPlugins");
 if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("vuefn plugin");
 `,
   );

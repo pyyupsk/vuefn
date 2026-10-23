@@ -14,6 +14,10 @@ export const route = defineRootRouteWithContext<{ appName: string }>()({
 
 <script setup lang="ts">
 import { Body, HeadContent, Html, Scripts } from '@tanstack/vue-router';
+import { useAppPlugins } from '@vuefn/core';
+import { createPinia } from 'pinia';
+
+useAppPlugins(createPinia());
 </script>
 
 <template>
