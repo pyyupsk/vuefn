@@ -40,12 +40,15 @@ function routeCall(declarator: RouteDeclarator | null, callee: string) {
   return call.callee.name === callee ? call : null;
 }
 
-export function routePath(content: string, filename: string): string {
-  const [path] = routeCall(routeDeclarator(parseBlock(content)), 'defineRoute')?.arguments ?? [];
-  if (path?.type === 'StringLiteral') return path.value;
-  throw new Error(
-    `${filename}: write the route as export const route = defineRoute("/path", { ... })`,
-  );
+export function routePath(content: string, filename: string): string | null {
+  const call = routeCall(routeDeclarator(parseBlock(content)), 'defineRoute');
+  if (!call) {
+    throw new Error(`${filename}: write the route as export const route = defineRoute({ ... })`);
+  }
+  const [path] = call.arguments;
+  if (!path || path.type === 'ObjectExpression') return null;
+  if (path.type === 'StringLiteral') return path.value;
+  throw new Error(`${filename}: pass the route path as a string`);
 }
 
 function importsName(program: Program, name: string): boolean {
@@ -99,7 +102,9 @@ export function routeModule(
     const define = isRoot ? 'defineRootRoute({ ... })' : 'defineRoute("/path", { ... })';
     throw new Error(`${filename}: write the route as export const route = ${define}`);
   }
-  const options = call.arguments[isRoot ? 0 : 1];
+  const [first] = call.arguments;
+  const hasPath = !isRoot && first?.type === 'StringLiteral';
+  const options = call.arguments[isRoot || !hasPath ? 0 : 1];
   if (options && options.type !== 'ObjectExpression') {
     throw new Error(`${filename}: pass the route options as an object literal`);
   }
@@ -108,15 +113,18 @@ export function routeModule(
   const id = declarator.id;
   code.overwrite(id.start ?? 0, id.end ?? 0, 'Route');
   code.overwrite(callee.start ?? 0, callee.end ?? 0, create);
-  if (!isRoot) {
-    const [pathArg] = call.arguments;
-    const from = pathArg?.end ?? 0;
+  if (!isRoot && hasPath && first) {
+    const from = first.end ?? 0;
     const to = options ? (options.start ?? 0) : (call.end ?? 0) - 1;
     if (to > from) code.overwrite(from, to, ')(');
     else code.appendLeft(from, ')(');
   }
+  if (!isRoot && !hasPath) {
+    const injected = `${JSON.stringify(path)})(${options ? '' : `{ ${slot}: VuefnPage }`}`;
+    code.appendLeft(options ? (options.start ?? 0) : (call.end ?? 0) - 1, injected);
+  }
   if (options) code.appendLeft((options.start ?? 0) + 1, ` ${slot}: VuefnPage,`);
-  else code.appendLeft((call.end ?? 0) - 1, `{ ${slot}: VuefnPage }`);
+  else if (hasPath || isRoot) code.appendLeft((call.end ?? 0) - 1, `{ ${slot}: VuefnPage }`);
 
   if (!importsName(program, create))
     head.unshift(`import { ${create} } from "@tanstack/vue-router";`);

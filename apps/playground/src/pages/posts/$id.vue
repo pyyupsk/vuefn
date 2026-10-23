@@ -16,7 +16,7 @@ export const getPost = createServerFn()
     return post;
   });
 
-export const route = defineRoute('/posts/$id', {
+export const route = defineRoute({
   headers: () => ({ 'cache-control': 'public, max-age=60' }),
   beforeLoad: ({ context }) => ({ site: context.appName }),
   loader: async ({ params, context }) => ({

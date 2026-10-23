@@ -25,6 +25,10 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./vite": "./dist/vite.mjs",
+    "./volar": {
+      "import": "./dist/volar.mjs",
+      "require": "./dist/volar.cjs"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {

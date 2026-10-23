@@ -53,6 +53,19 @@ function moduleOf(content: string, path: string | null) {
 }
 
 describe('routeModule', () => {
+  it('writes the path itself when defineRoute takes only the options', () => {
+    const code = moduleOf(
+      `import { defineRoute } from 'vuefn';
+export const route = defineRoute({
+  loader: () => 1,
+});`,
+      '/posts/',
+    );
+    expect(code).toContain(
+      'export const Route = createFileRoute("/posts/")({ component: VuefnPage,',
+    );
+  });
+
   it('writes the options inside a real createFileRoute call', () => {
     const code = moduleOf(
       `import { defineRoute } from 'vuefn';
@@ -170,10 +183,8 @@ describe('routePath', () => {
     );
   });
 
-  it('rejects a route without a path', () => {
-    expect(() => routePath('export const route = defineRoute({});', 'a.vue')).toThrow(
-      'defineRoute("/path"',
-    );
+  it('returns null when defineRoute takes only the options', () => {
+    expect(routePath('export const route = defineRoute({});', 'a.vue')).toBeNull();
   });
 
   it('rejects a page without export const route', () => {

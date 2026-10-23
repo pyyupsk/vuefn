@@ -161,6 +161,19 @@ The rest of the [TanStack file conventions](https://tanstack.com/router/latest/d
 | `posts.{-$category}.vue`  | `/posts/{-$category}`, an optional segment    |
 | `-components/Badge.vue`   | not a route, import it from a page            |
 
+### Without the path
+
+The path is in the file name and in the generated route file, so the page can leave it out. Add the Volar plugin once:
+
+```json
+// tsconfig.json
+{
+  "vueCompilerOptions": { "plugins": ["@vuefn/core/volar"] }
+}
+```
+
+Now `defineRoute({ ... })` is enough. The plugin gives `vue-tsc` the path before it checks the file, so `route.useLoaderData()` and `useParams()` stay typed. Without the plugin, pass the path by hand.
+
 ## Plugins
 
 Vue Start creates the Vue app itself, so `app.use()` has no place to run. Call `useAppPlugins` in the setup of `src/pages/__root.vue` instead, and the plugin reaches the server render and the browser:
@@ -197,6 +210,7 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
 - The page reaches its route data through `<script setup>`. A page without it still renders its template, but cannot read the loader
+- The path-less `defineRoute({ ... })` types only through the Volar plugin, and the plugin reads `src/.vuefn`, so run `vite dev` or `vite build` before `vue-tsc`
 - Tested with flat and folder routes, layouts and pathless layouts on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev)
 - Vue Start creates the Vue app itself, so `app.use()` goes through `useAppPlugins` in `__root.vue`. A plugin that needs the client entry rather than the app still needs `client.entry`
 - Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support

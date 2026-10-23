@@ -32,7 +32,8 @@ export async function generateRoutes(
     // an editor writes the file empty before it writes the new text
     if (source.trim() === '') continue;
     const block = findRouteBlock(source, page);
-    if (block && path !== null && routePath(block.content, page) !== path) {
+    const writtenPath = block && path !== null ? routePath(block.content, page) : null;
+    if (path !== null && writtenPath !== null && writtenPath !== path) {
       throw new Error(
         `${page}: the file name gives the path "${path}". Use defineRoute("${path}", ...).`,
       );

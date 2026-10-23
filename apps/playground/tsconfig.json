@@ -20,5 +20,8 @@
     "vite.config.ts",
     "worker-configuration.d.ts"
   ],
-  "exclude": ["src/.vuefn"]
+  "exclude": ["src/.vuefn"],
+  "vueCompilerOptions": {
+    "plugins": ["@vuefn/core/volar"]
+  }
 }

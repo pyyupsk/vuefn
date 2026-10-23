@@ -22,6 +22,8 @@ let message = "";
 try { defineRoute("/a"); } catch (error) { message = error.message; }
 if (!message.includes("only works in src/pages")) throw new Error("defineRoute");
 if (typeof useAppPlugins !== "function") throw new Error("useAppPlugins");
+const { createRequire } = await import("node:module");
+if (typeof createRequire(import.meta.url)("@vuefn/core/volar") !== "function") throw new Error("volar plugin");
 if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("vuefn plugin");
 `,
   );
