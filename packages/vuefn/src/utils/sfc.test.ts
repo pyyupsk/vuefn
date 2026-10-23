@@ -36,15 +36,15 @@ describe("routeModule", () => {
     expect(code).toContain('import { createFileRoute } from "@tanstack/vue-router";');
     expect(code).toContain('import Page from "../../pages/index.vue";');
     expect(code).toContain(
-      'export const Route = createFileRoute("/")({ ...route, component: Page });',
+      'export const Route = createFileRoute("/")({ ...route.options, component: Page });',
     );
   });
 
   it("builds a root route with the page as shell", () => {
     const code = routeModule(null, "../../pages/__root.vue", true);
-    expect(code).toContain("const route = {};");
+    expect(code).toContain("const route = { options: {} };");
     expect(code).toContain(
-      "export const Route = createRootRoute({ ...route, shellComponent: Page });",
+      "export const Route = createRootRoute({ ...route.options, shellComponent: Page });",
     );
   });
 });

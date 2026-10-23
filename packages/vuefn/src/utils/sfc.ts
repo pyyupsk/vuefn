@@ -20,9 +20,9 @@ export function routeModule(block: RouteBlock | null, pageImport: string, isRoot
   return [
     `import { ${create} } from "@tanstack/vue-router";`,
     `import Page from ${JSON.stringify(pageImport)};`,
-    block ? block.content.trim() : "const route = {};",
+    block ? block.content.trim() : "const route = { options: {} };",
     "",
-    `export const Route = ${call}({ ...route, ${slot}: Page });`,
+    `export const Route = ${call}({ ...route.options, ${slot}: Page });`,
     "",
   ].join("\n");
 }
