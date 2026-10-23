@@ -5,7 +5,7 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 ## Features
 
 - The loader, the server functions and the page of a route live in one `.vue` file
-- `useLoaderData()` and `useParams()` get their types from the loader and the path
+- `defineRoute` takes every TanStack route option, and `useLoaderData()`, `useParams()`, `useSearch()` and `Link` get their types from it
 - `createServerFn()` in a page runs on the server. The browser gets only the call
 - If a route path does not match its file name, the build stops and says the right one
 - `vite dev` picks up new, changed and deleted pages without a restart
@@ -121,21 +121,19 @@ vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite
 
 ## API
 
-| Export                       | From         | Does                                                                    |
-| ---------------------------- | ------------ | ----------------------------------------------------------------------- |
-| `vuefn()`                    | `vuefn/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
-| `defineRoute(path, options)` | `vuefn`      | The route of a page. `path` must match the file name                    |
-| `defineRootRoute(options)`   | `vuefn`      | The route of `src/pages/__root.vue`, which has no path                  |
-| `route.useLoaderData()`      | the route    | A `Ref` to what the loader returns                                      |
-| `route.useParams()`          | the route    | A `Ref` to the path parameters, typed from `path`                       |
+| Export                                        | From         | Does                                                                    |
+| --------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
+| `vuefn()`                                     | `vuefn/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
+| `defineRoute(path, options)`                  | `vuefn`      | The route of a page. `path` must match the file name                    |
+| `defineRootRoute(options)`                    | `vuefn`      | The route of `src/pages/__root.vue`, which has no path                  |
+| `defineRootRouteWithContext<Context>()(opts)` | `vuefn`      | The root route with a typed router context                              |
 
-`options` are TanStack route options, such as `loader` and `head`.
+`options` are the TanStack route options: `loader`, `beforeLoad`, `validateSearch`, `loaderDeps`, `head` and the rest. `route` is the TanStack route, so `route.useLoaderData()`, `route.useParams()`, `route.useSearch()`, `route.useRouteContext()` and `<route.Link>` are typed for this page.
 
 ## Limits
 
-- `<script setup>` sees only the names that `<script lang="ts">` exports
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
-- In `loader`, only `params` and `abortController` have types so far
+- Route options must be an object literal, so TanStack can keep server-only options out of the client
 - Tested with flat routes on Cloudflare Workers. Layouts and nested folders are not tested yet
 
 ## Why?

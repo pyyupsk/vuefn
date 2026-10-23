@@ -54,7 +54,7 @@ scripts/         pack-test.ts  installs the packed tarball like a user would
 Inside `packages/vuefn/src`:
 
 ```text
-index.ts         defineRoute, defineRootRoute and their types
+index.ts         defineRoute and defineRootRoute, typed with TanStack's route types
 vite.ts          the vuefn() plugin
 lib/generate.ts  reads src/pages and writes src/.vuefn/routes
 utils/sfc.ts     finds the route block and builds the route and page code

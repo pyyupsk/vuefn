@@ -64,7 +64,7 @@ export function routeModule(
   shared: readonly string[] = [],
 ): string {
   const isRoot = path === null;
-  const create = isRoot ? 'createRootRoute' : 'createFileRoute';
+  let create = isRoot ? 'createRootRoute' : 'createFileRoute';
   const slot = isRoot ? 'shellComponent' : 'component';
   const head = [`import VuefnPage from ${JSON.stringify(pageImport)};`];
   if (!block) {
@@ -82,8 +82,20 @@ export function routeModule(
   const content = block.content;
   const program = parseBlock(content);
   const declarator = routeDeclarator(program);
-  const call = routeCall(declarator, isRoot ? 'defineRootRoute' : 'defineRoute');
-  if (!declarator || !call) {
+  let call = routeCall(declarator, isRoot ? 'defineRootRoute' : 'defineRoute');
+  let callee = call?.callee;
+  const init = declarator?.init;
+  if (isRoot && !call && init?.type === 'CallExpression') {
+    const inner = init.callee;
+    if (inner.type === 'CallExpression' && inner.callee.type === 'Identifier') {
+      if (inner.callee.name === 'defineRootRouteWithContext') {
+        call = init;
+        callee = inner.callee;
+        create = 'createRootRouteWithContext';
+      }
+    }
+  }
+  if (!declarator || !call || !callee) {
     const define = isRoot ? 'defineRootRoute({ ... })' : 'defineRoute("/path", { ... })';
     throw new Error(`${filename}: write the route as export const route = ${define}`);
   }
@@ -95,7 +107,7 @@ export function routeModule(
   const code = new MagicString(content);
   const id = declarator.id;
   code.overwrite(id.start ?? 0, id.end ?? 0, 'Route');
-  code.overwrite(call.callee.start ?? 0, call.callee.end ?? 0, create);
+  code.overwrite(callee.start ?? 0, callee.end ?? 0, create);
   if (!isRoot) {
     const [pathArg] = call.arguments;
     const from = pathArg?.end ?? 0;

@@ -87,6 +87,17 @@ export const route = defineRoute('/posts/$id', {
     );
   });
 
+  it('builds a root route with a typed context', () => {
+    const code = moduleOf(
+      `export const route = defineRootRouteWithContext<{ user: string }>()({ head: () => ({}) });`,
+      null,
+    );
+    expect(code).toContain('import { createRootRouteWithContext } from "@tanstack/vue-router";');
+    expect(code).toContain(
+      'export const Route = createRootRouteWithContext<{ user: string }>()({ shellComponent: VuefnPage, head: () => ({}) });',
+    );
+  });
+
   it('builds a route for a page without a route block', () => {
     const code = routeModule(null, './page.vue', '', 'page.vue');
     expect(code).toContain('export const Route = createFileRoute("")({ component: VuefnPage });');

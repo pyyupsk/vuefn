@@ -1,7 +1,7 @@
 <script lang="ts">
-import { defineRootRoute } from 'vuefn';
+import { defineRootRouteWithContext } from 'vuefn';
 
-export const route = defineRootRoute({
+export const route = defineRootRouteWithContext<{ appName: string }>()({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },

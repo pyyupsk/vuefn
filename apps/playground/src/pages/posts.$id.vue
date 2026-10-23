@@ -17,17 +17,21 @@ export const getPost = createServerFn()
   });
 
 export const route = defineRoute('/posts/$id', {
-  loader: ({ params }) => getPost({ data: params.id }),
+  beforeLoad: ({ context }) => ({ site: context.appName }),
+  loader: async ({ params, context }) => ({
+    post: await getPost({ data: params.id }),
+    site: context.site,
+  }),
 });
 </script>
 
 <script setup lang="ts">
 const params = route.useParams();
-const post = route.useLoaderData();
+const data = route.useLoaderData();
 const total = posts.length;
 </script>
 
 <template>
-  <h1>{{ post.title }}</h1>
-  <p>Post {{ params.id }} of {{ total }}</p>
+  <h1>{{ data.post.title }}</h1>
+  <p>Post {{ params.id }} of {{ total }} on {{ data.site }}</p>
 </template>
