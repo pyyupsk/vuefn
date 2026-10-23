@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findRouteBlock, pageModule, routeModule } from "#utils/sfc";
+import { exportNames, findRouteBlock, pageModule, routeModule } from "#utils/sfc";
 
 const page = `<script lang="ts">
 export const route = defineRoute({ loader: () => 1 });
@@ -56,5 +56,36 @@ describe("pageModule", () => {
     expect(code).toContain('import { Route as route } from "/app/src/.vuefn/routes/index.ts";');
     expect(code).not.toContain("defineRoute");
     expect(code).toContain("<script setup");
+  });
+});
+
+describe("exportNames", () => {
+  it("lists value exports and skips type exports", () => {
+    const names = exportNames(`
+      import { x } from "y";
+      export const getData = createServerFn().handler(() => 1), other = 2;
+      export function helper() {}
+      const local = 1;
+      export { local as renamed };
+      export type Data = { a: 1 };
+      export const route = defineRoute({});
+    `);
+    expect(names).toEqual(["getData", "other", "helper", "renamed", "route"]);
+  });
+});
+
+describe("pageModule exports", () => {
+  it("brings every export of the route block into the page", () => {
+    const source = `<script lang="ts">
+export const getData = createServerFn().handler(() => 1);
+export const route = defineRoute({});
+</script>
+<script setup lang="ts">
+getData();
+</script>`;
+    const block = findRouteBlock(source, "a.vue")!;
+    const { code } = pageModule(source, block, "/gen/a.ts", "a.vue");
+    expect(code).toContain('import { Route as route, getData } from "/gen/a.ts";');
+    expect(code).toContain("export { route, getData };");
   });
 });

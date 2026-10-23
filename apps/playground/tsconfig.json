@@ -10,6 +10,6 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts", "worker-configuration.d.ts"],
   "exclude": ["src/.vuefn"]
 }

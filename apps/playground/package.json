@@ -6,7 +6,8 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
+    "typecheck": "vite build --logLevel error && vue-tsc --noEmit",
+    "postinstall": "wrangler types"
   },
   "dependencies": {
     "@tanstack/vue-router": "^1.170.42",
