@@ -1,0 +1,29 @@
+{
+  "name": "vuefn",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./vite": "./src/vite.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.5.44",
+    "magic-string": "^1.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  },
+  "peerDependencies": {
+    "@tanstack/vue-router": "^1.170.42",
+    "@tanstack/vue-start": "^1.169.4",
+    "vite": "^8.3.5"
+  }
+}
