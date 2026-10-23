@@ -1,5 +1,5 @@
-import { babelParse, parse } from '@vue/compiler-sfc';
 import { MagicString } from 'magic-string';
+import { babelParse, parse } from 'vue/compiler-sfc';
 
 export type RouteBlock = Readonly<{ content: string; start: number; end: number }>;
 
