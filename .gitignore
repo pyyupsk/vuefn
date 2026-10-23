@@ -39,3 +39,4 @@ routeTree.gen.ts
 .wrangler
 worker-configuration.d.ts
 packages/vuefn/LICENSE
+packages/vuefn/README.md

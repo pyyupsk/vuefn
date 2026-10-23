@@ -30,7 +30,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "prepack": "cp ../../LICENSE LICENSE",
+    "prepack": "cp ../../LICENSE ../../README.md .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
