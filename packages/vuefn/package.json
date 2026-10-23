@@ -1,5 +1,5 @@
 {
-  "name": "vuefn",
+  "name": "@pyyupsk/vuefn",
   "version": "0.0.0",
   "description": "One .vue file per route for TanStack Vue Start on Cloudflare Workers",
   "keywords": [
@@ -26,6 +26,9 @@
     ".": "./dist/index.mjs",
     "./vite": "./dist/vite.mjs",
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsdown",

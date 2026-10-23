@@ -9,7 +9,7 @@ function writePage(path: string, loaderText: string, templateText: string) {
   writeFileSync(
     file,
     `<script lang="ts">
-import { defineRoute } from 'vuefn';
+import { defineRoute } from '@pyyupsk/vuefn';
 
 export const route = defineRoute('${path}', {
   loader: () => ({ text: '${loaderText}' }),

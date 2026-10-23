@@ -14,8 +14,8 @@ try {
 
   await Bun.write(
     join(dir, 'check.mjs'),
-    `import { defineRootRoute, defineRootRouteWithContext, defineRoute } from "vuefn";
-import { vuefn } from "vuefn/vite";
+    `import { defineRootRoute, defineRootRouteWithContext, defineRoute } from "@pyyupsk/vuefn";
+import { vuefn } from "@pyyupsk/vuefn/vite";
 if (typeof defineRootRoute({}).options !== "object") throw new Error("defineRootRoute");
 if (typeof defineRootRouteWithContext()({}).options !== "object") throw new Error("defineRootRouteWithContext");
 let message = "";

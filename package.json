@@ -7,7 +7,7 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "bun run --filter vuefn build",
+    "build": "bun run --filter @pyyupsk/vuefn build",
     "dev": "bun run build && bun run --filter playground dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",

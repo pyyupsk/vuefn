@@ -1,7 +1,7 @@
 <script lang="ts">
+import { defineRoute } from '@pyyupsk/vuefn';
 import { notFound } from '@tanstack/vue-router';
 import { createServerFn } from '@tanstack/vue-start';
-import { defineRoute } from 'vuefn';
 
 const posts = [
   { id: '1', title: 'One file per route' },

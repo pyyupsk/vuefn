@@ -18,10 +18,10 @@
     "apps/node": {
       "name": "node-app",
       "dependencies": {
+        "@pyyupsk/vuefn": "workspace:*",
         "@tanstack/vue-router": "^1.170.42",
         "@tanstack/vue-start": "^1.169.4",
         "vue": "^3.5.44",
-        "vuefn": "workspace:*",
       },
       "devDependencies": {
         "@playwright/test": "^1.64.1",
@@ -35,10 +35,10 @@
     "apps/playground": {
       "name": "playground",
       "dependencies": {
+        "@pyyupsk/vuefn": "workspace:*",
         "@tanstack/vue-router": "^1.170.42",
         "@tanstack/vue-start": "^1.169.4",
         "vue": "^3.5.44",
-        "vuefn": "workspace:*",
       },
       "devDependencies": {
         "@cloudflare/vite-plugin": "^1.64.0",
@@ -51,7 +51,7 @@
       },
     },
     "packages/vuefn": {
-      "name": "vuefn",
+      "name": "@pyyupsk/vuefn",
       "version": "0.0.0",
       "dependencies": {
         "magic-string": "^1.4.3",
@@ -398,6 +398,8 @@
     "@poppinss/exception": ["@poppinss/exception@1.2.3", "", {}, "sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw=="],
 
     "@publint/pack": ["@publint/pack@0.1.7", "", { "dependencies": { "tinyexec": "^1.3.0" } }, "sha512-4EDEmvxWtgsCnnVeBvtFIFZtUhPPt1+bA9JrSwU4Sa//6oKtzCSlGGXYJr44OD9aGISymbieJ4mCKHUygUDU+g=="],
+
+    "@pyyupsk/vuefn": ["@pyyupsk/vuefn@workspace:packages/vuefn"],
 
     "@quansync/fs": ["@quansync/fs@1.1.0", "", { "dependencies": { "quansync": "^1.0.0" } }, "sha512-qAPG/t3HqML1TlN7sY/pTbEjzFVAKsMjNNMGheyDosro+kT4iw2KCUoHcVdmliwWjorm4elZbgNQyU2eD97eDg=="],
 
@@ -950,8 +952,6 @@
     "vue-demi": ["vue-demi@0.14.10", "", { "peerDependencies": { "@vue/composition-api": "^1.0.0-rc.1", "vue": "^3.0.0-0 || ^2.6.0" }, "optionalPeers": ["@vue/composition-api"], "bin": { "vue-demi-fix": "bin/vue-demi-fix.js", "vue-demi-switch": "bin/vue-demi-switch.js" } }, "sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg=="],
 
     "vue-tsc": ["vue-tsc@3.3.13", "", { "dependencies": { "@volar/typescript": "2.4.28", "@vue/language-core": "3.3.13" }, "peerDependencies": { "typescript": ">=5.0.0" }, "bin": { "vue-tsc": "bin/vue-tsc.js" } }, "sha512-jE4/bXdOMSHVxEGgQCqNllJy+9N3Gx6tfSAsg0yhFK/MAN6eXqISihupnDEKSCt12VVnjN2gI3AqLYcqoh5x/A=="],
-
-    "vuefn": ["vuefn@workspace:packages/vuefn"],
 
     "webpack-virtual-modules": ["webpack-virtual-modules@0.6.2", "", {}, "sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ=="],
 

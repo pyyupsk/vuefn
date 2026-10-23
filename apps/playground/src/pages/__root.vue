@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineRootRouteWithContext } from 'vuefn';
+import { defineRootRouteWithContext } from '@pyyupsk/vuefn';
 
 export const route = defineRootRouteWithContext<{ appName: string }>()({
   head: () => ({
