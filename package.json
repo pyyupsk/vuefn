@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run --filter vuefn build",
-    "dev": "bun run build && bun run --filter '*' dev",
+    "dev": "bun run build && bun run --filter playground dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
