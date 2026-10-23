@@ -15,10 +15,10 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 
 ```bash
 npm install vuefn @tanstack/vue-router @tanstack/vue-start vue
-npm install -D vite @vitejs/plugin-vue @cloudflare/vite-plugin wrangler vue-tsc
+npm install -D vite @vitejs/plugin-vue @cloudflare/vite-plugin wrangler vue-tsc typescript@^6
 ```
 
-Node `^22.23.4`, `^24.22.1` or `>=26.12.1`.
+Node `^22.23.4`, `^24.22.1` or `>=26.12.1`. `vue-tsc` 3 does not run on TypeScript 7 yet, so pin TypeScript 6.
 
 ## Usage
 
@@ -115,7 +115,7 @@ const post = route.useLoaderData(); // { id: string; title: string } | undefined
 </template>
 ```
 
-File names follow the [TanStack naming rules](https://tanstack.com/router/latest/docs/framework/vue/routing/file-naming-conventions): `index.vue` is `/`, `about.vue` is `/about`, `posts.$id.vue` is `/posts/$id`.
+File names follow the [TanStack naming rules](https://tanstack.com/router/latest/docs/framework/vue/routing/file-naming-conventions): `index.vue` is `/`, `about.vue` is `/about`, `posts.$id.vue` is `/posts/$id`. Vue Router and Nuxt write `[id].vue` where TanStack writes `$id.vue`.
 
 vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite dev` and `vite build`. Add both to `.gitignore`, and run `vue-tsc --noEmit` after one of those commands.
 
@@ -137,6 +137,8 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
 - Tested with flat routes on Cloudflare Workers. Layouts and nested folders are not tested yet
+- Vue Start creates the Vue app itself, so `app.use()` for Pinia or vue-i18n needs a custom entry
+- Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support
 
 ## Why?
 
