@@ -123,12 +123,14 @@ vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite
 
 | Export                                        | From         | Does                                                                    |
 | --------------------------------------------- | ------------ | ----------------------------------------------------------------------- |
-| `vuefn()`                                     | `vuefn/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
+| `vuefn(options)`                              | `vuefn/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
 | `defineRoute(path, options)`                  | `vuefn`      | The route of a page. `path` must match the file name                    |
 | `defineRootRoute(options)`                    | `vuefn`      | The route of `src/pages/__root.vue`, which has no path                  |
 | `defineRootRouteWithContext<Context>()(opts)` | `vuefn`      | The root route with a typed router context                              |
 
-`options` are the TanStack route options: `loader`, `beforeLoad`, `validateSearch`, `loaderDeps`, `head` and the rest. `route` is the TanStack route, so `route.useLoaderData()`, `route.useParams()`, `route.useSearch()`, `route.useRouteContext()` and `<route.Link>` are typed for this page.
+`vuefn(options)` takes the `tanstackStart()` options, such as `spa`, `prerender` and `srcDirectory`. vuefn sets `router.routesDirectory` itself.
+
+The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`, `validateSearch`, `loaderDeps`, `head` and the rest. `route` is the TanStack route, so `route.useLoaderData()`, `route.useParams()`, `route.useSearch()`, `route.useRouteContext()` and `<route.Link>` are typed for this page.
 
 ## Limits
 

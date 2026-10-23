@@ -9,17 +9,26 @@ import { fileRoutePath, findRouteBlock, pageModule } from '#utils/sfc';
 
 const ROUTES_DIR = '.vuefn/routes';
 
+/** The options of `vuefn()`: every TanStack Start option except `router.routesDirectory`. */
+export type VuefnOptions = NonNullable<Parameters<typeof tanstackStart>[0]>;
+
 /**
  * Vite plugin that turns each `src/pages/*.vue` file into a TanStack Start route.
  * Use it in place of `tanstackStart()`.
  *
+ * @param options - TanStack Start options, such as `spa`, `prerender` and `srcDirectory`. vuefn sets `router.routesDirectory`.
  * @returns The vuefn plugin followed by the TanStack Start plugins.
  * @example
  * export default defineConfig({
  *   plugins: [cloudflare({ viteEnvironment: { name: "ssr" } }), vuefn(), vue()],
  * });
  */
-export function vuefn(): PluginOption {
+export function vuefn(options: VuefnOptions = {}): PluginOption {
+  if (options.router?.routesDirectory) {
+    throw new Error(
+      'vuefn: leave out router.routesDirectory, vuefn writes the routes to .vuefn/routes',
+    );
+  }
   let pagesDir = '';
   let routesDir = '';
   let paths: RoutePaths = new Map();
@@ -29,7 +38,7 @@ export function vuefn(): PluginOption {
       name: 'vuefn',
       enforce: 'pre',
       config(config) {
-        const src = resolve(config.root ?? process.cwd(), 'src');
+        const src = resolve(config.root ?? process.cwd(), options.srcDirectory ?? 'src');
         pagesDir = resolve(src, 'pages');
         routesDir = resolve(src, ROUTES_DIR);
         paths = generateRoutes(pagesDir, routesDir);
@@ -67,6 +76,6 @@ export function vuefn(): PluginOption {
         return pageModule(code, block, routeFileFor(pagesDir, routesDir, id), id);
       },
     },
-    tanstackStart({ router: { routesDirectory: ROUTES_DIR } }),
+    tanstackStart({ ...options, router: { ...options.router, routesDirectory: ROUTES_DIR } }),
   ];
 }
