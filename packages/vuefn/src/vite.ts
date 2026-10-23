@@ -33,6 +33,10 @@ export function vuefn(): PluginOption {
         pagesDir = resolve(src, 'pages');
         routesDir = resolve(src, ROUTES_DIR);
         paths = generateRoutes(pagesDir, routesDir);
+        // Vite finds vue/server-renderer during the first SSR request and loads a second Vue mid-request
+        return {
+          environments: { ssr: { optimizeDeps: { include: ['vue', 'vue/server-renderer'] } } },
+        };
       },
       configureServer(server) {
         const update = (file: string) => {
