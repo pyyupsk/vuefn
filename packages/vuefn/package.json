@@ -8,6 +8,7 @@
     "vite-plugin",
     "vue"
   ],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pyyupsk/vuefn.git",
@@ -29,6 +30,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
+    "prepack": "cp ../../LICENSE LICENSE",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
