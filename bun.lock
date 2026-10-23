@@ -52,7 +52,7 @@
     },
     "packages/vuefn": {
       "name": "@pyyupsk/vuefn",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "magic-string": "^1.4.3",
       },
