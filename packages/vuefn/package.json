@@ -1,5 +1,5 @@
 {
-  "name": "@pyyupsk/vuefn",
+  "name": "@vuefn/core",
   "version": "0.1.0",
   "description": "One .vue file per route for TanStack Vue Start on Cloudflare Workers",
   "keywords": [

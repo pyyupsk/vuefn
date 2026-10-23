@@ -48,7 +48,7 @@ bun run --filter playground preview
 ## Project structure
 
 ```text
-packages/vuefn   @pyyupsk/vuefn  the Vite plugin and defineRoute
+packages/vuefn   @vuefn/core   the Vite plugin and defineRoute
 apps/playground  playground    pages that use every feature, run on workerd
 apps/node        node-app      the same plugin on a Node server, served with srvx
 scripts/         pack-test.ts  installs the packed tarball like a user would

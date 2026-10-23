@@ -14,7 +14,7 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 ## Install
 
 ```bash
-npm install @pyyupsk/vuefn @tanstack/vue-router @tanstack/vue-start vue
+npm install @vuefn/core @tanstack/vue-router @tanstack/vue-start vue
 npm install -D vite @vitejs/plugin-vue @cloudflare/vite-plugin wrangler vue-tsc typescript@^6
 ```
 
@@ -27,8 +27,8 @@ Use `vuefn()` in place of `tanstackStart()`:
 ```ts
 // vite.config.ts
 import { cloudflare } from '@cloudflare/vite-plugin';
-import { vuefn } from '@pyyupsk/vuefn/vite';
 import vue from '@vitejs/plugin-vue';
+import { vuefn } from '@vuefn/core/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -62,7 +62,7 @@ The root page renders the HTML document around every page:
 ```vue
 <!-- src/pages/__root.vue -->
 <script lang="ts">
-import { defineRootRoute } from '@pyyupsk/vuefn';
+import { defineRootRoute } from '@vuefn/core';
 
 export const route = defineRootRoute({
   head: () => ({ meta: [{ charSet: 'utf-8' }, { title: 'My app' }] }),
@@ -92,7 +92,7 @@ A page puts its route in `<script lang="ts">` and its view in `<script setup>`:
 <!-- src/pages/posts.$id.vue -->
 <script lang="ts">
 import { createServerFn } from '@tanstack/vue-start';
-import { defineRoute } from '@pyyupsk/vuefn';
+import { defineRoute } from '@vuefn/core';
 
 const posts = [{ id: '1', title: 'One file per route' }];
 
@@ -121,12 +121,12 @@ vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite
 
 ## API
 
-| Export                                        | From                  | Does                                                                    |
-| --------------------------------------------- | --------------------- | ----------------------------------------------------------------------- |
-| `vuefn(options)`                              | `@pyyupsk/vuefn/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
-| `defineRoute(path, options)`                  | `@pyyupsk/vuefn`      | The route of a page. `path` must match the file name                    |
-| `defineRootRoute(options)`                    | `@pyyupsk/vuefn`      | The route of `src/pages/__root.vue`, which has no path                  |
-| `defineRootRouteWithContext<Context>()(opts)` | `@pyyupsk/vuefn`      | The root route with a typed router context                              |
+| Export                                        | From               | Does                                                                    |
+| --------------------------------------------- | ------------------ | ----------------------------------------------------------------------- |
+| `vuefn(options)`                              | `@vuefn/core/vite` | The Vite plugin. It adds the TanStack Start plugins, so leave those out |
+| `defineRoute(path, options)`                  | `@vuefn/core`      | The route of a page. `path` must match the file name                    |
+| `defineRootRoute(options)`                    | `@vuefn/core`      | The route of `src/pages/__root.vue`, which has no path                  |
+| `defineRootRouteWithContext<Context>()(opts)` | `@vuefn/core`      | The root route with a typed router context                              |
 
 `vuefn(options)` takes the `tanstackStart()` options, such as `spa`, `prerender` and `srcDirectory`. vuefn sets `router.routesDirectory` itself.
 

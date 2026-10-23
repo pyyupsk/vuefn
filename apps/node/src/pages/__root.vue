@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineRootRoute } from '@pyyupsk/vuefn';
+import { defineRootRoute } from '@vuefn/core';
 
 export const route = defineRootRoute({
   head: () => ({ meta: [{ charSet: 'utf-8' }, { title: 'vuefn on Node' }] }),

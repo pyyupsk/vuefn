@@ -18,9 +18,9 @@
     "apps/node": {
       "name": "node-app",
       "dependencies": {
-        "@pyyupsk/vuefn": "workspace:*",
         "@tanstack/vue-router": "^1.170.42",
         "@tanstack/vue-start": "^1.169.4",
+        "@vuefn/core": "workspace:*",
         "vue": "^3.5.44",
       },
       "devDependencies": {
@@ -35,9 +35,9 @@
     "apps/playground": {
       "name": "playground",
       "dependencies": {
-        "@pyyupsk/vuefn": "workspace:*",
         "@tanstack/vue-router": "^1.170.42",
         "@tanstack/vue-start": "^1.169.4",
+        "@vuefn/core": "workspace:*",
         "vue": "^3.5.44",
       },
       "devDependencies": {
@@ -51,7 +51,7 @@
       },
     },
     "packages/vuefn": {
-      "name": "@pyyupsk/vuefn",
+      "name": "@vuefn/core",
       "version": "0.1.0",
       "dependencies": {
         "magic-string": "^1.4.3",
@@ -399,8 +399,6 @@
 
     "@publint/pack": ["@publint/pack@0.1.7", "", { "dependencies": { "tinyexec": "^1.3.0" } }, "sha512-4EDEmvxWtgsCnnVeBvtFIFZtUhPPt1+bA9JrSwU4Sa//6oKtzCSlGGXYJr44OD9aGISymbieJ4mCKHUygUDU+g=="],
 
-    "@pyyupsk/vuefn": ["@pyyupsk/vuefn@workspace:packages/vuefn"],
-
     "@quansync/fs": ["@quansync/fs@1.1.0", "", { "dependencies": { "quansync": "^1.0.0" } }, "sha512-qAPG/t3HqML1TlN7sY/pTbEjzFVAKsMjNNMGheyDosro+kT4iw2KCUoHcVdmliwWjorm4elZbgNQyU2eD97eDg=="],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.15", "", { "os": "android", "cpu": "arm" }, "sha512-aLcgK9gIJ3YRvrrtfSBbRa27F5WrpiTaPulnFpsHPxpUHgFlSgnU4854MHwoRGEBhfRJDWCS2WQ7lIjskE9Olw=="],
@@ -540,6 +538,8 @@
     "@vue/server-renderer": ["@vue/server-renderer@3.5.44", "", { "dependencies": { "@vue/compiler-ssr": "3.5.44", "@vue/runtime-dom": "3.5.44", "@vue/shared": "3.5.44" } }, "sha512-R4S1UoH4h5Frrauv8Z5XE5TxV9oBiUSgWIC4TyVK1FK+RocRnOLwFA5Xcmo2011RlgJp+AbZCnw6afrhlgRuUQ=="],
 
     "@vue/shared": ["@vue/shared@3.5.44", "", {}, "sha512-H82XLH0DjmSOdbEwO15x3QTo1f5PWEtv237eLpYKc0mqLu+B8hnq16lFWmuBmNurkeiG3wr+oM1FhOll/YVFRg=="],
+
+    "@vuefn/core": ["@vuefn/core@workspace:packages/vuefn"],
 
     "@yuku-core/binding-android-arm64": ["@yuku-core/binding-android-arm64@0.19.0", "", { "os": "android", "cpu": "arm64" }, "sha512-wdL2XmTiZixAOaHk9Z0JJZ8u9Qm8d333Zjpc6gaxXFX+UR5BlsfxZ7a2+2Rm71pamppsPYGUGFq2oVLbh6DISw=="],
 

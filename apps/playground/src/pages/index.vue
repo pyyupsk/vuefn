@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineRoute } from '@pyyupsk/vuefn';
 import { createServerFn } from '@tanstack/vue-start';
+import { defineRoute } from '@vuefn/core';
 import { env } from 'cloudflare:workers';
 
 export const getGreeting = createServerFn().handler(() => ({

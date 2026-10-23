@@ -11,9 +11,9 @@
     "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
   },
   "dependencies": {
-    "@pyyupsk/vuefn": "workspace:*",
     "@tanstack/vue-router": "^1.170.42",
     "@tanstack/vue-start": "^1.169.4",
+    "@vuefn/core": "workspace:*",
     "vue": "^3.5.44"
   },
   "devDependencies": {
