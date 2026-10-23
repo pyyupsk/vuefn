@@ -54,6 +54,7 @@
       "name": "@vuefn/core",
       "version": "0.1.0",
       "dependencies": {
+        "@tanstack/router-generator": "^1.167.46",
         "magic-string": "^1.4.3",
       },
       "devDependencies": {

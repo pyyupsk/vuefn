@@ -8,6 +8,7 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 - `defineRoute` takes every TanStack route option, and `useLoaderData()`, `useParams()`, `useSearch()` and `Link` get their types from it
 - `createServerFn()` in a page runs on the server. The browser gets only the call
 - If a route path does not match its file name, the build stops and says the right one
+- Folders, layout routes and pathless layouts follow the TanStack file conventions
 - `vite dev` picks up new, changed and deleted pages without a restart
 - No runtime of its own: TanStack Start does the routing, SSR and server functions
 
@@ -117,6 +118,49 @@ const post = route.useLoaderData(); // { id: string; title: string } | undefined
 
 File names follow the [TanStack naming rules](https://tanstack.com/router/latest/docs/framework/vue/routing/file-naming-conventions): `index.vue` is `/`, `about.vue` is `/about`, `posts.$id.vue` is `/posts/$id`. Vue Router and Nuxt write `[id].vue` where TanStack writes `$id.vue`.
 
+## Folders and layouts
+
+A folder gives its pages a shared layout, and a file named `route.vue` is that layout:
+
+```tree
+src/pages/
+├── posts/
+│   ├── route.vue   → /posts, the layout around both pages below
+│   ├── index.vue   → /posts/
+│   └── $id.vue     → /posts/$id
+```
+
+```vue
+<!-- src/pages/posts/route.vue -->
+<script lang="ts">
+import { defineRoute } from '@vuefn/core';
+
+export const route = defineRoute('/posts', {});
+</script>
+
+<script setup lang="ts">
+import { Outlet } from '@tanstack/vue-router';
+</script>
+
+<template>
+  <h2>Posts</h2>
+  <Outlet />
+</template>
+```
+
+`route.vue` is the layout only because it sits in the folder. It takes the path of the folder, `index.vue` takes the path with a trailing slash, and a folder without `route.vue` has no layout. A layout must render `<Outlet />`, otherwise its pages never appear.
+
+The rest of the [TanStack file conventions](https://tanstack.com/router/latest/docs/framework/react/routing/file-naming-conventions) works the same way, because vuefn asks TanStack's route generator for the path of every file instead of having rules of its own:
+
+| File                      | Path                                          |
+| ------------------------- | --------------------------------------------- |
+| `posts/$id.vue`           | `/posts/$id`                                  |
+| `_auth/route.vue`         | pathless, wraps `_auth/login.vue` as `/login` |
+| `(marketing)/pricing.vue` | `/pricing`                                    |
+| `blog_.$slug.vue`         | `/blog_/$slug`, not nested under `blog`       |
+| `posts.{-$category}.vue`  | `/posts/{-$category}`, an optional segment    |
+| `-components/Badge.vue`   | not a route, import it from a page            |
+
 vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite dev` and `vite build`. Add both to `.gitignore`, and run `vue-tsc --noEmit` after one of those commands.
 
 ## API
@@ -136,7 +180,8 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
-- Tested with flat routes on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev). Layouts and nested folders are not tested yet
+- The page reaches its route data through `<script setup>`. A page without it still renders its template, but cannot read the loader
+- Tested with flat and folder routes, layouts and pathless layouts on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev)
 - Vue Start creates the Vue app itself, so `app.use()` for Pinia or vue-i18n needs a custom entry
 - Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support
 

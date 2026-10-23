@@ -8,58 +8,99 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { generateRoute, generateRoutes, removeRoute } from '#lib/generate';
+import { generateRoutes } from '#lib/generate';
 
-const page = (path: string, text = '') =>
-  `<script lang="ts">\nexport const route = defineRoute("${path}", {});\n</script>\n<template><p>${text}</p></template>\n`;
+const page = (path: string, text = '', body = '') =>
+  `<script lang="ts">\nexport const route = defineRoute("${path}", {});\n${body}</script>\n<template><p>${text}</p></template>\n`;
 
+let root = '';
 let pages = '';
 let routes = '';
 
 beforeEach(() => {
-  const dir = mkdtempSync(join(tmpdir(), 'vuefn-'));
-  pages = join(dir, 'pages');
-  routes = join(dir, 'routes');
+  root = mkdtempSync(join(tmpdir(), 'vuefn-'));
+  pages = join(root, 'pages');
+  routes = join(root, 'routes');
   mkdirSync(pages);
 });
 
-afterEach(() => rmSync(join(pages, '..'), { recursive: true, force: true }));
+afterEach(() => rmSync(root, { recursive: true, force: true }));
 
-describe('generateRoute', () => {
-  it('writes the route file and records its path', () => {
-    writeFileSync(join(pages, 'about.vue'), page('/about'));
-    const paths = generateRoutes(pages, routes);
-    const target = join(routes, 'about.ts');
-    expect(readFileSync(target, 'utf8')).toContain('createFileRoute("/about")');
-    expect(paths.get(target)).toEqual({ page: join(pages, 'about.vue'), path: '/about' });
+function write(file: string, text = '') {
+  const target = join(pages, file);
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, text);
+}
+
+describe('generateRoutes', () => {
+  it('writes a route file for a nested page and records its path', async () => {
+    write('posts/$id.vue', page('/posts/$id'));
+    const { routes: found } = await generateRoutes(root, pages, routes);
+    const target = join(routes, 'posts', '$id.ts');
+    expect(readFileSync(target, 'utf8')).toContain('createFileRoute("/posts/$id")');
+    expect(found.get(join(pages, 'posts', '$id.vue'))).toEqual({
+      target,
+      path: '/posts/$id',
+      layout: false,
+    });
   });
 
-  it('does not rewrite the route file after a template-only edit', () => {
-    writeFileSync(join(pages, 'about.vue'), page('/about'));
-    const paths = generateRoutes(pages, routes);
+  it('writes a root route without a path', async () => {
+    write(
+      '__root.vue',
+      '<script lang="ts">\nexport const route = defineRootRoute({});\n</script>\n<template><slot /></template>\n',
+    );
+    await generateRoutes(root, pages, routes);
+    expect(readFileSync(join(routes, '__root.ts'), 'utf8')).toContain('createRootRoute');
+  });
+
+  it('does not rewrite the route file after a template-only edit', async () => {
+    write('about.vue', page('/about'));
+    await generateRoutes(root, pages, routes);
     const target = join(routes, 'about.ts');
     const before = statSync(target).mtimeMs;
-    writeFileSync(join(pages, 'about.vue'), page('/about', 'new text'));
-    generateRoute(pages, routes, join(pages, 'about.vue'), paths);
+    write('about.vue', page('/about', 'new text'));
+    await generateRoutes(root, pages, routes);
     expect(statSync(target).mtimeMs).toBe(before);
   });
 
-  it('skips a new empty page until it has content', () => {
-    writeFileSync(join(pages, 'about.vue'), '');
-    const paths = generateRoutes(pages, routes);
+  it('skips a new empty page until it has content', async () => {
+    write('about.vue');
+    const { routes: found } = await generateRoutes(root, pages, routes);
     expect(existsSync(join(routes, 'about.ts'))).toBe(false);
-    expect(paths.size).toBe(0);
+    expect(found.size).toBe(0);
   });
 
-  it('removes the route file when the page is deleted', () => {
-    writeFileSync(join(pages, 'about.vue'), page('/about'));
-    const paths = generateRoutes(pages, routes);
-    removeRoute(pages, routes, join(pages, 'about.vue'), paths);
-    expect(existsSync(join(routes, 'about.ts'))).toBe(false);
-    expect(paths.size).toBe(0);
+  it('removes the route file of a page that moved or was deleted', async () => {
+    write('posts/about.vue', page('/posts/about'));
+    await generateRoutes(root, pages, routes);
+    rmSync(join(pages, 'posts', 'about.vue'));
+    write('posts/index.vue', page('/posts/'));
+    const { routes: found } = await generateRoutes(root, pages, routes);
+    expect(existsSync(join(routes, 'posts', 'about.ts'))).toBe(false);
+    expect(existsSync(join(routes, 'posts', 'index.ts'))).toBe(true);
+    expect(found.size).toBe(1);
+  });
+
+  it('warns about a route with children that has no <Outlet />', async () => {
+    write('posts/route.vue', page('/posts'));
+    write('posts/$id.vue', page('/posts/$id'));
+    const warning = (await generateRoutes(root, pages, routes)).warnings;
+    expect(warning).toEqual([
+      `${join(pages, 'posts', 'route.vue')}: this route renders child routes, so its template needs <Outlet />`,
+    ]);
+  });
+
+  it('does not warn when the layout renders its children', async () => {
+    write(
+      'posts/route.vue',
+      '<script lang="ts">\nexport const route = defineRoute("/posts", {});\n</script>\n<template><Outlet /></template>\n',
+    );
+    write('posts/$id.vue', page('/posts/$id'));
+    expect((await generateRoutes(root, pages, routes)).warnings).toEqual([]);
   });
 });

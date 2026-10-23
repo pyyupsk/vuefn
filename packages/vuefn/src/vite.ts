@@ -3,9 +3,9 @@ import { resolve } from 'node:path';
 import { tanstackStart } from '@tanstack/vue-start/plugin/vite';
 import type { PluginOption } from 'vite';
 
-import { generateRoute, generateRoutes, removeRoute, routeFileFor } from '#lib/generate';
+import { generateRoutes, routeFileFor } from '#lib/generate';
 import type { RoutePaths } from '#lib/generate';
-import { fileRoutePath, findRouteBlock, pageModule } from '#utils/sfc';
+import { findRouteBlock, pageModule } from '#utils/sfc';
 
 const ROUTES_DIR = '.vuefn/routes';
 
@@ -29,19 +29,27 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
       'vuefn: leave out router.routesDirectory, vuefn writes the routes to .vuefn/routes',
     );
   }
+  let root = '';
   let pagesDir = '';
   let routesDir = '';
-  let paths: RoutePaths = new Map();
-  const isPage = (file: string) => file.startsWith(`${pagesDir}/`) && file.endsWith('.vue');
+  let routes: RoutePaths = new Map();
+  let warnings: string[] = [];
+  const refresh = async () => {
+    ({ routes, warnings } = await generateRoutes(root, pagesDir, routesDir, options.router));
+  };
   return [
     {
       name: 'vuefn',
       enforce: 'pre',
-      config(config) {
-        const src = resolve(config.root ?? process.cwd(), options.srcDirectory ?? 'src');
+      async config(config) {
+        root = resolve(config.root ?? process.cwd());
+        const src = resolve(root, options.srcDirectory ?? 'src');
         pagesDir = resolve(src, 'pages');
         routesDir = resolve(src, ROUTES_DIR);
-        paths = generateRoutes(pagesDir, routesDir);
+        await refresh();
+      },
+      buildStart() {
+        for (const warning of warnings) this.warn(warning);
       },
       configEnvironment(name, config) {
         if (name !== 'ssr' || config.optimizeDeps?.noDiscovery !== false) return;
@@ -49,29 +57,26 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
         return { optimizeDeps: { include: ['vue', 'vue/server-renderer'] } };
       },
       configureServer(server) {
-        const update = (file: string) => {
-          if (!isPage(file)) return;
+        // one change rereads every page, because it can add, rename or delete a folder
+        const run = async () => {
           try {
-            generateRoute(pagesDir, routesDir, file, paths);
+            await refresh();
           } catch (error) {
             server.config.logger.error(String(error instanceof Error ? error.message : error));
           }
         };
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const update = (file: string) => {
+          if (!file.startsWith(`${pagesDir}/`) || !file.endsWith('.vue')) return;
+          clearTimeout(timer);
+          timer = setTimeout(() => void run(), 50);
+        };
         server.watcher.on('add', update);
         server.watcher.on('change', update);
-        server.watcher.on('unlink', (file) => {
-          if (isPage(file)) removeRoute(pagesDir, routesDir, file, paths);
-        });
+        server.watcher.on('unlink', update);
       },
       transform(code, id) {
-        const written = paths.get(id);
-        const actual = written && fileRoutePath(code);
-        if (written && actual && actual !== written.path) {
-          this.error(
-            `${written.page}: the file name gives the path "${actual}". Use defineRoute("${actual}", ...).`,
-          );
-        }
-        if (!isPage(id)) return;
+        if (!routes.has(id)) return;
         const block = findRouteBlock(code, id);
         if (!block) return;
         return pageModule(code, block, routeFileFor(pagesDir, routesDir, id), id);

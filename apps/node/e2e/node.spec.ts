@@ -14,3 +14,10 @@ test('calls a server function on Node after hydration', async ({ page }) => {
   await expect(page.getByTestId('again')).toHaveText(/^Node \d+\.\d+\.\d+$/);
   expect(errors).toEqual([]);
 });
+
+test('nests a folder page under its layout on Node', async ({ request }) => {
+  const html = await (await request.get('/posts')).text();
+  expect(html).toContain('<h2>Posts on Node</h2>');
+  expect(html).toContain('2 posts');
+  expect(html).toContain('Post list');
+});

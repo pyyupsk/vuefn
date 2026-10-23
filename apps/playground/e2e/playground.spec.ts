@@ -31,6 +31,21 @@ test('answers 404 for a post that does not exist', async ({ request }) => {
   expect((await request.get('/posts/9')).status()).toBe(404);
 });
 
+test('wraps a nested index route and its pages in the folder layout', async ({ request }) => {
+  const index = await (await request.get('/posts')).text();
+  expect(index).toContain('<h2>Posts <strong data-testid="badge">nested</strong></h2>');
+  expect(index).toContain('Pick a post');
+  const post = await (await request.get('/posts/1')).text();
+  expect(post).toContain('<h2>Posts');
+  expect(post).toContain('One file per route');
+});
+
+test('keeps a pathless layout out of the URL', async ({ request }) => {
+  const html = await (await request.get('/login')).text();
+  expect(html).toContain('<aside data-testid="pathless">Auth layout</aside>');
+  expect(html).toContain('Sign in');
+});
+
 test('sends route headers from the server and keeps them out of the client bundle', async ({
   request,
 }) => {

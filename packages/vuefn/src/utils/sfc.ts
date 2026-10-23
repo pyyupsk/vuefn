@@ -215,5 +215,7 @@ export function pageModule(source: string, block: RouteBlock, routeImport: strin
     block.end,
     `\nimport { ${imports} } from ${JSON.stringify(routeImport)};\nexport { ${['route', ...names].join(', ')} };\n`,
   );
+  // a page without <script setup> still needs a default export for its template
+  if (!/<script[^>]*\ssetup\b/.test(source)) code.appendLeft(block.end, '\nexport default {};');
   return { code: code.toString(), map: code.generateMap({ source: id, hires: true }) };
 }

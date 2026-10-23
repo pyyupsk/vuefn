@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/router-generator": "^1.167.46",
     "magic-string": "^1.4.3"
   },
   "devDependencies": {
