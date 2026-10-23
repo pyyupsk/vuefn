@@ -4,9 +4,11 @@ import {
   exportNames,
   fileRoutePath,
   findRouteBlock,
+  localNames,
   pageModule,
   routeModule,
   routePath,
+  sharedNames,
 } from '#utils/sfc';
 
 const page = `<script lang="ts">
@@ -61,8 +63,9 @@ export const route = defineRoute('/posts/$id', {
       '/posts/$id',
     );
     expect(code).toContain('import { createFileRoute } from "@tanstack/vue-router";');
-    expect(code).toContain('import Page from "./page.vue";');
-    expect(code).toContain(`export const Route = createFileRoute('/posts/$id')({ component: Page,
+    expect(code).toContain('import VuefnPage from "./page.vue";');
+    expect(code)
+      .toContain(`export const Route = createFileRoute('/posts/$id')({ component: VuefnPage,
   loader: () => 1,
   headers: () => ({ a: '1' }),
 });`);
@@ -72,7 +75,7 @@ export const route = defineRoute('/posts/$id', {
 
   it('adds the component when the route has no options', () => {
     expect(moduleOf(`export const route = defineRoute('/about');`, '/about')).toContain(
-      "export const Route = createFileRoute('/about')({ component: Page });",
+      "export const Route = createFileRoute('/about')({ component: VuefnPage });",
     );
   });
 
@@ -80,15 +83,15 @@ export const route = defineRoute('/posts/$id', {
     const code = moduleOf(`export const route = defineRootRoute({ head: () => ({}) });`, null);
     expect(code).toContain('import { createRootRoute } from "@tanstack/vue-router";');
     expect(code).toContain(
-      'export const Route = createRootRoute({ shellComponent: Page, head: () => ({}) });',
+      'export const Route = createRootRoute({ shellComponent: VuefnPage, head: () => ({}) });',
     );
   });
 
   it('builds a route for a page without a route block', () => {
     const code = routeModule(null, './page.vue', '', 'page.vue');
-    expect(code).toContain('export const Route = createFileRoute("")({ component: Page });');
+    expect(code).toContain('export const Route = createFileRoute("")({ component: VuefnPage });');
     expect(routeModule(null, './root.vue', null, 'root.vue')).toContain(
-      'export const Route = createRootRoute({ shellComponent: Page });',
+      'export const Route = createRootRoute({ shellComponent: VuefnPage });',
     );
   });
 
@@ -173,5 +176,56 @@ describe('fileRoutePath', () => {
       '/posts/$id',
     );
     expect(fileRoutePath('export const Route = createRootRoute({})')).toBeNull();
+  });
+});
+
+describe('localNames', () => {
+  it('lists every top-level value name that is not exported', () => {
+    const names = localNames(`
+      import { a } from 'x';
+      import type { T } from 'x';
+      import { type U, b } from 'x';
+      import c, * as d from 'x';
+      const { e, f: [g, ...h] } = obj, i = 1;
+      let j = 2;
+      function k() {}
+      class L {}
+      enum M { A }
+      declare const n: number;
+      type O = 1;
+      interface P {}
+      export const route = defineRoute('/', {});
+      export function q() {}
+    `);
+    expect(names).toEqual(['a', 'b', 'c', 'd', 'e', 'g', 'h', 'i', 'j', 'k', 'L', 'M']);
+  });
+});
+
+describe('route block names in the page', () => {
+  const source = `<script lang="ts">
+import { notFound } from '@tanstack/vue-router';
+import { env } from 'cloudflare:workers';
+const posts = [1];
+export const getPost = () => (posts.length ? env.KEY : notFound());
+export const route = defineRoute('/a', {});
+</script>
+<script setup lang="ts">
+const total = posts.length;
+</script>`;
+
+  it('shares only the names that the page uses', () => {
+    expect(sharedNames(source, blockOf(source, 'a.vue'))).toEqual(['posts']);
+  });
+
+  it('exports the shared names from the route file', () => {
+    const block = blockOf(source, 'a.vue');
+    const code = routeModule(block, './a.vue', '/a', 'a.vue', sharedNames(source, block));
+    expect(code).toContain('export { posts };');
+    expect(code).not.toMatch(/export \{[^}]*env/);
+  });
+
+  it('imports the exports and the shared names into the page', () => {
+    const { code } = pageModule(source, blockOf(source, 'a.vue'), '/gen/a.ts', 'a.vue');
+    expect(code).toContain('import { Route as route, getPost, posts } from "/gen/a.ts";');
   });
 });

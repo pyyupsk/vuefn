@@ -55,24 +55,25 @@ function importsName(program: Program, name: string): boolean {
   );
 }
 
-// TanStack strips server-only options and splits code only when they are written inside the createFileRoute call.
+// TanStack only strips server options written inside the createFileRoute call
 export function routeModule(
   block: RouteBlock | null,
   pageImport: string,
   path: string | null,
   filename: string,
+  shared: readonly string[] = [],
 ): string {
   const isRoot = path === null;
   const create = isRoot ? 'createRootRoute' : 'createFileRoute';
   const slot = isRoot ? 'shellComponent' : 'component';
-  const head = [`import Page from ${JSON.stringify(pageImport)};`];
+  const head = [`import VuefnPage from ${JSON.stringify(pageImport)};`];
   if (!block) {
     const call = isRoot ? create : `${create}(${JSON.stringify(path)})`;
     return [
       `import { ${create} } from "@tanstack/vue-router";`,
       ...head,
       '',
-      `export const Route = ${call}({ ${slot}: Page });`,
+      `export const Route = ${call}({ ${slot}: VuefnPage });`,
       'export const route = Route;',
       '',
     ].join('\n');
@@ -102,12 +103,14 @@ export function routeModule(
     if (to > from) code.overwrite(from, to, ')(');
     else code.appendLeft(from, ')(');
   }
-  if (options) code.appendLeft((options.start ?? 0) + 1, ` ${slot}: Page,`);
-  else code.appendLeft((call.end ?? 0) - 1, `{ ${slot}: Page }`);
+  if (options) code.appendLeft((options.start ?? 0) + 1, ` ${slot}: VuefnPage,`);
+  else code.appendLeft((call.end ?? 0) - 1, `{ ${slot}: VuefnPage }`);
 
   if (!importsName(program, create))
     head.unshift(`import { ${create} } from "@tanstack/vue-router";`);
-  return [...head, code.toString().trim(), '', 'export const route = Route;', ''].join('\n');
+  const tail = ['export const route = Route;'];
+  if (shared.length > 0) tail.push(`export { ${shared.join(', ')} };`);
+  return [...head, code.toString().trim(), '', ...tail, ''].join('\n');
 }
 
 export function fileRoutePath(code: string): string | null {
@@ -116,15 +119,9 @@ export function fileRoutePath(code: string): string | null {
 
 export function exportNames(content: string): string[] {
   const names: string[] = [];
-  for (const node of babelParse(content, { sourceType: 'module', plugins: ['typescript'] }).program
-    .body) {
+  for (const node of parseBlock(content).body) {
     if (node.type !== 'ExportNamedDeclaration' || node.exportKind === 'type') continue;
-    const decl = node.declaration;
-    if (decl?.type === 'VariableDeclaration') {
-      for (const d of decl.declarations) if (d.id.type === 'Identifier') names.push(d.id.name);
-    } else if (decl?.type === 'FunctionDeclaration' && decl.id) {
-      names.push(decl.id.name);
-    }
+    if (node.declaration) names.push(...declaredNames(node.declaration));
     for (const spec of node.specifiers) {
       if (spec.type === 'ExportSpecifier' && spec.exportKind !== 'type') {
         names.push(spec.exported.type === 'Identifier' ? spec.exported.name : spec.exported.value);
@@ -134,8 +131,71 @@ export function exportNames(content: string): string[] {
   return names;
 }
 
+type Statement = Program['body'][number];
+type Pattern = Extract<RouteDeclarator['id'], object>;
+
+function patternNames(pattern: Pattern | null | undefined): string[] {
+  if (!pattern) return [];
+  switch (pattern.type) {
+    case 'Identifier':
+      return [pattern.name];
+    case 'ObjectPattern':
+      return pattern.properties.flatMap((p) =>
+        patternNames((p.type === 'RestElement' ? p.argument : p.value) as Pattern),
+      );
+    case 'ArrayPattern':
+      return pattern.elements.flatMap((e) => patternNames(e as Pattern | null));
+    case 'RestElement':
+      return patternNames(pattern.argument);
+    case 'AssignmentPattern':
+      return patternNames(pattern.left);
+    default:
+      return [];
+  }
+}
+
+function declaredNames(node: Statement): string[] {
+  switch (node.type) {
+    case 'VariableDeclaration':
+      return node.declare ? [] : node.declarations.flatMap((d) => patternNames(d.id));
+    case 'FunctionDeclaration':
+    case 'ClassDeclaration':
+      return node.id && !node.declare ? [node.id.name] : [];
+    case 'TSEnumDeclaration':
+      return node.declare ? [] : [node.id.name];
+    case 'ImportDeclaration':
+      if (node.importKind === 'type') return [];
+      return node.specifiers
+        .filter((spec) => spec.type !== 'ImportSpecifier' || spec.importKind !== 'type')
+        .map((spec) => spec.local.name);
+    default:
+      return [];
+  }
+}
+
+export function localNames(content: string): string[] {
+  const exported = new Set(exportNames(content));
+  return parseBlock(content)
+    .body.flatMap((node) =>
+      declaredNames(
+        node.type === 'ExportNamedDeclaration' && node.declaration ? node.declaration : node,
+      ),
+    )
+    .filter((name) => !exported.has(name));
+}
+
+// shortcut: a word match, so a name in a string also counts, parse the template if that leaks an import
+export function sharedNames(source: string, block: RouteBlock): string[] {
+  const rest = source.slice(0, block.start) + source.slice(block.end);
+  return localNames(block.content).filter((name) =>
+    new RegExp(`(^|[^\\w$])${name.replaceAll('$', '\\$')}($|[^\\w$])`).test(rest),
+  );
+}
+
 export function pageModule(source: string, block: RouteBlock, routeImport: string, id: string) {
-  const names = exportNames(block.content).filter((n) => n !== 'route');
+  const names = [...exportNames(block.content), ...sharedNames(source, block)].filter(
+    (n) => n !== 'route',
+  );
   const imports = ['Route as route', ...names].join(', ');
   const code = new MagicString(source);
   code.overwrite(

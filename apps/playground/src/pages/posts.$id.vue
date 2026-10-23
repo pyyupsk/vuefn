@@ -24,9 +24,10 @@ export const route = defineRoute('/posts/$id', {
 <script setup lang="ts">
 const params = route.useParams();
 const post = route.useLoaderData();
+const total = posts.length;
 </script>
 
 <template>
   <h1>{{ post.title }}</h1>
-  <p>Post {{ params.id }}</p>
+  <p>Post {{ params.id }} of {{ total }}</p>
 </template>

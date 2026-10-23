@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
-import { findRouteBlock, routeModule, routePath } from '#utils/sfc';
+import { findRouteBlock, routeModule, routePath, sharedNames } from '#utils/sfc';
 
 export type RoutePaths = Map<string, Readonly<{ page: string; path: string }>>;
 
@@ -23,7 +23,13 @@ export function generateRoute(
   if (relative(pagesDir, page) !== '__root.vue') path = block ? routePath(block.content, page) : '';
   if (path) paths.set(target, { page, path });
   else paths.delete(target);
-  const code = routeModule(block, relative(dirname(target), page), path, page);
+  const code = routeModule(
+    block,
+    relative(dirname(target), page),
+    path,
+    page,
+    block ? sharedNames(source, block) : [],
+  );
   // a template-only edit gives the same code, and rewriting it would reload the route tree
   if (existsSync(target) && readFileSync(target, 'utf8') === code) return;
   mkdirSync(dirname(target), { recursive: true });
