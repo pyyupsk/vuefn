@@ -7,7 +7,7 @@
     "dev": "vite dev --port 3000",
     "postinstall": "wrangler types",
     "preview": "vite preview",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test && playwright test -c playwright.dev.config.ts",
     "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
   },
   "dependencies": {

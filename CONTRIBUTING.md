@@ -24,7 +24,7 @@ bun run build         # build packages/vuefn to dist/, with publint and attw
 bun run test          # run all tests once
 bun run test:coverage # run the tests with a coverage report in coverage/
 bun run test:pack     # pack vuefn, install it in a temp app and load it with Node
-bun run test:e2e      # build both apps, run them on workerd and Node and test them in Chromium
+bun run test:e2e      # build both apps, run them on workerd and Node, then test live page edits in vite dev
 bun run lint          # oxlint, type-aware
 bun run format        # oxfmt
 bun run typecheck     # build, then type-check the package and the playground with vue-tsc
