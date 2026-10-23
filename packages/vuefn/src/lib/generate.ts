@@ -23,7 +23,7 @@ export function generateRoute(
   if (relative(pagesDir, page) !== '__root.vue') path = block ? routePath(block.content, page) : '';
   if (path) paths.set(target, { page, path });
   else paths.delete(target);
-  const code = routeModule(block, relative(dirname(target), page), path);
+  const code = routeModule(block, relative(dirname(target), page), path, page);
   // a template-only edit gives the same code, and rewriting it would reload the route tree
   if (existsSync(target) && readFileSync(target, 'utf8') === code) return;
   mkdirSync(dirname(target), { recursive: true });

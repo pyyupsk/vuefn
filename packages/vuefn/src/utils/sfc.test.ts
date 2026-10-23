@@ -46,21 +46,64 @@ describe('findRouteBlock', () => {
   });
 });
 
+function moduleOf(content: string, path: string | null) {
+  return routeModule({ content, start: 0, end: content.length }, './page.vue', path, 'page.vue');
+}
+
 describe('routeModule', () => {
-  it('builds a file route with the page as component', () => {
-    const code = routeModule(findRouteBlock(page, 'index.vue'), '../../pages/index.vue', '/');
+  it('writes the options inside a real createFileRoute call', () => {
+    const code = moduleOf(
+      `import { defineRoute } from 'vuefn';
+export const route = defineRoute('/posts/$id', {
+  loader: () => 1,
+  headers: () => ({ a: '1' }),
+});`,
+      '/posts/$id',
+    );
     expect(code).toContain('import { createFileRoute } from "@tanstack/vue-router";');
-    expect(code).toContain('import Page from "../../pages/index.vue";');
-    expect(code).toContain(
-      'export const Route = createFileRoute("/")({ ...route.options, component: Page });',
+    expect(code).toContain('import Page from "./page.vue";');
+    expect(code).toContain(`export const Route = createFileRoute('/posts/$id')({ component: Page,
+  loader: () => 1,
+  headers: () => ({ a: '1' }),
+});`);
+    expect(code).toContain('export const route = Route;');
+    expect(code).not.toContain('...');
+  });
+
+  it('adds the component when the route has no options', () => {
+    expect(moduleOf(`export const route = defineRoute('/about');`, '/about')).toContain(
+      "export const Route = createFileRoute('/about')({ component: Page });",
     );
   });
 
   it('builds a root route with the page as shell', () => {
-    const code = routeModule(null, '../../pages/__root.vue', null);
-    expect(code).toContain('const route = { options: {} };');
+    const code = moduleOf(`export const route = defineRootRoute({ head: () => ({}) });`, null);
+    expect(code).toContain('import { createRootRoute } from "@tanstack/vue-router";');
     expect(code).toContain(
-      'export const Route = createRootRoute({ ...route.options, shellComponent: Page });',
+      'export const Route = createRootRoute({ shellComponent: Page, head: () => ({}) });',
+    );
+  });
+
+  it('builds a route for a page without a route block', () => {
+    const code = routeModule(null, './page.vue', '', 'page.vue');
+    expect(code).toContain('export const Route = createFileRoute("")({ component: Page });');
+    expect(routeModule(null, './root.vue', null, 'root.vue')).toContain(
+      'export const Route = createRootRoute({ shellComponent: Page });',
+    );
+  });
+
+  it('does not import createFileRoute twice', () => {
+    const code = moduleOf(
+      `import { createFileRoute } from '@tanstack/vue-router';
+export const route = defineRoute('/a', {});`,
+      '/a',
+    );
+    expect(code.match(/import \{ createFileRoute \}/g)).toHaveLength(1);
+  });
+
+  it('rejects options that are not an object literal', () => {
+    expect(() => moduleOf(`export const route = defineRoute('/a', options);`, '/a')).toThrow(
+      'page.vue: pass the route options as an object literal',
     );
   });
 });
