@@ -47,6 +47,7 @@ test('adds, changes and removes a page without a restart', async ({ page, reques
   await expect(page.getByText('second template')).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { kept?: boolean }).kept)).toBe(true);
 
+  await page.waitForTimeout(1000);
   writePage('/about', 'second loader', 'second template');
   const route = join(import.meta.dirname, '..', 'src', '.vuefn', 'routes', 'about.ts');
   for (let i = 0; i < 6; i++) {
