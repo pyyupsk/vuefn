@@ -136,7 +136,7 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
-- Tested with flat routes on Cloudflare Workers. Layouts and nested folders are not tested yet
+- Tested with flat routes on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev). Layouts and nested folders are not tested yet
 - Vue Start creates the Vue app itself, so `app.use()` for Pinia or vue-i18n needs a custom entry
 - Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support
 

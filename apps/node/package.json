@@ -1,0 +1,25 @@
+{
+  "name": "node-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "start": "srvx serve --prod --entry dist/server/server.js --static ../client",
+    "test:e2e": "playwright test",
+    "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/vue-router": "^1.170.42",
+    "@tanstack/vue-start": "^1.169.4",
+    "vue": "^3.5.44",
+    "vuefn": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "srvx": "^1.0.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vue-tsc": "^3.3.13"
+  }
+}
