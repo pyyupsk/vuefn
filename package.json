@@ -13,6 +13,7 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "test": "vitest run",
+    "test:e2e": "bun run build && bun run --filter playground test:e2e",
     "test:pack": "bun run build && bun scripts/pack-test.ts",
     "typecheck": "bun run build && bun run --filter '*' typecheck"
   },

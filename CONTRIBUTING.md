@@ -23,6 +23,7 @@ bun run dev           # build vuefn, then run the playground on port 3000
 bun run build         # build packages/vuefn to dist/, with publint and attw
 bun run test          # run all tests once
 bun run test:pack     # pack vuefn, install it in a temp app and load it with Node
+bun run test:e2e      # build the playground, run it on workerd and test it in Chromium
 bun run lint          # oxlint, type-aware
 bun run format        # oxfmt
 bun run typecheck     # build, then type-check the package and the playground with vue-tsc
@@ -105,8 +106,8 @@ The block must be a real `.ts` file before TanStack Start reads it. A `createSer
 2. Make your change.
 3. Add or update tests. Make sure that `bun run test` passes.
 4. Run `bun run format`, `bun run lint` and `bun run typecheck`.
-5. If you changed the package files or the build, run `bun run test:pack`.
+5. If you changed the package files or the build, run `bun run test:pack`. If you changed how pages render, run `bun run test:e2e`. The first time, install Chromium with `bunx playwright install chromium` in `apps/playground`.
 6. Commit with a Conventional Commits message.
 7. Open a pull request against `main`.
 
-CI runs format, lint, the tests and typecheck on Ubuntu 24.04. It also loads the packed tarball on Node 22.23.4 and 24.22.1. All checks must pass before a merge.
+CI runs format, lint, the tests, typecheck and the e2e tests on Ubuntu 24.04. It also loads the packed tarball on Node 22.23.4 and 24.22.1. All checks must pass before a merge.
