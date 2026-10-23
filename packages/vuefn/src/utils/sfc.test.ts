@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { exportNames, findRouteBlock, pageModule, routeModule } from "#utils/sfc";
+import {
+  exportNames,
+  fileRoutePath,
+  findRouteBlock,
+  pageModule,
+  routeModule,
+  routePath,
+} from "#utils/sfc";
 
 const page = `<script lang="ts">
-export const route = defineRoute({ loader: () => 1 });
+export const route = defineRoute("/", { loader: () => 1 });
 </script>
 
 <script setup lang="ts">
@@ -15,7 +22,9 @@ const data = route.useLoaderData();
 describe("findRouteBlock", () => {
   it("returns the plain script block, not script setup", () => {
     const block = findRouteBlock(page, "index.vue");
-    expect(block?.content.trim()).toBe("export const route = defineRoute({ loader: () => 1 });");
+    expect(block?.content.trim()).toBe(
+      'export const route = defineRoute("/", { loader: () => 1 });',
+    );
     expect(page.slice(block!.start, block!.end)).toBe(block!.content);
   });
 
@@ -32,7 +41,7 @@ describe("findRouteBlock", () => {
 
 describe("routeModule", () => {
   it("builds a file route with the page as component", () => {
-    const code = routeModule(findRouteBlock(page, "index.vue"), "../../pages/index.vue", false);
+    const code = routeModule(findRouteBlock(page, "index.vue"), "../../pages/index.vue", "/");
     expect(code).toContain('import { createFileRoute } from "@tanstack/vue-router";');
     expect(code).toContain('import Page from "../../pages/index.vue";');
     expect(code).toContain(
@@ -41,7 +50,7 @@ describe("routeModule", () => {
   });
 
   it("builds a root route with the page as shell", () => {
-    const code = routeModule(null, "../../pages/__root.vue", true);
+    const code = routeModule(null, "../../pages/__root.vue", null);
     expect(code).toContain("const route = { options: {} };");
     expect(code).toContain(
       "export const Route = createRootRoute({ ...route.options, shellComponent: Page });",
@@ -87,5 +96,32 @@ getData();
     const { code } = pageModule(source, block, "/gen/a.ts", "a.vue");
     expect(code).toContain('import { Route as route, getData } from "/gen/a.ts";');
     expect(code).toContain("export { route, getData };");
+  });
+});
+
+describe("routePath", () => {
+  it("reads the path from defineRoute", () => {
+    expect(routePath('export const route = defineRoute("/posts/$id", {});', "a.vue")).toBe(
+      "/posts/$id",
+    );
+  });
+
+  it("rejects a route without a path", () => {
+    expect(() => routePath("export const route = defineRoute({});", "a.vue")).toThrow(
+      'defineRoute("/path"',
+    );
+  });
+
+  it("rejects a page without export const route", () => {
+    expect(() => routePath("export const getData = 1;", "a.vue")).toThrow("a.vue");
+  });
+});
+
+describe("fileRoutePath", () => {
+  it("reads the path TanStack wrote into the route file", () => {
+    expect(fileRoutePath("export const Route = createFileRoute('/posts/$id')({})")).toBe(
+      "/posts/$id",
+    );
+    expect(fileRoutePath("export const Route = createRootRoute({})")).toBeNull();
   });
 });

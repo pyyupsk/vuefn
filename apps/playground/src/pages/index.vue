@@ -9,12 +9,13 @@ export const getGreeting = createServerFn().handler(() => ({
   at: new Date().toISOString(),
 }));
 
-export const route = defineRoute({
+export const route = defineRoute("/", {
   loader: () => getGreeting(),
 });
 </script>
 
 <script setup lang="ts">
+import { Link } from "@tanstack/vue-router";
 import { ref } from "vue";
 
 const data = route.useLoaderData();
@@ -30,4 +31,5 @@ async function askAgain() {
   <p>Running in {{ data.runtime }}</p>
   <button type="button" @click="askAgain">Ask the server again</button>
   <p data-testid="latest">{{ latest }}</p>
+  <Link to="/posts/$id" :params="{ id: '2' }">Read post 2</Link>
 </template>

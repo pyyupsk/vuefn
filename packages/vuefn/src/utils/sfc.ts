@@ -13,10 +13,38 @@ export function findRouteBlock(source: string, filename: string): RouteBlock | n
   return { content: script.content, start: script.loc.start.offset, end: script.loc.end.offset };
 }
 
-export function routeModule(block: RouteBlock | null, pageImport: string, isRoot: boolean): string {
-  const create = isRoot ? "createRootRoute" : "createFileRoute";
-  const call = isRoot ? "createRootRoute" : 'createFileRoute("/")';
-  const slot = isRoot ? "shellComponent" : "component";
+export function routePath(content: string, filename: string): string {
+  for (const node of babelParse(content, { sourceType: "module", plugins: ["typescript"] }).program
+    .body) {
+    if (node.type !== "ExportNamedDeclaration" || node.declaration?.type !== "VariableDeclaration")
+      continue;
+    for (const d of node.declaration.declarations) {
+      if (d.id.type !== "Identifier" || d.id.name !== "route") continue;
+      const call = d.init;
+      if (
+        call?.type !== "CallExpression" ||
+        call.callee.type !== "Identifier" ||
+        call.callee.name !== "defineRoute"
+      )
+        break;
+      const [path] = call.arguments;
+      if (path?.type === "StringLiteral") return path.value;
+      break;
+    }
+  }
+  throw new Error(
+    `${filename}: write the route as export const route = defineRoute("/path", { ... })`,
+  );
+}
+
+export function routeModule(
+  block: RouteBlock | null,
+  pageImport: string,
+  path: string | null,
+): string {
+  const create = path === null ? "createRootRoute" : "createFileRoute";
+  const call = path === null ? "createRootRoute" : `createFileRoute(${JSON.stringify(path)})`;
+  const slot = path === null ? "shellComponent" : "component";
   return [
     `import { ${create} } from "@tanstack/vue-router";`,
     `import Page from ${JSON.stringify(pageImport)};`,
@@ -25,6 +53,10 @@ export function routeModule(block: RouteBlock | null, pageImport: string, isRoot
     `export const Route = ${call}({ ...route.options, ${slot}: Page });`,
     "",
   ].join("\n");
+}
+
+export function fileRoutePath(code: string): string | null {
+  return /createFileRoute\(\s*(["'`])(.*?)\1\s*\)/.exec(code)?.[2] ?? null;
 }
 
 export function exportNames(content: string): string[] {

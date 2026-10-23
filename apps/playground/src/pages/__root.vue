@@ -1,7 +1,7 @@
 <script lang="ts">
-import { defineRoute } from "vuefn";
+import { defineRootRoute } from "vuefn";
 
-export const route = defineRoute({
+export const route = defineRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
