@@ -22,6 +22,7 @@ bun run build
 bun run dev           # build vuefn, then run the playground on port 3000
 bun run build         # build packages/vuefn to dist/, with publint and attw
 bun run test          # run all tests once
+bun run test:coverage # run the tests with a coverage report in coverage/
 bun run test:pack     # pack vuefn, install it in a temp app and load it with Node
 bun run test:e2e      # build the playground, run it on workerd and test it in Chromium
 bun run lint          # oxlint, type-aware
@@ -110,4 +111,4 @@ The block must be a real `.ts` file before TanStack Start reads it. A `createSer
 6. Commit with a Conventional Commits message.
 7. Open a pull request against `main`.
 
-CI runs format, lint, the tests, typecheck and the e2e tests on Ubuntu 24.04. It also loads the packed tarball on Node 22.23.4 and 24.22.1. All checks must pass before a merge.
+CI runs format, lint, the tests, typecheck and the e2e tests on Ubuntu 24.04, and sends coverage to Codecov. It also loads the packed tarball on Node 22.23.4 and 24.22.1. All checks must pass before a merge.

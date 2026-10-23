@@ -13,6 +13,7 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "bun run build && bun run --filter playground test:e2e",
     "test:pack": "bun run build && bun scripts/pack-test.ts",
     "typecheck": "bun run build && bun run --filter '*' typecheck"
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^26.6.5",
+    "@vitest/coverage-v8": "^5.0.5",
     "eslint-plugin-jsdoc": "^65.4.1",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
