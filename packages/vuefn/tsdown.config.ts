@@ -6,4 +6,7 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
+  exports: true,
+  publint: { level: "suggestion" },
+  attw: { profile: "esm-only", level: "error" },
 });
