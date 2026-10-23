@@ -42,10 +42,11 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
         pagesDir = resolve(src, 'pages');
         routesDir = resolve(src, ROUTES_DIR);
         paths = generateRoutes(pagesDir, routesDir);
+      },
+      configEnvironment(name, config) {
+        if (name !== 'ssr' || config.optimizeDeps?.noDiscovery !== false) return;
         // Vite finds vue/server-renderer during the first SSR request and loads a second Vue mid-request
-        return {
-          environments: { ssr: { optimizeDeps: { include: ['vue', 'vue/server-renderer'] } } },
-        };
+        return { optimizeDeps: { include: ['vue', 'vue/server-renderer'] } };
       },
       configureServer(server) {
         const update = (file: string) => {

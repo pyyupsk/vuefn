@@ -31,11 +31,20 @@ describe('vuefn', () => {
     expect(() => vuefn({ router: { routesDirectory: 'routes' } })).toThrow('routesDirectory');
   });
 
-  it('pre-bundles vue for ssr so the first dev request has one vue', () => {
-    root = mkdtempSync(join(tmpdir(), 'vuefn-'));
-    mkdirSync(join(root, 'src', 'pages'), { recursive: true });
-    expect(runConfig(vuefn())).toEqual({
-      environments: { ssr: { optimizeDeps: { include: ['vue', 'vue/server-renderer'] } } },
+  it('pre-bundles vue for ssr only when ssr discovery is on', () => {
+    const [plugin] = [vuefn()].flat() as Plugin[];
+    const hook = plugin?.configEnvironment;
+    const run = (name: string, noDiscovery: boolean) =>
+      typeof hook === 'function'
+        ? hook.call({} as never, name, { optimizeDeps: { noDiscovery } }, {
+            command: 'serve',
+            mode: 'development',
+          } as never)
+        : undefined;
+    expect(run('ssr', false)).toEqual({
+      optimizeDeps: { include: ['vue', 'vue/server-renderer'] },
     });
+    expect(run('ssr', true)).toBeUndefined();
+    expect(run('client', false)).toBeUndefined();
   });
 });
