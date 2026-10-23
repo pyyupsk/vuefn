@@ -1,0 +1,28 @@
+// Installs the packed tarball in a temp app, as a user would from npm, and loads both entries with Node.
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { $ } from "bun";
+
+const pkg = join(import.meta.dir, "..", "packages", "vuefn");
+const dir = await mkdtemp(join(tmpdir(), "vuefn-pack-"));
+try {
+  const tarball = (await $`npm pack --silent --pack-destination ${dir}`.cwd(pkg).text()).trim();
+  await Bun.write(join(dir, "package.json"), '{ "private": true, "type": "module" }\n');
+  await $`npm install --silent --no-audit --no-fund ${join(dir, tarball)}`.cwd(dir);
+
+  await Bun.write(
+    join(dir, "check.mjs"),
+    `import { defineRoute } from "vuefn";
+import { vuefn } from "vuefn/vite";
+const route = defineRoute("/posts/$id", { loader: () => 1 });
+if (route.path !== "/posts/$id" || typeof route.options.loader !== "function") throw new Error("defineRoute");
+if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("vuefn plugin");
+`,
+  );
+  await $`node check.mjs`.cwd(dir);
+  const node = (await $`node --version`.text()).trim();
+  console.log(`${tarball}: vuefn and vuefn/vite load on Node ${node}`);
+} finally {
+  await rm(dir, { recursive: true, force: true });
+}
