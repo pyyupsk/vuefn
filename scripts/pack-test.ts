@@ -1,18 +1,19 @@
 // Installs the packed tarball in a temp app, as a user would from npm, and loads both entries with Node.
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { $ } from "bun";
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-const pkg = join(import.meta.dir, "..", "packages", "vuefn");
-const dir = await mkdtemp(join(tmpdir(), "vuefn-pack-"));
+import { $ } from 'bun';
+
+const pkg = join(import.meta.dir, '..', 'packages', 'vuefn');
+const dir = await mkdtemp(join(tmpdir(), 'vuefn-pack-'));
 try {
   const tarball = (await $`npm pack --silent --pack-destination ${dir}`.cwd(pkg).text()).trim();
-  await Bun.write(join(dir, "package.json"), '{ "private": true, "type": "module" }\n');
+  await Bun.write(join(dir, 'package.json'), '{ "private": true, "type": "module" }\n');
   await $`npm install --silent --no-audit --no-fund ${join(dir, tarball)}`.cwd(dir);
 
   await Bun.write(
-    join(dir, "check.mjs"),
+    join(dir, 'check.mjs'),
     `import { defineRoute } from "vuefn";
 import { vuefn } from "vuefn/vite";
 const route = defineRoute("/posts/$id", { loader: () => 1 });

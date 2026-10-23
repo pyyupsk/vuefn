@@ -1,28 +1,40 @@
-import { resolve } from "node:path";
-import { tanstackStart } from "@tanstack/vue-start/plugin/vite";
-import type { PluginOption } from "vite";
-import { generateRoute, generateRoutes, removeRoute, routeFileFor } from "#lib/generate";
-import type { RoutePaths } from "#lib/generate";
-import { fileRoutePath, findRouteBlock, pageModule } from "#utils/sfc";
+import { resolve } from 'node:path';
 
-const ROUTES_DIR = ".vuefn/routes";
+import { tanstackStart } from '@tanstack/vue-start/plugin/vite';
+import type { PluginOption } from 'vite';
 
+import { generateRoute, generateRoutes, removeRoute, routeFileFor } from '#lib/generate';
+import type { RoutePaths } from '#lib/generate';
+import { fileRoutePath, findRouteBlock, pageModule } from '#utils/sfc';
+
+const ROUTES_DIR = '.vuefn/routes';
+
+/**
+ * Vite plugin that turns each `src/pages/*.vue` file into a TanStack Start route.
+ * Use it in place of `tanstackStart()`.
+ *
+ * @returns The vuefn plugin followed by the TanStack Start plugins.
+ * @example
+ * export default defineConfig({
+ *   plugins: [cloudflare({ viteEnvironment: { name: "ssr" } }), vuefn(), vue()],
+ * });
+ */
 export function vuefn(): PluginOption {
-  let pagesDir = "";
-  let routesDir = "";
+  let pagesDir = '';
+  let routesDir = '';
   let paths: RoutePaths = new Map();
+  const isPage = (file: string) => file.startsWith(`${pagesDir}/`) && file.endsWith('.vue');
   return [
     {
-      name: "vuefn",
-      enforce: "pre",
+      name: 'vuefn',
+      enforce: 'pre',
       config(config) {
-        const src = resolve(config.root ?? process.cwd(), "src");
-        pagesDir = resolve(src, "pages");
+        const src = resolve(config.root ?? process.cwd(), 'src');
+        pagesDir = resolve(src, 'pages');
         routesDir = resolve(src, ROUTES_DIR);
         paths = generateRoutes(pagesDir, routesDir);
       },
       configureServer(server) {
-        const isPage = (file: string) => file.startsWith(`${pagesDir}/`) && file.endsWith(".vue");
         const update = (file: string) => {
           if (!isPage(file)) return;
           try {
@@ -31,9 +43,9 @@ export function vuefn(): PluginOption {
             server.config.logger.error(String(error instanceof Error ? error.message : error));
           }
         };
-        server.watcher.on("add", update);
-        server.watcher.on("change", update);
-        server.watcher.on("unlink", (file) => {
+        server.watcher.on('add', update);
+        server.watcher.on('change', update);
+        server.watcher.on('unlink', (file) => {
           if (isPage(file)) removeRoute(pagesDir, routesDir, file, paths);
         });
       },
@@ -45,7 +57,7 @@ export function vuefn(): PluginOption {
             `${written.page}: the file name gives the path "${actual}". Use defineRoute("${actual}", ...).`,
           );
         }
-        if (!id.startsWith(`${pagesDir}/`) || !id.endsWith(".vue")) return;
+        if (!isPage(id)) return;
         const block = findRouteBlock(code, id);
         if (!block) return;
         return pageModule(code, block, routeFileFor(pagesDir, routesDir, id), id);

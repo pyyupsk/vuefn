@@ -1,7 +1,7 @@
 <script lang="ts">
-import { createServerFn } from "@tanstack/vue-start";
-import { env } from "cloudflare:workers";
-import { defineRoute } from "vuefn";
+import { createServerFn } from '@tanstack/vue-start';
+import { env } from 'cloudflare:workers';
+import { defineRoute } from 'vuefn';
 
 export const getGreeting = createServerFn().handler(() => ({
   greeting: env.GREETING,
@@ -9,14 +9,14 @@ export const getGreeting = createServerFn().handler(() => ({
   at: new Date().toISOString(),
 }));
 
-export const route = defineRoute("/", {
+export const route = defineRoute('/', {
   loader: () => getGreeting(),
 });
 </script>
 
 <script setup lang="ts">
-import { Link } from "@tanstack/vue-router";
-import { ref } from "vue";
+import { Link } from '@tanstack/vue-router';
+import { ref } from 'vue';
 
 const data = route.useLoaderData();
 const latest = ref(data.value.at);

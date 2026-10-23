@@ -1,11 +1,11 @@
 <script lang="ts">
-import { notFound } from "@tanstack/vue-router";
-import { createServerFn } from "@tanstack/vue-start";
-import { defineRoute } from "vuefn";
+import { notFound } from '@tanstack/vue-router';
+import { createServerFn } from '@tanstack/vue-start';
+import { defineRoute } from 'vuefn';
 
 const posts = [
-  { id: "1", title: "One file per route" },
-  { id: "2", title: "Server functions on Workers" },
+  { id: '1', title: 'One file per route' },
+  { id: '2', title: 'Server functions on Workers' },
 ];
 
 export const getPost = createServerFn()
@@ -16,7 +16,7 @@ export const getPost = createServerFn()
     return post;
   });
 
-export const route = defineRoute("/posts/$id", {
+export const route = defineRoute('/posts/$id', {
   loader: ({ params }) => getPost({ data: params.id }),
 });
 </script>
