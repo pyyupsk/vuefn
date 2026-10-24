@@ -210,6 +210,7 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 - `export default` and `export *` in `<script lang="ts">` do not reach the page
 - Route options must be an object literal, so TanStack can keep server-only options out of the client
 - The page reaches its route data through `<script setup>`. A page without it still renders its template, but cannot read the loader
+- A loader runs in the browser on client-side navigation too, so a Worker-only import such as `cloudflare:workers` or D1 belongs in a `createServerFn`
 - The path-less `defineRoute({ ... })` types only through the Volar plugin, and the plugin reads `src/.vuefn`, so run `vite dev` or `vite build` before `vue-tsc`
 - Tested with flat and folder routes, layouts and pathless layouts on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev)
 - Vue Start creates the Vue app itself, so `app.use()` goes through `useAppPlugins` in `__root.vue`. A plugin that needs the client entry rather than the app still needs `client.entry`
