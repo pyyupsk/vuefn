@@ -6,8 +6,10 @@ import { validateName } from '#utils/validate-name';
 export async function createApp(target: string, name: string, template: string) {
   const error = validateName(name);
   if (error) throw new Error(error);
+  const stat = await lstat(target).catch(() => null);
+  if (stat?.isSymbolicLink()) throw new Error('The target is a symbolic link.');
+  if (stat && !stat.isDirectory()) throw new Error('The target is not a directory.');
   await mkdir(target, { recursive: true });
-  if ((await lstat(target)).isSymbolicLink()) throw new Error('The target is a symbolic link.');
   if ((await readdir(target)).length > 0) throw new Error('The target directory is not empty.');
   const files = await readdir(template);
   await Promise.all(

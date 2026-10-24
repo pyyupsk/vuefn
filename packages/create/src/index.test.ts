@@ -160,6 +160,14 @@ it('leaves a nonempty directory unchanged', async () => {
   expect(await readFile(join(app, 'keep.txt'), 'utf8')).toBe('keep me');
 });
 
+it('refuses a target that is a file', async () => {
+  await writeFile(join(dir, 'existing'), 'keep me');
+  const result = run('existing');
+  expect(result.status, result.stdout).toBe(1);
+  expect(result.stderr).toContain('not a directory');
+  expect(await readFile(join(dir, 'existing'), 'utf8')).toBe('keep me');
+});
+
 it('does not follow a target directory symlink', async () => {
   const actual = join(dir, 'actual');
   await mkdir(actual);
