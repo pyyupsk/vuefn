@@ -16,46 +16,12 @@ async function copy() {
 </script>
 
 <template>
-  <button class="cmd" type="button" @click="copy">
-    <code>{{ command }}</code>
-    <span aria-live="polite">{{ copied ? 'Copied' : 'Copy' }}</span>
+  <button
+    class="inline-flex max-w-full cursor-pointer items-center gap-4 bg-field-ink px-4.5 py-3.5 text-ui font-semibold text-ink transition hover:bg-white active:scale-97"
+    type="button"
+    @click="copy"
+  >
+    <code class="truncate text-ui font-medium">{{ command }}</code>
+    <span class="text-muted" aria-live="polite">{{ copied ? 'Copied' : 'Copy' }}</span>
   </button>
 </template>
-
-<style scoped>
-.cmd {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  max-width: 100%;
-  border: 0;
-  padding: 14px 18px;
-  background: var(--field-ink);
-  color: var(--ink);
-  font: 600 15px var(--font-text);
-  cursor: pointer;
-  transition:
-    background 120ms,
-    transform 120ms var(--ease);
-}
-
-.cmd:hover {
-  background: #fff;
-}
-
-.cmd:active {
-  transform: scale(0.97);
-}
-
-code {
-  font-size: 15px;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-span {
-  color: var(--muted);
-}
-</style>

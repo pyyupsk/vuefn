@@ -1,4 +1,159 @@
+@import 'tailwindcss';
 @import '@fontsource-variable/archivo';
 @import '@fontsource-variable/jetbrains-mono';
-@import './tokens.css';
-@import './base.css';
+
+@theme {
+  --color-bg: #e8e8e3;
+  --color-surface: #dcdcd6;
+  --color-surface-2: #d2d2cb;
+  --color-sheet: #f3f3ef;
+  --color-ink: #181715;
+  --color-muted: #5a5953;
+  --color-accent: #bfb21a;
+  --color-accent-ink: #181715;
+  --color-field: #181715;
+  --color-field-2: #24231f;
+  --color-field-ink: #e8e8e3;
+  --color-field-muted: #a9a8a0;
+  --color-code: #11100e;
+  --color-code-bar: #1c1b18;
+  --color-code-ink: #d9d8d0;
+  --color-code-muted: #8a897f;
+  --color-code-strong: #f2f1ea;
+  --color-code-number: #5c5b55;
+  --color-term: #0d0c0b;
+  --color-tree: #3b3a35;
+  --color-worker: #bfb21a;
+  --color-browser: #8fb3c9;
+
+  --font-sans: 'Archivo Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --text-snippet: 0.78125rem;
+  --text-small: 0.8125rem;
+  --text-ui: 0.9375rem;
+  --text-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --text-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --text-step: clamp(1.625rem, 1.1rem + 1.2vw, 2rem);
+  --text-tile: clamp(1.25rem, 0.9rem + 1vw, 1.75rem);
+  --text-tile-head: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+  --text-pick: clamp(2.5rem, 1.4rem + 3vw, 4rem);
+  --text-display: clamp(2.5rem, 1.4rem + 3.6vw, 4.5rem);
+
+  --tracking-display: -0.03em;
+
+  --container-headline: 12ch;
+  --container-step: 16ch;
+  --container-measure: 34ch;
+  --container-note: 36ch;
+  --container-lede: 44ch;
+
+  --spacing-margin: clamp(20px, 3vw, 40px);
+  --spacing-section: clamp(80px, 10vw, 150px);
+  --spacing-step: 52vh;
+  --spacing-stage: 66vh;
+  --spacing-sticky: 14vh;
+  --spacing-nudge: 8vh;
+
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-rise: rise 900ms var(--ease-soft) both;
+  --animate-rise-late: rise 900ms 110ms var(--ease-soft) both;
+  --animate-fade: fade 600ms 500ms var(--ease-soft) both;
+  --animate-fade-late: fade 600ms 560ms var(--ease-soft) both;
+
+  @keyframes rise {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+}
+
+@utility grid-cols-footer {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-sans text-body text-ink antialiased;
+    overflow-x: clip;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-3 outline-accent;
+  }
+}
+
+@layer components {
+  /* Shiki writes one span.line per line; these style its output, which has no classes of ours */
+  .code-lines pre {
+    @apply bg-transparent!;
+    counter-reset: line;
+  }
+
+  .code-lines .line {
+    @apply inline-block w-full border-l-3 border-transparent pr-4 transition-opacity;
+  }
+
+  .code-lines .line::before {
+    @apply inline-block w-10 pr-3.5 text-right text-code-number;
+    counter-increment: line;
+    content: counter(line);
+  }
+
+  .code-lines [data-where='worker'],
+  .code-lines [data-where='both'] {
+    @apply border-worker;
+  }
+
+  .code-lines [data-where='browser'] {
+    @apply border-browser;
+  }
+
+  [data-hover='worker'] .code-lines .line:not([data-where='worker']),
+  [data-hover='both'] .code-lines .line:not([data-where='both']),
+  [data-hover='browser'] .code-lines .line:not([data-where='browser']) {
+    @apply opacity-35;
+  }
+
+  .code-plain pre {
+    @apply overflow-x-auto bg-transparent!;
+  }
+
+  .reveal > * {
+    @apply translate-y-6 opacity-0 transition duration-600 ease-soft;
+  }
+
+  .reveal.in > * {
+    @apply translate-y-0 opacity-100;
+  }
+
+  .reveal.in > :nth-child(2) {
+    @apply delay-70;
+  }
+
+  .reveal.in > :nth-child(3) {
+    @apply delay-140;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .reveal > * {
+    opacity: 1;
+    transform: none;
+  }
+}

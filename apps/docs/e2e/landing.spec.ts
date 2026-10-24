@@ -11,7 +11,7 @@ test('serves the landing page as prerendered HTML', async ({ request }) => {
 
 test('says where a line of the hero file runs', async ({ page }) => {
   await page.goto('/');
-  const readout = page.locator('.readout [aria-live]');
+  const readout = page.locator('figcaption [aria-live]');
   await expect(readout).toHaveText('Point at a line to see where it runs.');
   await page.getByRole('tabpanel').locator('[data-where="worker"]').first().hover();
   await expect(readout).toContainText('run only on the Worker');

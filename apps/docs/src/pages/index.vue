@@ -48,248 +48,86 @@ useReveal('main > section');
 </script>
 
 <template>
-  <header class="hero">
-    <div class="intro">
-      <a class="mark" href="/">vuefn</a>
+  <header class="relative grid min-h-svh bg-field text-field-ink lg:grid-cols-2">
+    <div class="flex flex-col justify-between gap-10 px-margin pt-8 pb-12 lg:p-margin">
+      <a
+        class="absolute top-4.5 left-5 z-1 text-xl font-semibold tracking-tight no-underline lg:static"
+        href="/"
+        >vuefn</a
+      >
       <div>
-        <h1>
-          <span class="line"><span>One .vue file</span></span>
-          <span class="line"><span>per route</span></span>
+        <h1 class="max-w-headline text-display leading-none font-normal tracking-display">
+          <span class="block overflow-hidden pb-1"
+            ><span class="inline-block animate-rise">One .vue file</span></span
+          >
+          <span class="block overflow-hidden pb-1"
+            ><span class="inline-block animate-rise-late">per route</span></span
+          >
         </h1>
-        <p class="lede">
+        <p class="mt-6 mb-8 max-w-lede animate-fade text-field-muted">
           The loader, the server functions and the page live in one file. vuefn turns it into a
           TanStack Start route that runs on Cloudflare Workers.
         </p>
-        <CopyCommand class="after" command="npm create @vuefn@latest" />
+        <CopyCommand class="animate-fade-late" command="npm create @vuefn@latest" />
       </div>
     </div>
-    <div class="fragment">
-      <a class="top-link" :href="`${REPO}#readme`">Read the docs</a>
+    <div
+      class="relative -order-1 grid min-w-0 place-items-center bg-field-2 px-4 pt-16 pb-6 lg:order-0 lg:px-margin lg:pt-22 lg:pb-margin"
+    >
+      <a
+        class="absolute top-5 right-5 text-ui lg:top-margin lg:right-margin"
+        :href="`${REPO}#readme`"
+        >Read the docs</a
+      >
       <HeroFile :files="HERO_FILES" :html="code.hero" />
     </div>
   </header>
 
   <main id="main">
-    <section aria-labelledby="templates-h">
+    <section class="px-margin py-section" aria-labelledby="templates-h">
       <TemplatePicker :templates="TEMPLATES" :html="code.templates" />
     </section>
 
-    <section class="dark" aria-labelledby="cli-h">
+    <section class="bg-field px-margin py-section text-field-ink" aria-labelledby="cli-h">
       <CliSteps :steps="CLI_STEPS" />
     </section>
 
-    <section aria-labelledby="api-h">
+    <section class="px-margin py-section" aria-labelledby="api-h">
       <ApiList :rows="API" :flags="CLI_FLAGS" :config="code.config" />
     </section>
 
-    <section aria-labelledby="proof-h">
+    <section class="px-margin py-section" aria-labelledby="proof-h">
       <ProofTiles :items="PROOF" />
     </section>
 
-    <section class="cta" aria-labelledby="cta-h">
-      <h2 id="cta-h">
+    <section class="px-margin py-section" aria-labelledby="cta-h">
+      <h2 id="cta-h" class="max-w-lede text-lead leading-snug">
         vuefn is 0.1.0. Start with a side project, and open an issue when something breaks.
       </h2>
-      <div class="actions">
-        <a class="btn" :href="`${REPO}#quick-start`">Read the quick start</a>
+      <div class="mt-6 flex items-center gap-6">
+        <a
+          class="inline-block bg-accent px-4.5 py-2.5 text-base font-semibold text-accent-ink no-underline transition active:scale-97"
+          :href="`${REPO}#quick-start`"
+          >Read the quick start</a
+        >
         <a :href="`${REPO}/issues`">Open an issue</a>
       </div>
     </section>
   </main>
 
-  <footer>
+  <footer
+    class="grid gap-2 px-margin pt-10 pb-7.5 text-ui text-muted md:grid-cols-footer md:items-baseline"
+  >
     <span>One .vue file per route</span>
-    <nav aria-label="Footer">
-      <a :href="REPO">GitHub</a>
-      <a href="https://www.npmjs.com/package/@vuefn/core">npm</a>
-      <a :href="`${REPO}/releases`">Releases</a>
+    <nav class="flex gap-6" aria-label="Footer">
+      <a class="text-ink no-underline hover:underline" :href="REPO">GitHub</a>
+      <a
+        class="text-ink no-underline hover:underline"
+        href="https://www.npmjs.com/package/@vuefn/core"
+        >npm</a
+      >
+      <a class="text-ink no-underline hover:underline" :href="`${REPO}/releases`">Releases</a>
     </nav>
-    <span>MIT, 2026</span>
+    <span class="md:text-right">MIT, 2026</span>
   </footer>
 </template>
-
-<style scoped>
-.hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100svh;
-  background: var(--field);
-  color: var(--field-ink);
-}
-
-.intro {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: var(--margin);
-}
-
-.mark {
-  font-weight: 600;
-  font-size: 22px;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-
-h1 {
-  max-width: 12ch;
-  font-weight: 400;
-  font-size: var(--step-display);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-h1 .line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-}
-
-h1 .line > span {
-  display: inline-block;
-  animation: rise 900ms var(--ease) both;
-}
-
-h1 .line:nth-child(2) > span {
-  animation-delay: 110ms;
-}
-
-.lede {
-  max-width: 44ch;
-  margin: 24px 0 32px;
-  color: var(--field-muted);
-  animation: fade 600ms 500ms var(--ease) both;
-}
-
-.after {
-  animation: fade 600ms 560ms var(--ease) both;
-}
-
-.fragment {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-width: 0;
-  padding: 88px var(--margin) var(--margin);
-  background: var(--field-2);
-}
-
-.top-link {
-  position: absolute;
-  top: var(--margin);
-  right: var(--margin);
-  font-size: 15px;
-}
-
-section {
-  padding: clamp(80px, 10vw, 150px) var(--margin);
-}
-
-.dark {
-  background: var(--field);
-  color: var(--field-ink);
-}
-
-.cta h2 {
-  max-width: 30ch;
-  font-weight: 400;
-  font-size: var(--step-lead);
-  line-height: 1.35;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-top: 24px;
-}
-
-.btn {
-  display: inline-block;
-  padding: 10px 18px;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;
-  transition: transform 120ms var(--ease);
-}
-
-.btn:active {
-  transform: scale(0.97);
-}
-
-footer {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: baseline;
-  padding: 40px var(--margin) 30px;
-  color: var(--muted);
-  font-size: 15px;
-}
-
-footer nav {
-  display: flex;
-  gap: 24px;
-}
-
-footer nav a {
-  color: var(--ink);
-  text-decoration: none;
-}
-
-footer nav a:hover {
-  text-decoration: underline;
-}
-
-footer > span:last-child {
-  text-align: right;
-}
-
-@keyframes rise {
-  from {
-    transform: translateY(105%);
-  }
-}
-
-@keyframes fade {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-@media (max-width: 860px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .fragment {
-    order: -1;
-    padding: 64px 16px 24px;
-  }
-
-  .intro {
-    gap: 40px;
-    padding-block: 32px 48px;
-  }
-
-  .mark {
-    position: absolute;
-    top: 18px;
-    left: 20px;
-    z-index: 1;
-  }
-
-  .top-link {
-    top: 20px;
-    right: 20px;
-  }
-
-  footer {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-}
-</style>

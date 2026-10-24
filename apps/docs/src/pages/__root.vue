@@ -25,7 +25,11 @@ import { Body, HeadContent, Html, Scripts } from '@tanstack/vue-router';
       <HeadContent />
     </head>
     <Body>
-      <a class="skip" href="#main">Skip to content</a>
+      <a
+        class="sr-only bg-accent px-3 py-2 text-accent-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-margin focus:z-10"
+        href="#main"
+        >Skip to content</a
+      >
       <slot />
       <Scripts />
     </Body>
