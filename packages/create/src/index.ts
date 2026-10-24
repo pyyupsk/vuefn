@@ -97,19 +97,32 @@ async function main() {
     overwrite = true;
   }
   await createApp(target, name, templateDir, { overwrite });
-  let installed = false;
+  let install = false;
+  let git = false;
   if (interactive) {
-    const answer = await confirm({ message: 'Install dependencies?', initialValue: true });
-    if (!isCancel(answer) && answer) {
-      const { command, args } = getInstall();
-      const code = await run(command, args, target);
-      if (code !== 0) {
-        throw new Error(
-          `${command} ${args.join(' ')} failed (exit ${code}). The app is in ${name}; run the install command there.`,
-        );
-      }
-      installed = true;
+    const installAnswer = await confirm({ message: 'Install dependencies?', initialValue: true });
+    install = !isCancel(installAnswer) && installAnswer;
+    const gitAnswer = await confirm({
+      message: 'Initialize a git repository?',
+      initialValue: true,
+    });
+    git = !isCancel(gitAnswer) && gitAnswer;
+  }
+  if (git) {
+    const code = await run('git', ['init'], target).catch(() => 1);
+    if (code === 0) log.success('Initialized an empty git repository.');
+    else log.warn('git init failed, so the app has no repository.');
+  }
+  let installed = false;
+  if (install) {
+    const { command, args } = getInstall();
+    const code = await run(command, args, target);
+    if (code !== 0) {
+      throw new Error(
+        `${command} ${args.join(' ')} failed (exit ${code}). The app is in ${name}; run the install command there.`,
+      );
     }
+    installed = true;
   }
   const commands = `${cd}${getNextSteps(template, installed)}`;
   if (interactive) {

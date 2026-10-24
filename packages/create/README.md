@@ -7,7 +7,7 @@ Create a Vue app with vuefn on Cloudflare Workers.
 - Three templates: `minimal` (one page), `tailwind` (Tailwind CSS) and `d1` (Cloudflare D1 with Drizzle)
 - Vite, TypeScript and Wrangler ready to use
 - Interactive directory prompt, or a directory argument for scripts
-- Offers to install dependencies after creating the app, and asks before overwriting a nonempty directory
+- Offers to install dependencies and initialize a git repository, and asks before overwriting a nonempty directory
 
 ## Usage
 
@@ -24,7 +24,7 @@ Pick a template with `--template minimal|tailwind|d1`. Minimal is the default, a
 
 Omit `my-app` to choose a directory in the terminal. Press Ctrl+C or Ctrl+D to cancel before the CLI writes files.
 
-In scripts and CI, pass a directory. If standard input or standard output is not a terminal, the CLI does not prompt and does not install.
+In scripts and CI, pass a directory. If standard input or standard output is not a terminal, the CLI does not prompt, install or run `git init`.
 
 The CLI uses [package-manager-detector](https://github.com/antfu-collective/package-manager-detector) to read `npm_config_user_agent` and format the next steps. Supported callers include npm, Yarn, pnpm, Bun and Deno. If the value is missing or unsupported, it uses npm.
 

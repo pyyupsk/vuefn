@@ -63,6 +63,7 @@ it.skipIf(process.platform !== 'linux')(
       ['Project directory', 'prompt-app\r'],
       ['Template', '\r'],
       ['Install dependencies', 'n\r'],
+      ['git repository', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(result.stdout).toContain('Project directory');
@@ -93,6 +94,7 @@ it.skipIf(process.platform !== 'linux')(
       ['lowercase letters', '\x7f\x7f\x7f\x7f\x7fprompt-app\r'],
       ['Template', '\r'],
       ['Install dependencies', 'n\r'],
+      ['git repository', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
@@ -111,6 +113,7 @@ it.skipIf(process.platform !== 'linux')(
       ['Enter a directory.', 'prompt-app\r'],
       ['Template', '\r'],
       ['Install dependencies', 'n\r'],
+      ['git repository', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
@@ -193,6 +196,7 @@ it.skipIf(process.platform !== 'linux')(
       ['Template', '\r'],
       ['Overwrite files', 'y\r'],
       ['Install dependencies', 'n\r'],
+      ['git repository', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readFile(join(app, 'keep.txt'), 'utf8')).toBe('keep me');
@@ -216,6 +220,21 @@ it.skipIf(process.platform !== 'linux')(
     expect(result.status, result.stdout).toBe(0);
     expect(result.stdout).toContain('Creation cancelled.');
     expect(await readdir(app)).toEqual(['keep.txt']);
+  },
+  20000,
+);
+
+it.skipIf(process.platform !== 'linux')(
+  'initializes a git repository when the user agrees',
+  async () => {
+    const result = await runTerminal(
+      ['Project directory', 'git-app\r'],
+      ['Template', '\r'],
+      ['Install dependencies', 'n\r'],
+      ['git repository', 'y\r'],
+    );
+    expect(result.status, result.stdout).toBe(0);
+    expect(await readdir(join(dir, 'git-app'))).toContain('.git');
   },
   20000,
 );
