@@ -44,13 +44,14 @@ function partOf(part: CodePart): string {
 }
 
 function routePathOf(fileName: string): string | null {
+  const file = fileName.replaceAll('\\', '/');
   const marker = '/pages/';
-  const at = fileName.lastIndexOf(marker);
+  const at = file.lastIndexOf(marker);
   if (at < 0) return null;
   const routeFile = join(
-    fileName.slice(0, at),
+    file.slice(0, at),
     '.vuefn/routes',
-    fileName.slice(at + marker.length).replace(/\.vue$/, '.ts'),
+    file.slice(at + marker.length).replace(/\.vue$/, '.ts'),
   );
   try {
     return ROUTE_PATH.exec(readFileSync(routeFile, 'utf8'))?.[2] ?? null;

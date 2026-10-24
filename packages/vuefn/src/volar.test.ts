@@ -46,6 +46,17 @@ describe('volar plugin', () => {
     expect(text(file)).toContain('defineRoute("/posts/", {');
   });
 
+  it('reads the route file from a Windows path', () => {
+    const fileName = source('');
+    const file: File = {
+      id: 'script_ts',
+      lang: 'ts',
+      content: [['export const route = defineRoute({});', 'script', 0, {}]],
+    };
+    plugin().resolveEmbeddedCode(fileName.replaceAll('/', '\\'), {}, file);
+    expect(text(file)).toContain('defineRoute("/posts/", {');
+  });
+
   it('leaves a call that already has a path alone', () => {
     const file: File = {
       id: 'script_ts',
