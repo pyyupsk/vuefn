@@ -6,6 +6,7 @@ Create a Vue app with vuefn on Cloudflare Workers.
 
 - A minimal Workers app with one `.vue` page
 - Vite, TypeScript and Wrangler ready to use
+- Interactive directory prompt, or a directory argument for scripts
 - No automatic install and no writes into nonempty directories
 
 ## Usage
@@ -18,6 +19,10 @@ cd my-app
 npm install
 npm run dev
 ```
+
+Omit `my-app` to choose a directory in the terminal. Press Ctrl+C or Ctrl+D to cancel before the CLI writes files.
+
+In scripts and CI, pass a directory. If standard input or standard output is not a terminal, the CLI does not prompt.
 
 Use lowercase letters, numbers and hyphens for the directory name, up to 63 characters. Nested paths and `.` work too. The target directory must be empty.
 

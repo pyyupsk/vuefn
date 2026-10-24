@@ -1,12 +1,11 @@
 import { cp, lstat, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { validateName } from '#utils/validate-name';
+
 export async function createApp(target: string, name: string, template: string) {
-  if (!/^[a-z0-9][a-z0-9-]{0,62}$/.test(name)) {
-    throw new Error(
-      'Use 1–63 lowercase letters, numbers or hyphens, starting with a letter or number.',
-    );
-  }
+  const error = validateName(name);
+  if (error) throw new Error(error);
   await mkdir(target, { recursive: true });
   if ((await lstat(target)).isSymbolicLink()) throw new Error('The target is a symbolic link.');
   if ((await readdir(target)).length > 0) throw new Error('The target directory is not empty.');

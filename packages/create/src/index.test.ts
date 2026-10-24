@@ -1,4 +1,5 @@
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { once } from 'node:events';
 import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -18,8 +19,84 @@ afterEach(async () => {
 });
 
 function run(...args: string[]) {
-  return spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8' });
+  return spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8', timeout: 5000 });
 }
+
+async function runTerminal(...steps: [string, string][]) {
+  const command = [process.execPath, cli]
+    .map((arg) => `'${arg.replaceAll("'", "'\\''")}'`)
+    .join(' ');
+  const child = spawn('script', ['-qefc', `stty cols 100 rows 30; exec ${command}`, '/dev/null'], {
+    cwd: dir,
+    timeout: 5000,
+  });
+  let stdout = '';
+  let step = 0;
+  child.stdout.on('data', (chunk) => {
+    stdout += String(chunk);
+    const response = steps[step];
+    if (response && stdout.includes(response[0])) {
+      step++;
+      child.stdin.write(response[1]);
+    }
+  });
+  const [status] = await once(child, 'close');
+  return { status, stdout };
+}
+
+it.skipIf(process.platform !== 'linux')(
+  'asks for a directory in a terminal',
+  async () => {
+    const result = await runTerminal(['Project directory', 'prompt-app\r']);
+    expect(result.status, result.stdout).toBe(0);
+    expect(result.stdout).toContain('Project directory');
+    expect(result.stdout).toContain('npm install');
+    expect(JSON.parse(await readFile(join(dir, 'prompt-app/package.json'), 'utf8')).name).toBe(
+      'prompt-app',
+    );
+  },
+  10000,
+);
+
+it.skipIf(process.platform !== 'linux').each(['\x03', '\x04'])(
+  'cancels with %j before writing files',
+  async (key) => {
+    const result = await runTerminal(['Project directory', key]);
+    expect(result.status, result.stdout).toBe(0);
+    expect(result.stdout).toContain('Creation cancelled.');
+    expect(await readdir(dir)).toEqual([]);
+  },
+  10000,
+);
+
+it.skipIf(process.platform !== 'linux')(
+  'lets the user correct an invalid name before creating the app',
+  async () => {
+    const result = await runTerminal(
+      ['Project directory', 'MyApp\r'],
+      ['lowercase letters', '\x7f\x7f\x7f\x7f\x7fprompt-app\r'],
+    );
+    expect(result.status, result.stdout).toBe(0);
+    expect(await readdir(dir)).toEqual(['prompt-app']);
+    expect(JSON.parse(await readFile(join(dir, 'prompt-app/package.json'), 'utf8')).name).toBe(
+      'prompt-app',
+    );
+  },
+  10000,
+);
+
+it.skipIf(process.platform !== 'linux')(
+  'asks again when the directory is empty',
+  async () => {
+    const result = await runTerminal(
+      ['Project directory', '\r'],
+      ['Enter a directory.', 'prompt-app\r'],
+    );
+    expect(result.status, result.stdout).toBe(0);
+    expect(await readdir(dir)).toEqual(['prompt-app']);
+  },
+  10000,
+);
 
 it('creates a Workers app without installing dependencies', async () => {
   const result = run('my-app');
@@ -92,11 +169,19 @@ it('prints a usable cd command when a parent path contains shell characters', ()
 it.each(['--help', '-h'])('prints help for %s without writing files', async (flag) => {
   const result = run(flag);
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain('Usage: create-vuefn <directory>');
+  expect(result.stdout).toContain('Usage: create-vuefn [directory]');
   expect(await readdir(dir)).toEqual([]);
 });
 
-it.each([[], ['one', 'two'], ['--unknown']])('rejects invalid arguments %j', async (...args) => {
+it('requires a directory without a terminal', async () => {
+  const result = run();
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain('Pass a directory in non-interactive mode.');
+  expect(result.stdout).not.toContain('Project directory');
+  expect(await readdir(dir)).toEqual([]);
+});
+
+it.each([['one', 'two'], ['--unknown']])('rejects invalid arguments %j', async (...args) => {
   const result = run(...args);
   expect(result.status).toBe(1);
   expect(result.stderr).toContain('create-vuefn:');
