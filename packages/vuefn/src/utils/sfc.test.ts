@@ -48,8 +48,15 @@ describe('findRouteBlock', () => {
   });
 });
 
-function moduleOf(content: string, path: string | null) {
-  return routeModule({ content, start: 0, end: content.length }, './page.vue', path, 'page.vue');
+function moduleOf(content: string, path: string | null, routeFile?: string, fileName = 'page.vue') {
+  return routeModule(
+    { content, start: 0, end: content.length },
+    './page.vue',
+    path,
+    fileName,
+    [],
+    routeFile,
+  );
 }
 
 describe('routeModule', () => {
@@ -59,6 +66,18 @@ describe('routeModule', () => {
       '/posts',
     );
     expect(code).toContain('createFileRoute(`/posts`)({ component: VuefnPage,');
+  });
+
+  it('moves relative imports to the folder of the route file', () => {
+    const code = moduleOf(
+      `import { notes } from '../db/schema';
+
+export const route = defineRoute({});`,
+      '/posts/',
+      '/app/src/.vuefn/routes/posts/index.ts',
+      '/app/src/pages/posts/index.vue',
+    );
+    expect(code).toContain('from "../../../pages/db/schema"');
   });
 
   it('writes the path itself when defineRoute takes only the options', () => {

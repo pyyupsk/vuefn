@@ -44,6 +44,7 @@ export async function generateRoutes(
       path,
       page,
       block ? sharedNames(source, block) : [],
+      target,
     );
     if (!existsSync(target) || readFileSync(target, 'utf8') !== code) {
       mkdirSync(dirname(target), { recursive: true });

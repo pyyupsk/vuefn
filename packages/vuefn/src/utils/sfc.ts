@@ -1,3 +1,5 @@
+import { dirname, relative, resolve } from 'node:path';
+
 import { MagicString } from 'magic-string';
 import { babelParse, parse } from 'vue/compiler-sfc';
 
@@ -75,6 +77,7 @@ export function routeModule(
   path: string | null,
   filename: string,
   shared: readonly string[] = [],
+  routeFile = filename,
 ): string {
   const isRoot = path === null;
   let create = isRoot ? 'createRootRoute' : 'createFileRoute';
@@ -120,6 +123,14 @@ export function routeModule(
   }
 
   const code = new MagicString(content);
+  for (const node of program.body) {
+    const source = node.type === 'ImportDeclaration' ? node.source : null;
+    const specifier = source?.value;
+    if (!source || !specifier?.startsWith('.')) continue;
+    const moved = relative(dirname(routeFile), resolve(dirname(filename), specifier));
+    const next = moved.startsWith('.') ? moved : `./${moved}`;
+    code.overwrite(source.start ?? 0, source.end ?? 0, JSON.stringify(next));
+  }
   const id = declarator.id;
   code.overwrite(id.start ?? 0, id.end ?? 0, 'Route');
   code.overwrite(callee.start ?? 0, callee.end ?? 0, create);
