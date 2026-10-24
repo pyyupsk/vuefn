@@ -12,7 +12,17 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 - `vite dev` picks up new, changed and deleted pages without a restart
 - No runtime of its own: TanStack Start does the routing, SSR and server functions
 
+## Quick start
+
+```bash
+npm create @vuefn@latest my-app
+```
+
+The CLI asks for a template (`minimal`, `tailwind` or `d1`) and can install dependencies for you. See [`@vuefn/create`](https://github.com/pyyupsk/vuefn/tree/main/packages/create) for the options.
+
 ## Install
+
+To add vuefn to an existing app:
 
 ```bash
 npm install @vuefn/core @tanstack/vue-router @tanstack/vue-start vue

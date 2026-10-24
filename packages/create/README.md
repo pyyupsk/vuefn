@@ -11,8 +11,6 @@ Create a Vue app with vuefn on Cloudflare Workers.
 
 ## Usage
 
-This package and `@vuefn/core` are not published yet. After both packages are published:
-
 ```bash
 npm create @vuefn@latest my-app
 cd my-app
