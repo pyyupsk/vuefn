@@ -9,6 +9,11 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, expect, it } from 'vitest';
 
 const cli = fileURLToPath(new URL('./index.ts', import.meta.url));
+
+async function coreRange() {
+  const manifest = new URL('../../vuefn/package.json', import.meta.url);
+  return `^${JSON.parse(await readFile(manifest, 'utf8')).version}`;
+}
 let dir: string;
 
 beforeEach(async () => {
@@ -111,7 +116,7 @@ it('creates a Workers app without installing dependencies', async () => {
   const app = join(dir, 'my-app');
   const pkg = JSON.parse(await readFile(join(app, 'package.json'), 'utf8'));
   expect(pkg.name).toBe('my-app');
-  expect(pkg.dependencies['@vuefn/core']).toBe('^0.1.0');
+  expect(pkg.dependencies['@vuefn/core']).toBe(await coreRange());
   expect(pkg.scripts).not.toHaveProperty('postinstall');
   const home = await readFile(join(app, 'src/pages/index.vue'), 'utf8');
   expect(home).toContain('<h1>Hello, vuefn!</h1>');
