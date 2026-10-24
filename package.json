@@ -8,17 +8,21 @@
   "type": "module",
   "scripts": {
     "build": "bun run --filter '@vuefn/*' build",
+    "changeset": "changeset",
     "dev": "bun run build && bun run --filter playground dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
+    "release": "changeset publish",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "bun run build && bun run --filter playground test:e2e && bun run --filter node-app test:e2e",
     "test:pack": "bun run build && bun scripts/pack-test.ts",
-    "typecheck": "bun run build && bun run --filter '*' typecheck"
+    "typecheck": "bun run build && bun run --filter '*' typecheck",
+    "version": "changeset version && bun scripts/sync-template.ts && bun install"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@types/bun": "latest",
     "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.5",
