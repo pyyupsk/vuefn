@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { lstat, readdir } from 'node:fs/promises';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -82,7 +83,20 @@ async function main() {
   const name = basename(target);
   const templateDir = fileURLToPath(new URL(`../template/${template}`, import.meta.url));
   const cd = target === process.cwd() ? '' : `  cd '${directory.replaceAll("'", "'\\''")}'\n`;
-  await createApp(target, name, templateDir);
+  let overwrite = false;
+  const stat = await lstat(target).catch(() => null);
+  if (interactive && stat?.isDirectory() && (await readdir(target)).length > 0) {
+    const answer = await confirm({
+      message: `${target} is not empty. Overwrite files with the same names?`,
+      initialValue: false,
+    });
+    if (isCancel(answer) || !answer) {
+      cancel('Creation cancelled.');
+      return;
+    }
+    overwrite = true;
+  }
+  await createApp(target, name, templateDir, { overwrite });
   let installed = false;
   if (interactive) {
     const answer = await confirm({ message: 'Install dependencies?', initialValue: true });

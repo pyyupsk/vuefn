@@ -7,7 +7,7 @@ Create a Vue app with vuefn on Cloudflare Workers.
 - Three templates: `minimal` (one page), `tailwind` (Tailwind CSS) and `d1` (Cloudflare D1 with Drizzle)
 - Vite, TypeScript and Wrangler ready to use
 - Interactive directory prompt, or a directory argument for scripts
-- Offers to install dependencies after creating the app, and never writes into a nonempty directory
+- Offers to install dependencies after creating the app, and asks before overwriting a nonempty directory
 
 ## Usage
 
@@ -28,7 +28,9 @@ In scripts and CI, pass a directory. If standard input or standard output is not
 
 The CLI uses [package-manager-detector](https://github.com/antfu-collective/package-manager-detector) to read `npm_config_user_agent` and format the next steps. Supported callers include npm, Yarn, pnpm, Bun and Deno. If the value is missing or unsupported, it uses npm.
 
-Use lowercase letters, numbers and hyphens for the directory name, up to 63 characters. Nested paths and `.` work too. The target directory must be empty.
+Use lowercase letters, numbers and hyphens for the directory name, up to 63 characters. Nested paths and `.` work too.
+
+An empty or missing directory is fine. For a nonempty one the CLI lists the choice and asks before replacing files with the same names; other files stay. Non-interactive callers get an error instead, so a script cannot overwrite by accident.
 
 ## Commands
 

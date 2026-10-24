@@ -181,6 +181,45 @@ it('refuses a target that is a file', async () => {
   expect(await readFile(join(dir, 'existing'), 'utf8')).toBe('keep me');
 });
 
+it.skipIf(process.platform !== 'linux')(
+  'overwrites a nonempty directory when the user agrees',
+  async () => {
+    const app = join(dir, 'existing');
+    await mkdir(app);
+    await writeFile(join(app, 'keep.txt'), 'keep me');
+    await writeFile(join(app, 'package.json'), '{ "name": "old" }');
+    const result = await runTerminal(
+      ['Project directory', 'existing\r'],
+      ['Template', '\r'],
+      ['Overwrite files', 'y\r'],
+      ['Install dependencies', 'n\r'],
+    );
+    expect(result.status, result.stdout).toBe(0);
+    expect(await readFile(join(app, 'keep.txt'), 'utf8')).toBe('keep me');
+    expect(JSON.parse(await readFile(join(app, 'package.json'), 'utf8')).name).toBe('existing');
+    expect(await readdir(app)).toContain('src');
+  },
+  20000,
+);
+
+it.skipIf(process.platform !== 'linux')(
+  'keeps a nonempty directory when the user declines to overwrite',
+  async () => {
+    const app = join(dir, 'existing');
+    await mkdir(app);
+    await writeFile(join(app, 'keep.txt'), 'keep me');
+    const result = await runTerminal(
+      ['Project directory', 'existing\r'],
+      ['Template', '\r'],
+      ['Overwrite files', 'n\r'],
+    );
+    expect(result.status, result.stdout).toBe(0);
+    expect(result.stdout).toContain('Creation cancelled.');
+    expect(await readdir(app)).toEqual(['keep.txt']);
+  },
+  20000,
+);
+
 it('does not follow a target directory symlink', async () => {
   const actual = join(dir, 'actual');
   await mkdir(actual);
