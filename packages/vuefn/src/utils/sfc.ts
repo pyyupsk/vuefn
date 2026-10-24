@@ -34,6 +34,13 @@ function routeDeclarator(program: Program): RouteDeclarator | null {
   return null;
 }
 
+function isPathLiteral(node: { type: string; expressions?: unknown[] } | undefined): boolean {
+  return (
+    node?.type === 'StringLiteral' ||
+    (node?.type === 'TemplateLiteral' && node.expressions?.length === 0)
+  );
+}
+
 function routeCall(declarator: RouteDeclarator | null, callee: string) {
   const call = declarator?.init;
   if (call?.type !== 'CallExpression' || call.callee.type !== 'Identifier') return null;
@@ -48,6 +55,9 @@ export function routePath(content: string, filename: string): string | null {
   const [path] = call.arguments;
   if (!path || path.type === 'ObjectExpression') return null;
   if (path.type === 'StringLiteral') return path.value;
+  if (path.type === 'TemplateLiteral' && path.expressions.length === 0) {
+    return path.quasis[0]?.value.cooked ?? null;
+  }
   throw new Error(`${filename}: pass the route path as a string`);
 }
 
@@ -103,7 +113,7 @@ export function routeModule(
     throw new Error(`${filename}: write the route as export const route = ${define}`);
   }
   const [first] = call.arguments;
-  const hasPath = !isRoot && first?.type === 'StringLiteral';
+  const hasPath = !isRoot && isPathLiteral(first);
   const options = call.arguments[isRoot || !hasPath ? 0 : 1];
   if (options && options.type !== 'ObjectExpression') {
     throw new Error(`${filename}: pass the route options as an object literal`);

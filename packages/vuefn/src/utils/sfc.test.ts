@@ -53,6 +53,14 @@ function moduleOf(content: string, path: string | null) {
 }
 
 describe('routeModule', () => {
+  it('keeps a template literal path', () => {
+    const code = moduleOf(
+      'export const route = defineRoute(`/posts`, { loader: () => 1 });',
+      '/posts',
+    );
+    expect(code).toContain('createFileRoute(`/posts`)({ component: VuefnPage,');
+  });
+
   it('writes the path itself when defineRoute takes only the options', () => {
     const code = moduleOf(
       `import { defineRoute } from 'vuefn';
@@ -180,6 +188,16 @@ describe('routePath', () => {
   it('reads the path from defineRoute', () => {
     expect(routePath('export const route = defineRoute("/posts/$id", {});', 'a.vue')).toBe(
       '/posts/$id',
+    );
+  });
+
+  it('reads the path from a template literal without expressions', () => {
+    expect(routePath('export const route = defineRoute(`/posts`, {});', 'a.vue')).toBe('/posts');
+  });
+
+  it('rejects a path that is not a literal', () => {
+    expect(() => routePath('export const route = defineRoute(path, {});', 'a.vue')).toThrow(
+      'pass the route path as a string',
     );
   });
 
