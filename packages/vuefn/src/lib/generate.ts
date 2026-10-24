@@ -40,7 +40,7 @@ export async function generateRoutes(
     }
     const code = routeModule(
       block,
-      relative(dirname(target), page),
+      relative(dirname(target), page).replaceAll('\\', '/'),
       path,
       page,
       block ? sharedNames(source, block) : [],
