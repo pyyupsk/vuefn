@@ -1,4 +1,5 @@
 // Installs both tarballs and builds an app made by the CLI, without publishing to npm.
+import { readFileSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -40,8 +41,14 @@ if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("v
   const app = join(dir, 'starter');
   const manifest = Bun.file(join(app, 'package.json'));
   const generated = await manifest.json();
-  if (generated.name !== 'starter' || generated.dependencies['@vuefn/core'] !== '^0.1.0') {
-    throw new Error('The CLI generated an incorrect package.json');
+  if (generated.name !== 'starter') throw new Error('The CLI generated an incorrect package.json');
+
+  // the file: install below hides a starter that asks for another core version than the release
+  const { version } = JSON.parse(readFileSync(join(pkg, 'package.json'), 'utf8'));
+  if (generated.dependencies['@vuefn/core'] !== `^${version}`) {
+    throw new Error(
+      `The starter wants @vuefn/core ${generated.dependencies['@vuefn/core']}, the packed version is ${version}`,
+    );
   }
   generated.dependencies['@vuefn/core'] = `file:${join(dir, tarball)}`;
   await Bun.write(manifest, `${JSON.stringify(generated, null, 2)}\n`);
