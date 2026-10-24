@@ -15,7 +15,7 @@
     "lint": "oxlint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "bun run build && bun run --filter playground test:e2e && bun run --filter node-app test:e2e",
+    "test:e2e": "bun run build && bun run --filter playground test:e2e && bun run --filter node-app test:e2e && bun run --filter docs test:e2e",
     "test:pack": "bun run build && bun scripts/pack-test.ts",
     "typecheck": "bun run build && bun run --filter '*' typecheck",
     "version": "changeset version && bun scripts/sync-template.ts && bun install"

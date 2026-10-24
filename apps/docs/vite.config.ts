@@ -1,0 +1,16 @@
+import { fileURLToPath } from 'node:url';
+
+import { cloudflare } from '@cloudflare/vite-plugin';
+import vue from '@vitejs/plugin-vue';
+import { vuefn } from '@vuefn/core/vite';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  resolve: { alias: { '@': fileURLToPath(new URL('src', import.meta.url)) } },
+  plugins: [
+    cloudflare({ viteEnvironment: { name: 'ssr' }, inspectorPort: false }),
+    // posts.html instead of posts/index.html, because Workers assets redirect /posts to /posts/
+    vuefn({ prerender: { enabled: true, crawlLinks: true, autoSubfolderIndex: false } }),
+    vue(),
+  ],
+});

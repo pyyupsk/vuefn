@@ -1,0 +1,33 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "deploy": "vite build && wrangler deploy",
+    "dev": "vite dev --port 3001",
+    "postinstall": "wrangler types",
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@shikijs/langs": "^4.5.0",
+    "@tanstack/vue-router": "^1.170.42",
+    "@tanstack/vue-start": "^1.169.4",
+    "@vuefn/core": "workspace:*",
+    "shiki": "^4.5.0",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.64.0",
+    "@playwright/test": "^1.64.1",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vue-tsc": "^3.3.13",
+    "wrangler": "^4.152.0"
+  }
+}
