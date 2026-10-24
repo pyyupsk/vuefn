@@ -40,5 +40,6 @@ routeTree.gen.ts
 worker-configuration.d.ts
 packages/vuefn/LICENSE
 packages/vuefn/README.md
+packages/create/LICENSE
 test-results
 playwright-report

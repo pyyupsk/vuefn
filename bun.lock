@@ -51,6 +51,19 @@
         "wrangler": "^4.152.0",
       },
     },
+    "packages/create": {
+      "name": "@vuefn/create",
+      "version": "0.1.0",
+      "bin": {
+        "create-vuefn": "./dist/index.mjs",
+      },
+      "devDependencies": {
+        "@types/node": "^26.6.5",
+        "publint": "^0.3.25",
+        "tsdown": "^0.23.1",
+        "typescript": "^6.0.3",
+      },
+    },
     "packages/vuefn": {
       "name": "@vuefn/core",
       "version": "0.1.0",
@@ -548,6 +561,8 @@
     "@vue/shared": ["@vue/shared@3.5.44", "", {}, "sha512-H82XLH0DjmSOdbEwO15x3QTo1f5PWEtv237eLpYKc0mqLu+B8hnq16lFWmuBmNurkeiG3wr+oM1FhOll/YVFRg=="],
 
     "@vuefn/core": ["@vuefn/core@workspace:packages/vuefn"],
+
+    "@vuefn/create": ["@vuefn/create@workspace:packages/create"],
 
     "@yuku-core/binding-android-arm64": ["@yuku-core/binding-android-arm64@0.19.0", "", { "os": "android", "cpu": "arm64" }, "sha512-wdL2XmTiZixAOaHk9Z0JJZ8u9Qm8d333Zjpc6gaxXFX+UR5BlsfxZ7a2+2Rm71pamppsPYGUGFq2oVLbh6DISw=="],
 

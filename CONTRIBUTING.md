@@ -20,10 +20,10 @@ bun run build
 
 ```bash
 bun run dev           # build vuefn, then run the playground on port 3000
-bun run build         # build packages/vuefn to dist/, with publint and attw
+bun run build         # build core and the CLI, with package checks
 bun run test          # run all tests once
 bun run test:coverage # run the tests with a coverage report in coverage/
-bun run test:pack     # pack vuefn, install it in a temp app and load it with Node
+bun run test:pack     # pack both packages, create a Workers app, build and type-check it
 bun run test:e2e      # build both apps, run them on workerd and Node, then test live page edits in vite dev
 bun run lint          # oxlint, type-aware
 bun run format        # oxfmt
@@ -48,7 +48,8 @@ bun run --filter playground preview
 ## Project structure
 
 ```text
-packages/vuefn   @vuefn/core   the Vite plugin and defineRoute
+packages/vuefn   @vuefn/core    the Vite plugin and defineRoute
+packages/create  @vuefn/create  the CLI and its Workers template
 apps/playground  playground    pages that use every feature, run on workerd
 apps/node        node-app      the same plugin on a Node server, served with srvx
 scripts/         pack-test.ts  installs the packed tarball like a user would

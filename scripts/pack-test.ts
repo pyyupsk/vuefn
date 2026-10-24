@@ -1,4 +1,4 @@
-// Installs the packed tarball in a temp app, as a user would from npm, and loads both entries with Node.
+// Installs both tarballs and builds an app made by the CLI, without publishing to npm.
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -9,8 +9,13 @@ const pkg = join(import.meta.dir, '..', 'packages', 'vuefn');
 const dir = await mkdtemp(join(tmpdir(), 'vuefn-pack-'));
 try {
   const tarball = (await $`npm pack --silent --pack-destination ${dir}`.cwd(pkg).text()).trim();
+  const cli = (
+    await $`npm pack --silent --pack-destination ${dir}`.cwd(join(pkg, '..', 'create')).text()
+  ).trim();
   await Bun.write(join(dir, 'package.json'), '{ "private": true, "type": "module" }\n');
-  await $`npm install --silent --no-audit --no-fund ${join(dir, tarball)}`.cwd(dir);
+  await $`npm install --silent --no-audit --no-fund ${join(dir, tarball)} ${join(dir, cli)}`.cwd(
+    dir,
+  );
 
   await Bun.write(
     join(dir, 'check.mjs'),
@@ -30,6 +35,19 @@ if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("v
   await $`node check.mjs`.cwd(dir);
   const node = (await $`node --version`.text()).trim();
   console.log(`${tarball}: vuefn and vuefn/vite load on Node ${node}`);
+
+  await $`npm exec --offline -- create-vuefn starter`.cwd(dir);
+  const app = join(dir, 'starter');
+  const manifest = Bun.file(join(app, 'package.json'));
+  const generated = await manifest.json();
+  if (generated.name !== 'starter' || generated.dependencies['@vuefn/core'] !== '^0.1.0') {
+    throw new Error('The CLI generated an incorrect package.json');
+  }
+  generated.dependencies['@vuefn/core'] = `file:${join(dir, tarball)}`;
+  await Bun.write(manifest, `${JSON.stringify(generated, null, 2)}\n`);
+  await $`npm install --no-audit --no-fund`.cwd(app);
+  await $`npm run typecheck`.cwd(app);
+  console.log(`${cli}: the generated Workers app builds and type-checks on Node ${node}`);
 } finally {
   await rm(dir, { recursive: true, force: true });
 }

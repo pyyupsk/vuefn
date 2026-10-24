@@ -78,7 +78,13 @@
   "options": {
     "typeAware": true
   },
-  "ignorePatterns": ["**/.vuefn/**", "**/routeTree.gen.ts", "**/dist/**", "**/node_modules/**"],
+  "ignorePatterns": [
+    "**/.vuefn/**",
+    "**/routeTree.gen.ts",
+    "**/dist/**",
+    "**/node_modules/**",
+    "packages/create/template/**"
+  ],
   "overrides": [
     {
       "files": ["scripts/**"],
@@ -91,8 +97,8 @@
         "**/*.test.ts",
         "scripts/**",
         "apps/**",
-        "packages/vuefn/src/lib/**",
-        "packages/vuefn/src/utils/**"
+        "packages/*/src/lib/**",
+        "packages/*/src/utils/**"
       ],
       "rules": {
         "jsdoc-js/require-jsdoc": "off",

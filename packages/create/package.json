@@ -1,0 +1,45 @@
+{
+  "name": "@vuefn/create",
+  "version": "0.1.0",
+  "description": "Create a Vue app with vuefn on Cloudflare Workers",
+  "keywords": [
+    "cloudflare-workers",
+    "create",
+    "tanstack-start",
+    "vue"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pyyupsk/vuefn.git",
+    "directory": "packages/create"
+  },
+  "bin": {
+    "create-vuefn": "./dist/index.mjs"
+  },
+  "files": [
+    "dist",
+    "template"
+  ],
+  "type": "module",
+  "imports": {
+    "#*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "prepack": "cp ../../LICENSE .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "publint": "^0.3.25",
+    "tsdown": "^0.23.1",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
+  }
+}
