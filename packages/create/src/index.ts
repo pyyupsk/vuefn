@@ -6,6 +6,7 @@ import { parseArgs } from 'node:util';
 import { cancel, intro, isCancel, log, outro, text, updateSettings } from '@clack/prompts';
 
 import { createApp } from '#lib/create';
+import { getNextSteps } from '#lib/package-manager';
 import { validateName } from '#utils/validate-name';
 
 async function main() {
@@ -44,9 +45,9 @@ async function main() {
   const target = resolve(directory);
   const name = basename(target);
   const template = fileURLToPath(new URL('../template/minimal', import.meta.url));
-  await createApp(target, name, template);
   const cd = target === process.cwd() ? '' : `  cd '${directory.replaceAll("'", "'\\''")}'\n`;
-  const commands = `${cd}  npm install\n  npm run dev`;
+  const commands = `${cd}${getNextSteps()}`;
+  await createApp(target, name, template);
   if (interactive) {
     log.success(`Created ${name}.`);
     outro(`Next steps:\n${commands}`);

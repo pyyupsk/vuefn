@@ -24,6 +24,8 @@ Omit `my-app` to choose a directory in the terminal. Press Ctrl+C or Ctrl+D to c
 
 In scripts and CI, pass a directory. If standard input or standard output is not a terminal, the CLI does not prompt.
 
+The CLI uses [package-manager-detector](https://github.com/antfu-collective/package-manager-detector) to read `npm_config_user_agent` and format the next steps. Supported callers include npm, Yarn, pnpm, Bun and Deno. If the value is missing or unsupported, it uses npm.
+
 Use lowercase letters, numbers and hyphens for the directory name, up to 63 characters. Nested paths and `.` work too. The target directory must be empty.
 
 ## Commands

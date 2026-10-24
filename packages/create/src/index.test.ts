@@ -3,6 +3,7 @@ import { once } from 'node:events';
 import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { env } from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 import { afterEach, beforeEach, expect, it } from 'vitest';
@@ -19,7 +20,12 @@ afterEach(async () => {
 });
 
 function run(...args: string[]) {
-  return spawnSync(process.execPath, [cli, ...args], { cwd: dir, encoding: 'utf8', timeout: 5000 });
+  return spawnSync(process.execPath, [cli, ...args], {
+    cwd: dir,
+    encoding: 'utf8',
+    env: { ...env, npm_config_user_agent: undefined },
+    timeout: 5000,
+  });
 }
 
 async function runTerminal(...steps: [string, string][]) {
@@ -28,6 +34,7 @@ async function runTerminal(...steps: [string, string][]) {
     .join(' ');
   const child = spawn('script', ['-qefc', `stty cols 100 rows 30; exec ${command}`, '/dev/null'], {
     cwd: dir,
+    env: { ...env, npm_config_user_agent: undefined },
     timeout: 5000,
   });
   let stdout = '';
@@ -50,7 +57,7 @@ it.skipIf(process.platform !== 'linux')(
     const result = await runTerminal(['Project directory', 'prompt-app\r']);
     expect(result.status, result.stdout).toBe(0);
     expect(result.stdout).toContain('Project directory');
-    expect(result.stdout).toContain('npm install');
+    expect(result.stdout).toContain('npm i');
     expect(JSON.parse(await readFile(join(dir, 'prompt-app/package.json'), 'utf8')).name).toBe(
       'prompt-app',
     );
@@ -114,7 +121,32 @@ it('creates a Workers app without installing dependencies', async () => {
   expect(worker).toContain('"main": "@tanstack/vue-start/server-entry"');
   expect(await readFile(join(app, '.gitignore'), 'utf8')).toContain('node_modules');
   expect(await readdir(app)).not.toContain('node_modules');
-  expect(result.stdout).toContain('npm install');
+  expect(result.stdout).toContain('npm i');
+});
+
+it.each([
+  { agent: 'bun/1.4.4 npm/? node/v24.22.1 linux x64', next: '  bun install\n  bun run dev' },
+  { agent: 'pnpm/11.18.0 npm/? node/v24.22.1 linux x64', next: '  pnpm i\n  pnpm run dev' },
+  { agent: 'npm/11.0.0 node/v24.22.1 linux x64', next: '  npm i\n  npm run dev' },
+  { agent: 'yarn/1.22.22 npm/? node/v24.22.1 linux x64', next: '  yarn install\n  yarn run dev' },
+  { agent: 'yarn/4.0.0 npm/? node/v24.22.1 linux x64', next: '  yarn install\n  yarn run dev' },
+  { agent: 'deno/2.0.0', next: '  deno install\n  deno task dev' },
+  { agent: 'nub/1.0.0', next: '  nub install\n  nub run dev' },
+  { agent: 'aube/1.0.0', next: '  aube install\n  aube run dev' },
+  { agent: 'upm/1.0.0', next: '  upm install\n  upm run dev' },
+  { agent: undefined, next: '  npm i\n  npm run dev' },
+  { agent: 'unknown/1.0.0', next: '  npm i\n  npm run dev' },
+  { agent: 'vi/1.0.0', next: '  npm i\n  npm run dev' },
+])('prints next steps for user agent $agent', async ({ agent, next }) => {
+  const result = spawnSync(process.execPath, [cli, 'my-app'], {
+    cwd: dir,
+    encoding: 'utf8',
+    env: { ...env, npm_config_user_agent: agent },
+    timeout: 5000,
+  });
+  expect(result.status, result.stderr).toBe(0);
+  expect(result.stdout).toContain(next);
+  expect(await readdir(join(dir, 'my-app'))).not.toContain('node_modules');
 });
 
 it('leaves a nonempty directory unchanged', async () => {
