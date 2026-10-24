@@ -1,16 +1,24 @@
 import { resolveCommand } from 'package-manager-detector/commands';
 import { getUserAgent } from 'package-manager-detector/detect';
 
-export function getNextSteps(template: string) {
+type Manager = NonNullable<ReturnType<typeof getUserAgent>>;
+
+function command(manager: Manager, action: 'install' | 'run', args: string[] = []) {
+  const resolved = resolveCommand(manager, action, args);
+  if (!resolved) throw new Error(`No ${action} command for ${manager}.`);
+  return resolved;
+}
+
+export function getInstall() {
+  return command(getUserAgent() ?? 'npm', 'install');
+}
+
+export function getNextSteps(template: string, installed = false) {
   const manager = getUserAgent() ?? 'npm';
   const steps = [
-    resolveCommand(manager, 'install', []),
-    ...(template === 'd1' ? [resolveCommand(manager, 'run', ['db:migrate'])] : []),
-    resolveCommand(manager, 'run', ['dev']),
+    ...(installed ? [] : [command(manager, 'install')]),
+    ...(template === 'd1' ? [command(manager, 'run', ['db:migrate'])] : []),
+    command(manager, 'run', ['dev']),
   ];
-  const commands = steps.map((step) => {
-    if (!step) throw new Error(`No install or dev command for ${manager}.`);
-    return `  ${[step.command, ...step.args].join(' ')}`;
-  });
-  return commands.join('\n');
+  return steps.map((step) => `  ${[step.command, ...step.args].join(' ')}`).join('\n');
 }

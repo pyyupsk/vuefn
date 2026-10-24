@@ -40,7 +40,7 @@ async function runTerminal(...steps: [string, string][]) {
   const child = spawn('script', ['-qefc', `stty cols 100 rows 30; exec ${command}`, '/dev/null'], {
     cwd: dir,
     env: { ...env, npm_config_user_agent: undefined },
-    timeout: 5000,
+    timeout: 20000,
   });
   let stdout = '';
   let step = 0;
@@ -59,7 +59,11 @@ async function runTerminal(...steps: [string, string][]) {
 it.skipIf(process.platform !== 'linux')(
   'asks for a directory in a terminal',
   async () => {
-    const result = await runTerminal(['Project directory', 'prompt-app\r'], ['Template', '\r']);
+    const result = await runTerminal(
+      ['Project directory', 'prompt-app\r'],
+      ['Template', '\r'],
+      ['Install dependencies', 'n\r'],
+    );
     expect(result.status, result.stdout).toBe(0);
     expect(result.stdout).toContain('Project directory');
     expect(result.stdout).toContain('npm i');
@@ -67,7 +71,7 @@ it.skipIf(process.platform !== 'linux')(
       'prompt-app',
     );
   },
-  10000,
+  20000,
 );
 
 it.skipIf(process.platform !== 'linux').each(['\x03', '\x04'])(
@@ -78,7 +82,7 @@ it.skipIf(process.platform !== 'linux').each(['\x03', '\x04'])(
     expect(result.stdout).toContain('Creation cancelled.');
     expect(await readdir(dir)).toEqual([]);
   },
-  10000,
+  20000,
 );
 
 it.skipIf(process.platform !== 'linux')(
@@ -88,6 +92,7 @@ it.skipIf(process.platform !== 'linux')(
       ['Project directory', 'MyApp\r'],
       ['lowercase letters', '\x7f\x7f\x7f\x7f\x7fprompt-app\r'],
       ['Template', '\r'],
+      ['Install dependencies', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
@@ -95,7 +100,7 @@ it.skipIf(process.platform !== 'linux')(
       'prompt-app',
     );
   },
-  10000,
+  20000,
 );
 
 it.skipIf(process.platform !== 'linux')(
@@ -105,11 +110,12 @@ it.skipIf(process.platform !== 'linux')(
       ['Project directory', '\r'],
       ['Enter a directory.', 'prompt-app\r'],
       ['Template', '\r'],
+      ['Install dependencies', 'n\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
   },
-  10000,
+  20000,
 );
 
 it('creates a Workers app without installing dependencies', async () => {

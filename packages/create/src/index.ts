@@ -3,10 +3,21 @@ import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-import { cancel, intro, isCancel, log, outro, select, text, updateSettings } from '@clack/prompts';
+import {
+  cancel,
+  confirm,
+  intro,
+  isCancel,
+  log,
+  outro,
+  select,
+  text,
+  updateSettings,
+} from '@clack/prompts';
 
 import { createApp } from '#lib/create';
-import { getNextSteps } from '#lib/package-manager';
+import { getInstall, getNextSteps } from '#lib/package-manager';
+import { run } from '#lib/run';
 import { TEMPLATES, isTemplate } from '#lib/templates';
 import type { TemplateName } from '#lib/templates';
 import { validateName } from '#utils/validate-name';
@@ -71,8 +82,22 @@ async function main() {
   const name = basename(target);
   const templateDir = fileURLToPath(new URL(`../template/${template}`, import.meta.url));
   const cd = target === process.cwd() ? '' : `  cd '${directory.replaceAll("'", "'\\''")}'\n`;
-  const commands = `${cd}${getNextSteps(template)}`;
   await createApp(target, name, templateDir);
+  let installed = false;
+  if (interactive) {
+    const answer = await confirm({ message: 'Install dependencies?', initialValue: true });
+    if (!isCancel(answer) && answer) {
+      const { command, args } = getInstall();
+      const code = await run(command, args, target);
+      if (code !== 0) {
+        throw new Error(
+          `${command} ${args.join(' ')} failed (exit ${code}). The app is in ${name}; run the install command there.`,
+        );
+      }
+      installed = true;
+    }
+  }
+  const commands = `${cd}${getNextSteps(template, installed)}`;
   if (interactive) {
     log.success(`Created ${name}.`);
     outro(`Next steps:\n${commands}`);
