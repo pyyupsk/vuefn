@@ -21,6 +21,10 @@ function pages(files: readonly string[]) {
 }
 
 describe('readPages', () => {
+  it('names a pages directory that does not exist', async () => {
+    await expect(readPages(root, join(root, 'missing'))).rejects.toThrow('no pages directory at');
+  });
+
   it('gives each file the path of the TanStack route conventions', async () => {
     const dir = pages([
       '__root.vue',

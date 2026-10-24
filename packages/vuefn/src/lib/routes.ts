@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { relative } from 'node:path';
 
 import { getConfig, physicalGetRouteNodes } from '@tanstack/router-generator';
@@ -27,6 +28,7 @@ export async function readPages(
   pagesDir: string,
   router: RouterOptions = {},
 ): Promise<Map<string, PageRoute>> {
+  if (!existsSync(pagesDir)) throw new Error(`vuefn: no pages directory at ${pagesDir}`);
   const { indexToken, routeToken, routeFilePrefix, routeFileIgnorePrefix, routeFileIgnorePattern } =
     router ?? {};
   const config = getConfig(
