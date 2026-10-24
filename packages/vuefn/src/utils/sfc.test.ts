@@ -80,6 +80,22 @@ export const route = defineRoute({});`,
     expect(code).toContain('from "../../../pages/db/schema"');
   });
 
+  it('moves relative import.meta.glob patterns to the folder of the route file', () => {
+    const code = moduleOf(
+      `const docs = import.meta.glob('../content/*.md');
+const raw = import.meta.glob(['./*.md', '!./draft.md', '/src/root/*.md'], { query: '?raw' });
+
+export const route = defineRoute({ loader: () => [docs, raw] });`,
+      '/posts/',
+      '/app/src/.vuefn/routes/posts/index.ts',
+      '/app/src/pages/posts/index.vue',
+    );
+    expect(code).toContain('import.meta.glob("../../../pages/content/*.md")');
+    expect(code).toContain(
+      'import.meta.glob(["../../../pages/posts/*.md", "!../../../pages/posts/draft.md", \'/src/root/*.md\'], { query: \'?raw\' })',
+    );
+  });
+
   it('writes the path itself when defineRoute takes only the options', () => {
     const code = moduleOf(
       `import { defineRoute } from 'vuefn';

@@ -1,7 +1,7 @@
 import { dirname, relative, resolve } from 'node:path';
 
 import { MagicString } from 'magic-string';
-import { babelParse, parse } from 'vue/compiler-sfc';
+import { babelParse, parse, walk } from 'vue/compiler-sfc';
 
 export type RouteBlock = Readonly<{ content: string; start: number; end: number }>;
 
@@ -34,6 +34,20 @@ function routeDeclarator(program: Program): RouteDeclarator | null {
     }
   }
   return null;
+}
+
+type CallExpression = Extract<RouteDeclarator['init'], { type: 'CallExpression' }>;
+
+function isGlobCall(node: { type: string }): node is CallExpression {
+  if (node.type !== 'CallExpression') return false;
+  const { callee } = node as CallExpression;
+  return (
+    callee.type === 'MemberExpression' &&
+    callee.object.type === 'MetaProperty' &&
+    callee.object.meta.name === 'import' &&
+    callee.property.type === 'Identifier' &&
+    callee.property.name === 'glob'
+  );
 }
 
 function isPathLiteral(node: { type: string; expressions?: unknown[] } | undefined): boolean {
@@ -123,14 +137,29 @@ export function routeModule(
   }
 
   const code = new MagicString(content);
+  const move = (node: { start?: number | null; end?: number | null }, specifier: string) => {
+    const negated = specifier.startsWith('!');
+    const pattern = negated ? specifier.slice(1) : specifier;
+    if (!pattern.startsWith('.')) return;
+    const moved = relative(dirname(routeFile), resolve(dirname(filename), pattern)).replaceAll(
+      '\\',
+      '/',
+    );
+    const next = `${negated ? '!' : ''}${moved.startsWith('.') ? moved : `./${moved}`}`;
+    code.overwrite(node.start ?? 0, node.end ?? 0, JSON.stringify(next));
+  };
   for (const node of program.body) {
-    const source = node.type === 'ImportDeclaration' ? node.source : null;
-    const specifier = source?.value;
-    if (!source || !specifier?.startsWith('.')) continue;
-    const moved = relative(dirname(routeFile), resolve(dirname(filename), specifier));
-    const next = moved.startsWith('.') ? moved : `./${moved}`;
-    code.overwrite(source.start ?? 0, source.end ?? 0, JSON.stringify(next));
+    if (node.type === 'ImportDeclaration') move(node.source, node.source.value);
   }
+  walk(program, {
+    enter(node: { type: string }) {
+      if (!isGlobCall(node)) return;
+      const [patterns] = node.arguments;
+      const list = patterns?.type === 'ArrayExpression' ? patterns.elements : [patterns];
+      for (const pattern of list)
+        if (pattern?.type === 'StringLiteral') move(pattern, pattern.value);
+    },
+  });
   const id = declarator.id;
   code.overwrite(id.start ?? 0, id.end ?? 0, 'Route');
   code.overwrite(callee.start ?? 0, callee.end ?? 0, create);
