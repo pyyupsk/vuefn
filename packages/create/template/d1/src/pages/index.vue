@@ -11,8 +11,13 @@ export const listNotes = createServerFn().handler(() =>
   drizzle(env.DB).select().from(notes).orderBy(desc(notes.createdAt)),
 );
 
-export const addNote = createServerFn()
-  .validator((body: string) => body)
+export const addNote = createServerFn({ method: 'POST' })
+  .validator((body: unknown) => {
+    if (typeof body !== 'string' || !body.trim() || body.length > 500) {
+      throw new Error('A note needs 1 to 500 characters.');
+    }
+    return body.trim();
+  })
   .handler(async ({ data: body }) => {
     await drizzle(env.DB).insert(notes).values({ body, createdAt: Date.now() });
   });
@@ -41,7 +46,7 @@ async function submit() {
   <main>
     <h1>Notes</h1>
     <form @submit.prevent="submit">
-      <input v-model="body" placeholder="Write a note" />
+      <input v-model="body" placeholder="Write a note" maxlength="500" required />
       <button type="submit">Add</button>
     </form>
     <ul>
