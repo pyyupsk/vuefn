@@ -16,7 +16,7 @@ try {
     if (positionals.length !== 1) throw new Error('Usage: create-vuefn <directory>');
     const target = resolve(positionals[0]);
     const name = basename(target);
-    const template = fileURLToPath(new URL('../template', import.meta.url));
+    const template = fileURLToPath(new URL('../template/minimal', import.meta.url));
     await createApp(target, name, template);
     const cd =
       target === process.cwd() ? '' : `  cd '${positionals[0].replaceAll("'", "'\\''")}'\n`;
