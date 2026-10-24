@@ -6,7 +6,7 @@
     "build": "vite build",
     "deploy": "vite build && wrangler deploy",
     "dev": "vite dev --port 3000",
-    "preview": "vite preview",
+    "preview": "vite build && vite preview",
     "typecheck": "vite build --logLevel error && vue-tsc --noEmit"
   },
   "dependencies": {
