@@ -59,7 +59,7 @@ async function runTerminal(...steps: [string, string][]) {
 it.skipIf(process.platform !== 'linux')(
   'asks for a directory in a terminal',
   async () => {
-    const result = await runTerminal(['Project directory', 'prompt-app\r']);
+    const result = await runTerminal(['Project directory', 'prompt-app\r'], ['Template', '\r']);
     expect(result.status, result.stdout).toBe(0);
     expect(result.stdout).toContain('Project directory');
     expect(result.stdout).toContain('npm i');
@@ -87,6 +87,7 @@ it.skipIf(process.platform !== 'linux')(
     const result = await runTerminal(
       ['Project directory', 'MyApp\r'],
       ['lowercase letters', '\x7f\x7f\x7f\x7f\x7fprompt-app\r'],
+      ['Template', '\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
@@ -103,6 +104,7 @@ it.skipIf(process.platform !== 'linux')(
     const result = await runTerminal(
       ['Project directory', '\r'],
       ['Enter a directory.', 'prompt-app\r'],
+      ['Template', '\r'],
     );
     expect(result.status, result.stdout).toBe(0);
     expect(await readdir(dir)).toEqual(['prompt-app']);
@@ -190,6 +192,31 @@ it('creates an app in the current empty directory', async () => {
   expect(result.status, result.stderr).toBe(0);
   expect(JSON.parse(await readFile(join(app, 'package.json'), 'utf8')).name).toBe('current-app');
   expect(result.stdout).not.toContain('  cd ');
+});
+
+it('creates each template', async () => {
+  const tailwind = run('tailwind-app', '--template', 'tailwind');
+  expect(tailwind.status, tailwind.stderr).toBe(0);
+  expect(tailwind.stderr).toBe('');
+  const tailwindPkg = JSON.parse(await readFile(join(dir, 'tailwind-app/package.json'), 'utf8'));
+  expect(tailwindPkg.devDependencies.tailwindcss).toBeTruthy();
+  expect(await readdir(join(dir, 'tailwind-app/src'))).toContain('app.css');
+
+  const d1 = run('d1-app', '--template', 'd1');
+  expect(d1.status, d1.stderr).toBe(0);
+  expect(d1.stderr).toBe('');
+  const d1Pkg = JSON.parse(await readFile(join(dir, 'd1-app/package.json'), 'utf8'));
+  expect(d1Pkg.dependencies['drizzle-orm']).toBeTruthy();
+  expect(await readdir(join(dir, 'd1-app'))).toContain('migrations');
+  expect(await readFile(join(dir, 'd1-app/wrangler.jsonc'), 'utf8')).toContain('d1_databases');
+  expect(d1.stdout).toContain('npm run db:migrate');
+});
+
+it('lists the templates and refuses an unknown one', () => {
+  const result = run('my-app', '--template', 'svelte');
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain('Use minimal, tailwind, d1.');
+  expect(result.stdout).toBe('');
 });
 
 it('creates missing parent directories', async () => {

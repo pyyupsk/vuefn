@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vuefn-app",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/vue-start/server-entry",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vuefn-app-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+    },
+  ],
+}

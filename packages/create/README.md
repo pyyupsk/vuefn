@@ -4,7 +4,7 @@ Create a Vue app with vuefn on Cloudflare Workers.
 
 ## Features
 
-- A minimal Workers app with one `.vue` page
+- Three templates: `minimal` (one page), `tailwind` (Tailwind CSS) and `d1` (Cloudflare D1 with Drizzle)
 - Vite, TypeScript and Wrangler ready to use
 - Interactive directory prompt, or a directory argument for scripts
 - No automatic install and no writes into nonempty directories
@@ -19,6 +19,8 @@ cd my-app
 npm install
 npm run dev
 ```
+
+Pick a template with `--template minimal|tailwind|d1`. Minimal is the default, and the CLI asks for it in a terminal.
 
 Omit `my-app` to choose a directory in the terminal. Press Ctrl+C or Ctrl+D to cancel before the CLI writes files.
 
@@ -37,6 +39,8 @@ Use lowercase letters, numbers and hyphens for the directory name, up to 63 char
 | `npm run preview`   | Serves the build locally with workerd          |
 | `npm run typecheck` | Generates the route tree and checks TypeScript |
 | `npm run deploy`    | Builds and deploys the app with Wrangler       |
+
+The `d1` template also has `npm run db:migrate` for the local D1 database and `npm run db:generate` for a Drizzle migration.
 
 ## Local development
 

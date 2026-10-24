@@ -1,18 +1,12 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const TEMPLATE = join(
-  here,
-  '..',
-  'packages',
-  'create',
-  'template',
-  'minimal',
-  'package.json',
-);
+const templates = join(here, '..', 'packages', 'create', 'template');
+
+export const TEMPLATE = join(templates, 'minimal', 'package.json');
 
 /** Points the starter at the version of `@vuefn/core` in the same release. */
 export function syncTemplate(version: string, template = TEMPLATE): void {
@@ -29,6 +23,7 @@ if (import.meta.main) {
   const { version } = JSON.parse(
     readFileSync(join(here, '..', 'packages', 'vuefn', 'package.json'), 'utf8'),
   ) as { version: string };
-  syncTemplate(version);
-  console.log(`template: @vuefn/core ^${version}`);
+  for (const name of readdirSync(templates))
+    syncTemplate(version, join(templates, name, 'package.json'));
+  console.log(`templates: @vuefn/core ^${version}`);
 }

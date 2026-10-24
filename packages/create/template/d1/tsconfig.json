@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["vite/client", "node"],
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "vite.config.ts",
+    "drizzle.config.ts",
+    "worker-configuration.d.ts"
+  ],
+  "exclude": ["src/.vuefn"],
+  "vueCompilerOptions": {
+    "plugins": ["@vuefn/core/volar"]
+  }
+}

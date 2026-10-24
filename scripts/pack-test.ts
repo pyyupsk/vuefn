@@ -36,25 +36,36 @@ if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("v
   await $`node check.mjs`.cwd(dir);
   const node = (await $`node --version`.text()).trim();
   console.log(`${tarball}: vuefn and vuefn/vite load on Node ${node}`);
-
-  await $`npm exec --offline -- create-vuefn starter`.cwd(dir);
-  const app = join(dir, 'starter');
-  const manifest = Bun.file(join(app, 'package.json'));
-  const generated = await manifest.json();
-  if (generated.name !== 'starter') throw new Error('The CLI generated an incorrect package.json');
-
   // the file: install below hides a starter that asks for another core version than the release
   const { version } = JSON.parse(readFileSync(join(pkg, 'package.json'), 'utf8'));
-  if (generated.dependencies['@vuefn/core'] !== `^${version}`) {
-    throw new Error(
-      `The starter wants @vuefn/core ${generated.dependencies['@vuefn/core']}, the packed version is ${version}`,
-    );
+  async function testTemplate(template: string) {
+    const name = `starter-${template}`;
+    await $`npm exec --offline -- create-vuefn ${name} --template ${template}`.cwd(dir);
+    const app = join(dir, name);
+    const manifest = Bun.file(join(app, 'package.json'));
+    const generated = await manifest.json();
+    if (generated.name !== name) throw new Error(`The ${template} starter has an incorrect name`);
+    if (generated.dependencies['@vuefn/core'] !== `^${version}`) {
+      throw new Error(
+        `The ${template} starter wants @vuefn/core ${generated.dependencies['@vuefn/core']}, the packed version is ${version}`,
+      );
+    }
+    generated.dependencies['@vuefn/core'] = `file:${join(dir, tarball)}`;
+    await Bun.write(manifest, `${JSON.stringify(generated, null, 2)}\n`);
+    await $`npm install --no-audit --no-fund`.cwd(app);
+    await $`npm run typecheck`.cwd(app);
+    console.log(`${template}: builds and type-checks on Node ${node}`);
   }
-  generated.dependencies['@vuefn/core'] = `file:${join(dir, tarball)}`;
-  await Bun.write(manifest, `${JSON.stringify(generated, null, 2)}\n`);
-  await $`npm install --no-audit --no-fund`.cwd(app);
-  await $`npm run typecheck`.cwd(app);
-  console.log(`${cli}: the generated Workers app builds and type-checks on Node ${node}`);
+
+  async function testTemplates(list: string[]): Promise<void> {
+    const [first, ...rest] = list;
+    if (!first) return;
+    await testTemplate(first);
+    await testTemplates(rest);
+  }
+
+  await testTemplates(['minimal', 'tailwind', 'd1']);
+  console.log(`${cli}: every generated Workers app builds and type-checks on Node ${node}`);
 } finally {
   await rm(dir, { recursive: true, force: true });
 }
