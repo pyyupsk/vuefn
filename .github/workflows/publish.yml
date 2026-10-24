@@ -1,13 +1,12 @@
 name: Publish
 
-# Push a tag vX.Y.Z that matches packages/vuefn/package.json to publish that version to npm.
+# Run it by hand from main after the versions in package.json are ready.
+# Each package is published only when its version is not on npm yet, so a rerun finishes a partial publish.
 on:
-  push:
-    tags: ['v*']
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 concurrency:
@@ -17,12 +16,11 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment: npm
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
           persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
@@ -33,23 +31,32 @@ jobs:
           node-version: 24
           package-manager-cache: false
       - run: npm install --global npm@11.16.0 # zizmor: ignore[adhoc-packages] trusted publishing needs npm 11
+      - name: Only from main
+        run: test "$GITHUB_REF" = refs/heads/main
       - run: bun install --frozen-lockfile
-      - name: Tag matches package.json
-        run: test "v$(jq -r .version packages/vuefn/package.json)" = "$GITHUB_REF_NAME"
       - run: bun run test
       - run: bun run typecheck
       - run: bun run test:pack
-      # A version published by hand, such as the first one, is not published again.
-      - name: Publish
-        working-directory: packages/vuefn
+      - name: Release plan
         run: |
-          name=$(jq -r .name package.json)
-          version=$(jq -r .version package.json)
-          if npm view "$name@$version" version >/dev/null 2>&1; then
-            echo "$name@$version is already on npm."
-          else
-            npm publish
-          fi
-      - run: npx changelogithub@15.0.5
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          for dir in vuefn create; do
+            name=$(jq -r .name "packages/$dir/package.json")
+            version=$(jq -r .version "packages/$dir/package.json")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version: already on npm"
+            else
+              echo "$name@$version: publish"
+            fi
+          done
+      # @vuefn/core first: the starter that @vuefn/create writes points at its version
+      - name: Publish
+        run: |
+          for dir in vuefn create; do
+            name=$(jq -r .name "packages/$dir/package.json")
+            version=$(jq -r .version "packages/$dir/package.json")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already on npm."
+            else
+              (cd "packages/$dir" && npm publish)
+            fi
+          done
