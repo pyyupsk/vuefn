@@ -8,25 +8,25 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 const theme: ThemeRegistration = {
   name: 'vuefn',
   type: 'dark',
-  colors: { 'editor.background': '#11100e', 'editor.foreground': '#d9d8d0' },
+  colors: { 'editor.background': '#0e1012', 'editor.foreground': '#d8dadc' },
   tokenColors: [
-    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#8a897f' } },
-    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#b5cf8a' } },
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#8b9096' } },
+    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#8fd6b4' } },
     {
       scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'],
-      settings: { foreground: '#c7b9e8' },
+      settings: { foreground: '#f6a35c' },
     },
     {
       scope: ['entity.name.function', 'support.function', 'meta.function-call'],
-      settings: { foreground: '#e3d48a' },
+      settings: { foreground: '#ece6d8' },
     },
-    { scope: ['entity.name.tag', 'support.class.component'], settings: { foreground: '#8fb3c9' } },
-    { scope: ['entity.other.attribute-name'], settings: { foreground: '#c9c1a3' } },
+    { scope: ['entity.name.tag', 'support.class.component'], settings: { foreground: '#42b883' } },
+    { scope: ['entity.other.attribute-name'], settings: { foreground: '#c3c8ce' } },
     {
       scope: ['entity.name.type', 'support.type', 'support.type.primitive'],
-      settings: { foreground: '#9cc2b8' },
+      settings: { foreground: '#9cc9e0' },
     },
-    { scope: ['constant.numeric', 'constant.language'], settings: { foreground: '#e0a979' } },
+    { scope: ['constant.numeric', 'constant.language'], settings: { foreground: '#f6a35c' } },
   ],
 };
 

@@ -8,7 +8,7 @@ export const route = defineRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'theme-color', content: '#181715' },
+      { name: 'theme-color', content: '#15171a' },
     ],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),

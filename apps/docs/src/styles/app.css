@@ -3,28 +3,28 @@
 @import '@fontsource-variable/jetbrains-mono';
 
 @theme {
-  --color-bg: #e8e8e3;
-  --color-surface: #dcdcd6;
-  --color-surface-2: #d2d2cb;
-  --color-sheet: #f3f3ef;
-  --color-ink: #181715;
-  --color-muted: #5a5953;
-  --color-accent: #bfb21a;
-  --color-accent-ink: #181715;
-  --color-field: #181715;
-  --color-field-2: #24231f;
-  --color-field-ink: #e8e8e3;
-  --color-field-muted: #a9a8a0;
-  --color-code: #11100e;
-  --color-code-bar: #1c1b18;
-  --color-code-ink: #d9d8d0;
-  --color-code-muted: #8a897f;
-  --color-code-strong: #f2f1ea;
-  --color-code-number: #5c5b55;
-  --color-term: #0d0c0b;
-  --color-tree: #3b3a35;
-  --color-worker: #bfb21a;
-  --color-browser: #8fb3c9;
+  --color-bg: #f3f3f0;
+  --color-surface: #e5e5e0;
+  --color-surface-2: #d9d9d3;
+  --color-sheet: #fafaf8;
+  --color-ink: #15171a;
+  --color-muted: #5b6168;
+  --color-accent: #f6821f;
+  --color-accent-ink: #15171a;
+  --color-field: #15171a;
+  --color-field-2: #202327;
+  --color-field-ink: #f3f3f0;
+  --color-field-muted: #a3a7ab;
+  --color-code: #0e1012;
+  --color-code-bar: #1a1d20;
+  --color-code-ink: #d8dadc;
+  --color-code-muted: #8b9096;
+  --color-code-strong: #f2f2ee;
+  --color-code-number: #55595e;
+  --color-term: #0b0c0e;
+  --color-tree: #3a3e43;
+  --color-worker: #f6821f;
+  --color-browser: #42b883;
 
   --font-sans: 'Archivo Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
@@ -88,7 +88,7 @@
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-3 outline-accent;
+    @apply outline-2 outline-offset-3 outline-current;
   }
 }
 
