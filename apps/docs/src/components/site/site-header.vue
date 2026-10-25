@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SiteLogo from '@/components/site/site-logo.vue';
+import SiteSearch from '@/components/site/site-search.vue';
 import { REPO, VERSION } from '@/content/site';
 
 defineProps<{ current?: 'docs' }>();
@@ -22,8 +23,9 @@ defineProps<{ current?: 'docs' }>();
         >
         <a class="transition-colors hover:text-foreground" :href="REPO">GitHub</a>
       </nav>
+      <SiteSearch class="ml-auto" />
       <a
-        class="ml-auto inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
+        class="hidden h-9 items-center rounded-full bg-primary sm:inline-flex px-4 text-sm font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
         href="/docs/quick-start"
         >Get started</a
       >

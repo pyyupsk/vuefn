@@ -1,6 +1,8 @@
 <script lang="ts">
 import { defineRootRoute } from '@vuefn/core';
 
+import NotFound from '@/components/site/not-found.vue';
+
 import appCss from '@/styles/app.css?url';
 
 export const route = defineRootRoute({
@@ -18,6 +20,7 @@ export const route = defineRootRoute({
       { rel: 'manifest', href: '/site.webmanifest' },
     ],
   }),
+  notFoundComponent: NotFound,
 });
 </script>
 

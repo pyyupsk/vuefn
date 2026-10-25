@@ -208,6 +208,24 @@
     @apply flex h-10 items-center justify-between border-b border-border pr-1.5 pl-4 font-mono text-xs text-muted-foreground;
   }
 
+  /* the dialog has its own way out, so the browser's clear button in the search field goes */
+  input[type='search']::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  /* Pagefind marks the matched words in its excerpts */
+  .search-excerpt mark {
+    @apply rounded-sm bg-brand-100 text-foreground;
+  }
+
+  .pm-tabs {
+    @apply -ml-2 flex gap-0.5 font-sans;
+  }
+
+  .pm-tab {
+    @apply h-7 cursor-pointer rounded-md px-2 text-xs text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-muted aria-pressed:text-foreground;
+  }
+
   .code-copy {
     @apply h-7 cursor-pointer rounded-md border border-border bg-card px-2.5 font-sans text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground;
   }

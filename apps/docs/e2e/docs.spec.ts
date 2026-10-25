@@ -60,3 +60,35 @@ test('opens the docs menu on a phone without errors', async ({ browser }) => {
   expect(errors).toEqual([]);
   await context.close();
 });
+
+test('sends /docs to the introduction', async ({ page }) => {
+  await page.goto('/docs');
+  await expect(page).toHaveURL('/docs/introduction');
+});
+
+test('shows a page for a path that does not exist', async ({ page }) => {
+  const response = await page.goto('/no-such-page');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { name: 'This page does not exist' })).toBeVisible();
+});
+
+test('switches every command block to the chosen package manager', async ({ page }) => {
+  await page.goto('/docs/quick-start');
+  await page.getByRole('button', { name: 'pnpm' }).first().click();
+  await expect(page.getByText('pnpm create @vuefn my-app', { exact: true })).toBeVisible();
+  await expect(page.getByText('pnpm db:migrate')).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'pnpm' }).first()).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
+
+test('finds a page with the search dialog', async ({ page }) => {
+  await page.goto('/docs/introduction', { waitUntil: 'networkidle' });
+  await page.keyboard.press('ControlOrMeta+k');
+  const dialog = page.getByRole('dialog', { name: 'Search the docs' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('searchbox').fill('validator');
+  await expect(dialog.getByRole('link', { name: /Server functions/ })).toBeVisible();
+});

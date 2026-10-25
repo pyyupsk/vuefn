@@ -1,6 +1,7 @@
 import type { Options } from 'unplugin-vue-markdown/types';
 
 import { slugOf } from '../utils/docs.ts';
+import { MANAGERS, forManager, hasNpmCommand } from '../utils/package-manager.ts';
 import { load } from './highlight.ts';
 
 type Markdown = Parameters<NonNullable<Options['markdownSetup']>>[0];
@@ -33,28 +34,48 @@ function headings(md: Markdown) {
   });
 }
 
+const copyButton = '<button type="button" class="code-copy" data-copy>Copy</button>';
+
 /** Wraps each fenced block in a card with its file name (or "Terminal") and a copy button. */
-function codeBlocks(md: Markdown) {
+function codeBlocks(md: Markdown, highlight: (code: string, lang: string) => string) {
   const fence = md.renderer.rules.fence;
   if (!fence) return;
   md.renderer.rules.fence = (tokens, index, options, env, self) => {
-    const [lang = '', ...rest] = (tokens[index]?.info ?? '').trim().split(/\s+/);
+    const token = tokens[index];
+    const [lang = '', ...rest] = (token?.info ?? '').trim().split(/\s+/);
+    if (token && lang === 'bash' && rest.length === 0 && hasNpmCommand(token.content)) {
+      return managerTabs(token.content, highlight);
+    }
     const title = md.utils.escapeHtml(rest.join(' ') || (lang === 'bash' ? 'Terminal' : lang));
     const wrap = (html: string) =>
-      `<figure class="code-block"><figcaption class="code-head"><span>${title}</span><button type="button" class="code-copy" data-copy>Copy</button></figcaption>${html}</figure>`;
+      `<figure class="code-block" data-pagefind-ignore><figcaption class="code-head"><span>${title}</span>${copyButton}</figcaption>${html}</figure>`;
     const html = fence(tokens, index, options, env, self);
     return typeof html === 'string' ? wrap(html) : (async () => wrap(await html))();
   };
 }
 
+/** A shell block with one tab per package manager. The page switches them with `data-pm`. */
+function managerTabs(code: string, highlight: (code: string, lang: string) => string) {
+  const tabs = MANAGERS.map(
+    (manager, index) =>
+      `<button type="button" class="pm-tab" data-pm="${manager}" aria-pressed="${index === 0}">${manager}</button>`,
+  ).join('');
+  const panels = MANAGERS.map(
+    (manager, index) =>
+      `<div data-pm-panel="${manager}"${index === 0 ? '' : ' hidden'}>${highlight(forManager(code, manager), 'bash')}</div>`,
+  ).join('');
+  return `<figure class="code-block" data-pm-block data-pagefind-ignore><figcaption class="code-head"><span class="pm-tabs">${tabs}</span>${copyButton}</figcaption>${panels}</figure>`;
+}
+
 export async function setupMarkdown(md: Markdown) {
   const highlighter = await load();
   const langs = highlighter.getLoadedLanguages();
-  md.options.highlight = (code, lang) =>
+  const highlight = (code: string, lang: string) =>
     highlighter.codeToHtml(code.trimEnd(), {
       lang: langs.includes(lang) ? lang : 'text',
       theme: 'vuefn-light',
     });
+  md.options.highlight = highlight;
   md.use(headings);
-  md.use(codeBlocks);
+  codeBlocks(md, highlight);
 }

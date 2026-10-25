@@ -25,7 +25,7 @@ export const route = defineRoute({
 
 <script setup lang="ts">
 import { Link } from '@tanstack/vue-router';
-import { computed, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue';
 import type { Component } from 'vue';
 
 import DocPager from '@/components/docs/doc-pager.vue';
@@ -34,6 +34,7 @@ import DocToc from '@/components/docs/doc-toc.vue';
 import SiteHeader from '@/components/site/site-header.vue';
 import type { Heading } from '@/lib/markdown';
 import { neighborsOf } from '@/utils/docs';
+import { isManager, savedManager, showManager } from '@/utils/package-manager';
 
 // shortcut: every page ships in one chunk, split with a lazy glob when the docs grow past a few dozen pages
 const docs = import.meta.glob<{ default: Component; toc: Heading[]; steps?: boolean }>(
@@ -67,10 +68,31 @@ async function copyPage() {
   if (copied.value) setTimeout(() => (copied.value = false), 1400);
 }
 
-// the copy buttons come from the Markdown, so one listener handles them all
+const article = useTemplateRef<HTMLElement>('article');
+
+// the Markdown renders every block with npm first, so the saved choice is applied after mount
+onMounted(() => article.value && showManager(article.value, savedManager()));
+watch(
+  () => page.value.slug,
+  async () => {
+    await nextTick();
+    if (article.value) showManager(article.value, savedManager());
+  },
+);
+
+// the copy buttons and the tabs come from the Markdown, so one listener handles them all
 async function onArticleClick(event: MouseEvent) {
-  const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-copy]');
-  const code = button?.closest('figure')?.querySelector('pre')?.textContent;
+  const target = event.target as Element | null;
+  const tab = target?.closest<HTMLElement>('[data-pm]');
+  if (tab && article.value && isManager(tab.dataset.pm)) {
+    showManager(article.value, tab.dataset.pm);
+    return;
+  }
+  const button = target?.closest<HTMLButtonElement>('[data-copy]');
+  const figure = button?.closest('figure');
+  const code = (
+    figure?.querySelector('[data-pm-panel]:not([hidden]) pre') ?? figure?.querySelector('pre')
+  )?.textContent;
   if (!button || typeof code !== 'string' || !(await copyText(code))) return;
   button.textContent = 'Copied';
   setTimeout(() => (button.textContent = 'Copy'), 1400);
@@ -95,14 +117,14 @@ async function onArticleClick(event: MouseEvent) {
     </aside>
 
     <main id="main" class="min-w-0 py-8 lg:py-10">
-      <div class="mx-auto max-w-3xl">
-        <p class="text-sm text-muted-foreground">
+      <div class="mx-auto max-w-3xl" data-pagefind-body>
+        <p class="text-sm text-muted-foreground" data-pagefind-ignore>
           {{ page.group }}<span class="mx-1.5" aria-hidden="true">›</span
           ><span class="text-foreground">{{ page.title }}</span>
         </p>
         <div class="mt-2 flex flex-wrap items-start justify-between gap-4">
           <h1 class="text-4xl font-semibold tracking-tight">{{ page.title }}</h1>
-          <div class="flex gap-1.5">
+          <div class="flex gap-1.5" data-pagefind-ignore>
             <button
               type="button"
               class="h-8 cursor-pointer rounded-lg border border-border bg-card px-3 text-xs font-medium transition-colors hover:bg-accent"
@@ -130,10 +152,10 @@ async function onArticleClick(event: MouseEvent) {
         </div>
         <p class="mt-3 text-lg text-muted-foreground">{{ page.description }}</p>
         <hr class="my-8 border-border" />
-        <article :class="{ 'doc-steps': doc?.steps }" @click="onArticleClick">
+        <article ref="article" :class="{ 'doc-steps': doc?.steps }" @click="onArticleClick">
           <component :is="doc?.default" />
         </article>
-        <DocPager v-bind="around" />
+        <DocPager v-bind="around" data-pagefind-ignore />
       </div>
     </main>
 
