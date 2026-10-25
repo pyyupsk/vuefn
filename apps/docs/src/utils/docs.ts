@@ -1,4 +1,4 @@
-import { DOCS } from '../content/docs/nav.ts';
+import { DOCS } from '#content/docs/nav.ts';
 
 const PAGES = DOCS.flatMap((group) => group.pages);
 

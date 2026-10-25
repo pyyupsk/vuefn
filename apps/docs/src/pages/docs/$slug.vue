@@ -33,16 +33,17 @@ export const route = defineRoute({
 
 <script setup lang="ts">
 import { Link, useRouter } from '@tanstack/vue-router';
-import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import type { Component } from 'vue';
 
 import DocPager from '@/components/docs/doc-pager.vue';
 import DocSidebar from '@/components/docs/doc-sidebar.vue';
 import DocToc from '@/components/docs/doc-toc.vue';
 import SiteHeader from '@/components/site/site-header.vue';
+import { usePackageManager } from '@/hooks/usePackageManager';
 import type { Heading } from '@/lib/markdown';
 import { neighborsOf, pageMarkdown } from '@/utils/docs';
-import { isManager, savedManager, showManager } from '@/utils/package-manager';
+import { isManager } from '@/utils/package-manager';
 
 // shortcut: every page ships in one chunk, split with a lazy glob when the docs grow past a few dozen pages
 const docs = import.meta.glob<{ default: Component; toc: Heading[]; steps?: boolean }>(
@@ -77,16 +78,7 @@ async function copyPage() {
 }
 
 const article = useTemplateRef<HTMLElement>('article');
-
-// the Markdown renders every block with npm first, so the saved choice is applied after mount
-onMounted(() => article.value && showManager(article.value, savedManager()));
-watch(
-  () => page.value.slug,
-  async () => {
-    await nextTick();
-    if (article.value) showManager(article.value, savedManager());
-  },
-);
+const packageManager = usePackageManager(article, () => page.value.slug);
 
 // the copy buttons and the tabs come from the Markdown, so one listener handles them all
 async function onArticleClick(event: MouseEvent) {
@@ -99,8 +91,8 @@ async function onArticleClick(event: MouseEvent) {
     return;
   }
   const tab = target?.closest<HTMLElement>('[data-pm]');
-  if (tab && article.value && isManager(tab.dataset.pm)) {
-    showManager(article.value, tab.dataset.pm);
+  if (tab && isManager(tab.dataset.pm)) {
+    packageManager.show(tab.dataset.pm);
     return;
   }
   const button = target?.closest<HTMLButtonElement>('[data-copy]');

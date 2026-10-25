@@ -15,7 +15,7 @@ The URL is what the browser shows. The route path is what `defineRoute` takes, a
 | `(marketing)/pricing.vue` | `/pricing`                                 | `/(marketing)/pricing` |
 | `blog_.$slug.vue`         | `/blog/hello`, not nested under `blog.vue` | `/blog_/$slug`         |
 | `posts.{-$category}.vue`  | `/posts` or `/posts/news`                  | `/posts/{-$category}`  |
-| `-components/Badge.vue`   | none, it is not a route                    | none                   |
+| `-components/badge.vue`   | none, it is not a route                    | none                   |
 
 Vue Router and Nuxt write `[id].vue` where TanStack writes `$id.vue`.
 

@@ -7,7 +7,7 @@ export const route = defineRoute('/posts', {});
 <script setup lang="ts">
 import { Outlet } from '@tanstack/vue-router';
 
-import Badge from '../-components/Badge.vue';
+import Badge from '../-components/badge.vue';
 </script>
 
 <template>

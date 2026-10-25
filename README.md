@@ -169,7 +169,7 @@ The rest of the [TanStack file conventions](https://tanstack.com/router/latest/d
 | `(marketing)/pricing.vue` | `/pricing`                                    |
 | `blog_.$slug.vue`         | `/blog_/$slug`, not nested under `blog`       |
 | `posts.{-$category}.vue`  | `/posts/{-$category}`, an optional segment    |
-| `-components/Badge.vue`   | not a route, import it from a page            |
+| `-components/badge.vue`   | not a route, import it from a page            |
 
 ### Without the path
 

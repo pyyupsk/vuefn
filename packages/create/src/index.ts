@@ -19,8 +19,8 @@ import {
 import { createApp } from '#lib/create';
 import { getInstall, getNextSteps } from '#lib/package-manager';
 import { run } from '#lib/run';
-import { TEMPLATES, isTemplate } from '#lib/templates';
-import type { TemplateName } from '#lib/templates';
+import { TEMPLATES, isTemplate } from '#utils/templates';
+import type { TemplateName } from '#utils/templates';
 import { validateName } from '#utils/validate-name';
 
 async function main() {

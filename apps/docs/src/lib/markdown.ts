@@ -1,7 +1,8 @@
 import type { Options } from 'unplugin-vue-markdown/types';
 
-import { slugOf } from '../utils/docs.ts';
-import { MANAGERS, forManager, hasNpmCommand } from '../utils/package-manager.ts';
+import { slugOf } from '#utils/docs.ts';
+import { MANAGERS, forManager, hasNpmCommand } from '#utils/package-manager.ts';
+
 import { load } from './highlight.ts';
 
 type Markdown = Parameters<NonNullable<Options['markdownSetup']>>[0];

@@ -1,10 +1,10 @@
 // Writes robots.txt, llms.txt, llms-full.txt and one .md file per docs page into the built site.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
-import { DOCS } from '../src/content/docs/nav.ts';
-import { SITE_URL } from '../src/content/site.ts';
-import { pageMarkdown } from '../src/utils/docs.ts';
-import { llmsIndex } from '../src/utils/llms.ts';
+import { DOCS } from '#content/docs/nav.ts';
+import { SITE_URL } from '#content/site.ts';
+import { pageMarkdown } from '#utils/docs.ts';
+import { llmsIndex } from '#utils/llms.ts';
 
 const out = new URL('../dist/client/', import.meta.url);
 mkdirSync(new URL('docs/', out), { recursive: true });

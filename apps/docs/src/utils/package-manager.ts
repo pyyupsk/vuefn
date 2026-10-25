@@ -51,25 +51,6 @@ export function forManager(code: string, manager: Manager) {
     .join('\n');
 }
 
-const STORAGE_KEY = 'vuefn-package-manager';
-
 export function isManager(value: unknown): value is Manager {
   return MANAGERS.includes(value as Manager);
-}
-
-/** The package manager that the reader picked last, or npm. */
-export function savedManager(): Manager {
-  const saved = globalThis.localStorage?.getItem(STORAGE_KEY);
-  return isManager(saved) ? saved : 'npm';
-}
-
-/** Shows the tab of `manager` in every package-manager block under `root` and remembers it. */
-export function showManager(root: Element, manager: Manager) {
-  for (const tab of root.querySelectorAll<HTMLElement>('[data-pm]')) {
-    tab.setAttribute('aria-pressed', String(tab.dataset.pm === manager));
-  }
-  for (const panel of root.querySelectorAll<HTMLElement>('[data-pm-panel]')) {
-    panel.hidden = panel.dataset.pmPanel !== manager;
-  }
-  globalThis.localStorage?.setItem(STORAGE_KEY, manager);
 }

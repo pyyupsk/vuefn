@@ -25,7 +25,7 @@ export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
     title: 'Guides',
     pages: [
       {
-        slug: 'the-route-block',
+        slug: 'route-block',
         title: 'The route block',
         description:
           'What goes in each script block, and which names the page gets from the route.',
@@ -36,17 +36,17 @@ export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
         description: 'Run code only on the Worker, read with GET and write with POST.',
       },
       {
-        slug: 'layouts-and-folders',
+        slug: 'layouts',
         title: 'Layouts and folders',
         description: 'How file names become paths, and how a folder gets a layout.',
       },
       {
-        slug: 'prerender-on-workers',
+        slug: 'prerender',
         title: 'Prerender on Workers',
         description: 'Render pages to HTML at build time and serve them as static files.',
       },
       {
-        slug: 'd1-with-drizzle',
+        slug: 'd1',
         title: 'D1 with Drizzle',
         description: 'Read and write a Cloudflare D1 database from a page, with the d1 template.',
       },

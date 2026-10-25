@@ -2,7 +2,8 @@ import { readdirSync } from 'node:fs';
 
 import { expect, it } from 'vitest';
 
-import { DOCS } from '../content/docs/nav';
+import { DOCS } from '#content/docs/nav.ts';
+
 import { groupOf, neighborsOf, pageOf, slugOf } from './docs';
 
 it('has one Markdown file for each page in the sidebar', () => {
@@ -17,7 +18,7 @@ it('finds the pages around a page', () => {
   expect(neighborsOf('introduction')).toEqual({ prev: undefined, next: pageOf('quick-start') });
   expect(neighborsOf('quick-start')).toEqual({
     prev: pageOf('introduction'),
-    next: pageOf('the-route-block'),
+    next: pageOf('route-block'),
   });
   expect(neighborsOf('limits')).toEqual({ prev: pageOf('cli'), next: undefined });
   expect(neighborsOf('missing')).toEqual({ prev: undefined, next: undefined });

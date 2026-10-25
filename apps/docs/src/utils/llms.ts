@@ -1,4 +1,4 @@
-import type { DocPage } from '../content/docs/nav.ts';
+import type { DocPage } from '#content/docs/nav.ts';
 
 type Group = { title: string; pages: readonly DocPage[] };
 
