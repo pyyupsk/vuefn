@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRouter } from '@tanstack/vue-router';
 import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue';
 
 type Result = { url: string; title: string; excerpt: string };
@@ -8,6 +9,7 @@ type Pagefind = {
   }>;
 };
 
+const router = useRouter();
 const dialog = useTemplateRef<HTMLDialogElement>('dialog');
 const query = ref('');
 const results = ref<Result[]>([]);
@@ -57,9 +59,10 @@ function onKey(event: KeyboardEvent) {
   }
 }
 
-function go() {
-  const first = results.value[0];
-  if (first) window.location.href = first.url;
+async function go(url = results.value[0]?.url) {
+  if (!url) return;
+  dialog.value?.close();
+  await router.navigate({ href: url });
 }
 
 onMounted(() => window.addEventListener('keydown', onKey));
@@ -85,7 +88,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       aria-label="Search the docs"
       @click.self="dialog?.close()"
     >
-      <form method="dialog" class="border-b border-border" @submit.prevent="go">
+      <form method="dialog" class="border-b border-border" @submit.prevent="go()">
         <input
           v-model="query"
           type="search"
@@ -114,6 +117,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           <li v-for="result in results" :key="result.url">
             <a
               :href="result.url"
+              @click.prevent="go(result.url)"
               class="block rounded-lg px-3 py-2.5 transition-colors hover:bg-accent focus:bg-accent focus:outline-none"
             >
               <span class="block text-sm font-medium">{{ result.title }}</span>

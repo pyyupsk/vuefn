@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link } from '@tanstack/vue-router';
+
 import SiteLogo from '@/components/site/site-logo.vue';
 import { REPO } from '@/content/site';
 </script>
@@ -11,7 +13,9 @@ import { REPO } from '@/content/site';
       <SiteLogo class="text-foreground" />
       <span>One .vue file per route</span>
       <nav class="flex gap-5 md:ml-auto" aria-label="Footer">
-        <a class="hover:text-foreground" href="/docs/introduction">Docs</a>
+        <Link class="hover:text-foreground" to="/docs/$slug" :params="{ slug: 'introduction' }"
+          >Docs</Link
+        >
         <a class="hover:text-foreground" :href="REPO">GitHub</a>
         <a class="hover:text-foreground" href="https://www.npmjs.com/package/@vuefn/core">npm</a>
         <a class="hover:text-foreground" :href="`${REPO}/releases`">Releases</a>

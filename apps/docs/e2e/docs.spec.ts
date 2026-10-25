@@ -92,3 +92,19 @@ test('finds a page with the search dialog', async ({ page }) => {
   await dialog.getByRole('searchbox').fill('validator');
   await expect(dialog.getByRole('link', { name: /Server functions/ })).toBeVisible();
 });
+
+test('moves between pages without a full reload', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.evaluate(() => Object.assign(window, { stayed: true }));
+  await page.getByRole('link', { name: 'Read the docs' }).click();
+  await expect(page).toHaveURL('/docs/introduction');
+  await page
+    .getByRole('navigation', { name: 'Docs' })
+    .last()
+    .getByRole('link', { name: 'API' })
+    .click();
+  await expect(page).toHaveURL('/docs/api');
+  await page.locator('article').getByRole('link', { name: 'Vue plugins' }).click();
+  await expect(page).toHaveURL('/docs/vue-plugins');
+  expect(await page.evaluate(() => (window as unknown as { stayed?: boolean }).stayed)).toBe(true);
+});

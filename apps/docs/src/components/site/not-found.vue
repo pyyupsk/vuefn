@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link } from '@tanstack/vue-router';
+
 import SiteHeader from '@/components/site/site-header.vue';
 </script>
 
@@ -11,15 +13,16 @@ import SiteHeader from '@/components/site/site-header.vue';
       The link may be old, or the page moved. The docs have every page in the sidebar.
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <a
+      <Link
         class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
-        href="/docs/introduction"
-        >Open the docs</a
+        to="/docs/$slug"
+        :params="{ slug: 'introduction' }"
+        >Open the docs</Link
       >
-      <a
+      <Link
         class="inline-flex h-11 items-center rounded-full border border-border bg-card px-5 font-medium transition hover:bg-accent active:scale-98"
-        href="/"
-        >Home</a
+        to="/"
+        >Home</Link
       >
     </div>
   </main>

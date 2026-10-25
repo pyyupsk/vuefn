@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link } from '@tanstack/vue-router';
+
 import SiteLogo from '@/components/site/site-logo.vue';
 import SiteSearch from '@/components/site/site-search.vue';
 import { REPO, VERSION } from '@/content/site';
@@ -15,19 +17,21 @@ defineProps<{ current?: 'docs' }>();
         >v{{ VERSION }}</span
       >
       <nav class="flex gap-5 text-sm text-muted-foreground" aria-label="Main">
-        <a
+        <Link
           class="transition-colors hover:text-foreground"
           :class="{ 'font-medium text-foreground': current === 'docs' }"
-          href="/docs/introduction"
-          >Docs</a
+          to="/docs/$slug"
+          :params="{ slug: 'introduction' }"
+          >Docs</Link
         >
         <a class="transition-colors hover:text-foreground" :href="REPO">GitHub</a>
       </nav>
       <SiteSearch class="ml-auto" />
-      <a
+      <Link
         class="hidden h-9 items-center rounded-full bg-primary sm:inline-flex px-4 text-sm font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
-        href="/docs/quick-start"
-        >Get started</a
+        to="/docs/$slug"
+        :params="{ slug: 'quick-start' }"
+        >Get started</Link
       >
     </div>
   </header>

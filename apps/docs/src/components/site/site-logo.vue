@@ -1,5 +1,9 @@
+<script setup lang="ts">
+import { Link } from '@tanstack/vue-router';
+</script>
+
 <template>
-  <a class="flex items-center gap-2 text-lg font-semibold tracking-tight" href="/">
+  <Link class="flex items-center gap-2 text-lg font-semibold tracking-tight" to="/">
     <svg class="size-7" viewBox="0 0 256 256" aria-hidden="true">
       <g fill="currentColor" transform="translate(0 -15)">
         <path
@@ -12,5 +16,5 @@
       </g>
     </svg>
     vuefn
-  </a>
+  </Link>
 </template>

@@ -24,7 +24,7 @@ export const route = defineRoute({
 </script>
 
 <script setup lang="ts">
-import { Link } from '@tanstack/vue-router';
+import { Link, useRouter } from '@tanstack/vue-router';
 import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue';
 import type { Component } from 'vue';
 
@@ -47,6 +47,7 @@ const sources = import.meta.glob<string>('/src/content/docs/*.md', {
   import: 'default',
 });
 
+const router = useRouter();
 const page = route.useLoaderData();
 const doc = computed(() => docs[`/src/content/docs/${page.value.slug}.md`]);
 const around = computed(() => neighborsOf(page.value.slug));
@@ -83,6 +84,13 @@ watch(
 // the copy buttons and the tabs come from the Markdown, so one listener handles them all
 async function onArticleClick(event: MouseEvent) {
   const target = event.target as Element | null;
+  // links in the Markdown are plain anchors, so internal ones go through the router here
+  const anchor = target?.closest<HTMLAnchorElement>('a[href^="/"]');
+  if (anchor && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) {
+    event.preventDefault();
+    await router.navigate({ href: anchor.getAttribute('href') ?? '/' });
+    return;
+  }
   const tab = target?.closest<HTMLElement>('[data-pm]');
   if (tab && article.value && isManager(tab.dataset.pm)) {
     showManager(article.value, tab.dataset.pm);
