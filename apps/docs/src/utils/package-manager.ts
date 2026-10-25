@@ -1,7 +1,13 @@
 export const MANAGERS = ['npm', 'pnpm', 'bun', 'yarn'] as const;
 export type Manager = (typeof MANAGERS)[number];
 
-const RUN: Record<Manager, string> = { npm: 'npm run', pnpm: 'pnpm', bun: 'bun run', yarn: 'yarn' };
+// pnpm has built-in commands such as `deploy`, so its scripts need `run`
+const RUN: Record<Manager, string> = {
+  npm: 'npm run',
+  pnpm: 'pnpm run',
+  bun: 'bun run',
+  yarn: 'yarn',
+};
 const EXEC: Record<Manager, string> = {
   npm: 'npx',
   pnpm: 'pnpm dlx',

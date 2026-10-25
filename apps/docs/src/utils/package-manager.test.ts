@@ -14,7 +14,7 @@ it('rewrites npm commands for pnpm', () => {
 cd my-app
 pnpm install
 pnpm add -D wrangler
-pnpm db:migrate
+pnpm run db:migrate
 pnpm dlx wrangler d1 create my-app-db`);
 });
 
