@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue';
 import { vuefn } from '@vuefn/core/vite';
 import Markdown from 'unplugin-vue-markdown/vite';
 import { defineConfig } from 'vite';
-import { pagefind } from 'vite-plugin-pagefind';
+import { pagefindBuild, pagefindDevelop } from 'vite-plugin-pagefind';
 
 import { SITE_URL } from './src/content/site.ts';
 import { setupMarkdown } from './src/lib/markdown.ts';
@@ -26,6 +26,11 @@ export default defineConfig({
     vue({ include: [/\.vue$/, /\.md$/] }),
     tailwindcss(),
     // the build script runs pagefind; in dev the plugin builds once and serves the index from public/
-    pagefind({ outputDirectory: 'dist/client' }),
+    // not in the preview server that prerender starts, or the build runs itself again
+    pagefindBuild(),
+    {
+      ...pagefindDevelop({ outputDirectory: 'dist/client' }),
+      apply: (_, env) => env.command === 'serve' && !env.isPreview,
+    },
   ],
 });
