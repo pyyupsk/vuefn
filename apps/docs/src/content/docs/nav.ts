@@ -21,4 +21,60 @@ export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
       },
     ],
   },
+  {
+    title: 'Guides',
+    pages: [
+      {
+        slug: 'the-route-block',
+        title: 'The route block',
+        description:
+          'What goes in each script block, and which names the page gets from the route.',
+      },
+      {
+        slug: 'server-functions',
+        title: 'Server functions',
+        description: 'Run code only on the Worker, read with GET and write with POST.',
+      },
+      {
+        slug: 'layouts-and-folders',
+        title: 'Layouts and folders',
+        description: 'How file names become paths, and how a folder gets a layout.',
+      },
+      {
+        slug: 'prerender-on-workers',
+        title: 'Prerender on Workers',
+        description: 'Render pages to HTML at build time and serve them as static files.',
+      },
+      {
+        slug: 'd1-with-drizzle',
+        title: 'D1 with Drizzle',
+        description: 'Read and write a Cloudflare D1 database from a page, with the d1 template.',
+      },
+      {
+        slug: 'vue-plugins',
+        title: 'Vue plugins',
+        description: 'Install Pinia and other Vue plugins on the app that Vue Start creates.',
+      },
+    ],
+  },
+  {
+    title: 'Reference',
+    pages: [
+      {
+        slug: 'api',
+        title: 'API',
+        description: 'Every export of @vuefn/core and what it takes.',
+      },
+      {
+        slug: 'cli',
+        title: 'CLI',
+        description: 'The options of npm create @vuefn and how it behaves in a terminal and in CI.',
+      },
+      {
+        slug: 'limits',
+        title: 'Limits',
+        description: 'What vuefn does not do yet, and the known bugs.',
+      },
+    ],
+  },
 ];

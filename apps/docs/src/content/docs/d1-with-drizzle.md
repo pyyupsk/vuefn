@@ -1,0 +1,75 @@
+## Start from the template
+
+The `d1` template is a list of notes in Cloudflare D1 with Drizzle ORM. It shows how a page reads and writes a database through server functions.
+
+```bash
+npm create @vuefn@latest my-app -- --template d1
+cd my-app
+npm install
+npm run db:migrate
+npm run dev
+```
+
+`npm run db:migrate` applies the SQL files in `migrations/` to the local D1 database that Wrangler keeps for `vite dev`.
+
+## The files
+
+| File                       | Holds                                    |
+| -------------------------- | ---------------------------------------- |
+| `wrangler.jsonc`           | The `DB` binding to the D1 database      |
+| `src/db/schema.ts`         | The Drizzle schema of the `notes` table  |
+| `migrations/0001_init.sql` | The SQL that creates the table           |
+| `src/pages/index.vue`      | The page, with `listNotes` and `addNote` |
+| `drizzle.config.ts`        | The configuration for `drizzle-kit`      |
+
+## Read and write in the page
+
+The database is only on the Worker, so every query is in a server function. `env` comes from `cloudflare:workers`:
+
+```vue src/pages/index.vue
+<script lang="ts">
+import { createServerFn } from '@tanstack/vue-start';
+import { defineRoute } from '@vuefn/core';
+import { env } from 'cloudflare:workers';
+import { desc } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
+
+import { notes } from '../db/schema';
+
+export const listNotes = createServerFn().handler(() =>
+  drizzle(env.DB).select().from(notes).orderBy(desc(notes.createdAt)),
+);
+
+export const addNote = createServerFn({ method: 'POST' })
+  .validator((body: unknown) => {
+    if (typeof body !== 'string' || !body.trim() || body.length > 500) {
+      throw new Error('A note needs 1 to 500 characters.');
+    }
+    return body.trim();
+  })
+  .handler(async ({ data: body }) => {
+    await drizzle(env.DB).insert(notes).values({ body, createdAt: Date.now() });
+  });
+
+export const route = defineRoute({
+  loader: () => listNotes(),
+});
+</script>
+```
+
+## Change the schema
+
+1. Edit `src/db/schema.ts`.
+2. Run `npm run db:generate`. Drizzle writes a new SQL migration to `drizzle/`.
+3. Copy the new file into `migrations/`, where Wrangler looks for migrations.
+4. Run `npm run db:migrate` to apply it to the local database.
+
+## Deploy
+
+Create the database once, and put its id in `wrangler.jsonc`. Then apply the migrations to it and deploy:
+
+```bash
+npx wrangler d1 create my-app-db
+npx wrangler d1 migrations apply DB --remote
+npm run deploy
+```

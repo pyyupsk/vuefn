@@ -15,7 +15,11 @@ it('has one Markdown file for each page in the sidebar', () => {
 
 it('finds the pages around a page', () => {
   expect(neighborsOf('introduction')).toEqual({ prev: undefined, next: pageOf('quick-start') });
-  expect(neighborsOf('quick-start')).toEqual({ prev: pageOf('introduction'), next: undefined });
+  expect(neighborsOf('quick-start')).toEqual({
+    prev: pageOf('introduction'),
+    next: pageOf('the-route-block'),
+  });
+  expect(neighborsOf('limits')).toEqual({ prev: pageOf('cli'), next: undefined });
   expect(neighborsOf('missing')).toEqual({ prev: undefined, next: undefined });
 });
 
