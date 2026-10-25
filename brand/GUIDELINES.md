@@ -14,6 +14,8 @@ The mark is a function ƒ, slanted like ƒ(x). Its crossbar runs on into the n, 
 | `*-mono-028557.svg`, `*-mono-42b883.svg`                   | Green versions: 600 on light grounds, 500 on dark grounds |
 | `vuefn-symbol-square.svg`, `-app-icon.svg`, `-favicon.svg` | Square artwork for icons                                  |
 
+`og.html` is the source of `apps/docs/public/og.png`, the 1200 × 630 image for link previews. Open it in a browser at that size and take a screenshot to make the PNG again.
+
 The built web icons (`favicon.ico`, `favicon.svg`, `icon-*.png`, `site.webmanifest`) live in `apps/docs/public`.
 
 ## Colour

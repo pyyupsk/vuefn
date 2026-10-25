@@ -108,3 +108,18 @@ test('moves between pages without a full reload', async ({ page }) => {
   await expect(page).toHaveURL('/docs/vue-plugins');
   expect(await page.evaluate(() => (window as unknown as { stayed?: boolean }).stayed)).toBe(true);
 });
+
+test('serves the files that crawlers and AI tools read', async ({ request }) => {
+  const llms = await (await request.get('/llms.txt')).text();
+  expect(llms).toContain('- [Quick start](https://vuefn.fasu.dev/docs/quick-start.md)');
+  const markdown = await request.get('/docs/quick-start.md');
+  expect(markdown.status()).toBe(200);
+  expect(await markdown.text()).toMatch(/^# Quick start\n\n> /);
+  expect(await (await request.get('/llms-full.txt')).text()).toContain('# Server functions');
+  expect(await (await request.get('/sitemap.xml')).text()).toContain(
+    '<loc>https://vuefn.fasu.dev/docs/api</loc>',
+  );
+  expect(await (await request.get('/robots.txt')).text()).toContain(
+    'Sitemap: https://vuefn.fasu.dev/sitemap.xml',
+  );
+});

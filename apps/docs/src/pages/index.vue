@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/vue-start';
 import { defineRoute } from '@vuefn/core';
 
 import { HERO_FILES, TEMPLATES, VITE_CONFIG } from '@/content/landing';
+import { SITE_URL } from '@/content/site';
 import { highlight } from '@/lib/highlight';
 import { whereOf } from '@/utils/where';
 
@@ -28,7 +29,9 @@ export const route = defineRoute({
       { name: 'description', content: description },
       { property: 'og:title', content: 'vuefn: one .vue file per route' },
       { property: 'og:description', content: description },
+      { property: 'og:url', content: `${SITE_URL}/` },
     ],
+    links: [{ rel: 'canonical', href: `${SITE_URL}/` }],
   }),
 });
 </script>

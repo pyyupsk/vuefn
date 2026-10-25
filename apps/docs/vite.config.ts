@@ -7,6 +7,7 @@ import { vuefn } from '@vuefn/core/vite';
 import Markdown from 'unplugin-vue-markdown/vite';
 import { defineConfig } from 'vite';
 
+import { SITE_URL } from './src/content/site.ts';
 import { setupMarkdown } from './src/lib/markdown.ts';
 
 export default defineConfig({
@@ -14,7 +15,12 @@ export default defineConfig({
   plugins: [
     cloudflare({ viteEnvironment: { name: 'ssr' }, inspectorPort: false }),
     // posts.html instead of posts/index.html, because Workers assets redirect /posts to /posts/
-    vuefn({ prerender: { enabled: true, crawlLinks: true, autoSubfolderIndex: false } }),
+    vuefn({
+      prerender: { enabled: true, crawlLinks: true, autoSubfolderIndex: false },
+      sitemap: { enabled: true, host: SITE_URL },
+      // /docs only redirects to the introduction
+      pages: [{ path: '/docs/', sitemap: { exclude: true }, prerender: { enabled: false } }],
+    }),
     Markdown({ headEnabled: false, wrapperClasses: 'doc', markdownSetup: setupMarkdown }),
     vue({ include: [/\.vue$/, /\.md$/] }),
     tailwindcss(),

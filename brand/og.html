@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        background: #fafafa;
+        font-family: Geist, sans-serif;
+        color: #09090b;
+        display: grid;
+        grid-template-columns: 1fr 470px;
+        gap: 48px;
+        padding: 64px 64px 56px;
+      }
+      .left {
+        display: flex;
+        flex-direction: column;
+      }
+      .logo {
+        height: 46px;
+        width: auto;
+        align-self: flex-start;
+      }
+      h1 {
+        margin-top: auto;
+        font-size: 76px;
+        line-height: 1;
+        letter-spacing: -0.045em;
+        font-weight: 600;
+      }
+      h1 span {
+        color: #6b6b73;
+      }
+      p {
+        margin-top: 22px;
+        font-size: 24px;
+        color: #6b6b73;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      p i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #42b883;
+      }
+      .card {
+        align-self: center;
+        background: #0b0b0d;
+        border-radius: 22px;
+        overflow: hidden;
+        color: #d4d4d8;
+        font:
+          17px/1.75 'Geist Mono',
+          monospace;
+        box-shadow: 0 30px 60px -20px rgba(9, 9, 11, 0.35);
+      }
+      .bar {
+        height: 42px;
+        background: #141417;
+        border-bottom: 1px solid #232327;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 18px;
+        font-size: 14px;
+        color: #8b8b93;
+      }
+      .bar i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #232327;
+      }
+      .bar span {
+        margin-left: 10px;
+      }
+      pre {
+        padding: 16px 0;
+        font: inherit;
+        white-space: pre;
+      }
+      .l {
+        display: block;
+        padding: 0 20px;
+        border-left: 3px solid transparent;
+      }
+      .w {
+        border-color: #f6821f;
+        background: rgba(246, 130, 31, 0.07);
+      }
+      .b {
+        border-color: #42b883;
+        background: rgba(66, 184, 131, 0.07);
+      }
+      .k {
+        color: #fdba74;
+      }
+      .s {
+        color: #86e1b2;
+      }
+      .f {
+        color: #93c5fd;
+      }
+      .t {
+        color: #67e8f9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="left">
+      <img class="logo" src="vuefn-horizontal.svg" alt="vuefn" />
+      <h1>One .vue file<br /><span>per route.</span></h1>
+      <p><i></i>TanStack Start for Vue on Cloudflare Workers</p>
+    </div>
+    <div class="card">
+      <div class="bar"><i></i><i></i><i></i><span>pages/posts/$id.vue</span></div>
+      <pre><span class="l">&lt;<span class="t">script</span> lang=<span class="s">"ts"</span>&gt;</span><span class="l w"><span class="k">export const</span> getPost =</span><span class="l w">  <span class="f">createServerFn</span>()</span><span class="l w">  .<span class="f">handler</span>(<span class="f">readPost</span>)</span><span class="l"> </span><span class="l w"><span class="k">export const</span> route =</span><span class="l w">  <span class="f">defineRoute</span>({ loader })</span><span class="l">&lt;/<span class="t">script</span>&gt;</span><span class="l"> </span><span class="l b">&lt;<span class="t">script</span> setup&gt;</span><span class="l b"><span class="k">const</span> post = route</span><span class="l b">  .<span class="f">useLoaderData</span>()</span><span class="l b">&lt;/<span class="t">script</span>&gt;</span></pre>
+    </div>
+  </body>
+</html>

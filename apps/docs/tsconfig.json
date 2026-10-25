@@ -18,6 +18,7 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "e2e/**/*.ts",
+    "scripts/**/*.ts",
     "playwright.config.ts",
     "vite.config.ts",
     "worker-configuration.d.ts"

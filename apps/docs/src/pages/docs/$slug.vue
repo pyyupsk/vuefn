@@ -2,6 +2,7 @@
 import { notFound } from '@tanstack/vue-router';
 import { defineRoute } from '@vuefn/core';
 
+import { SITE_URL } from '@/content/site';
 import { groupOf, pageOf } from '@/utils/docs';
 
 export const route = defineRoute({
@@ -10,16 +11,23 @@ export const route = defineRoute({
     if (!page) throw notFound();
     return { ...page, group: groupOf(page.slug)?.title };
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title} · vuefn` },
-          { name: 'description', content: loaderData.description },
-          { property: 'og:title', content: `${loaderData.title} · vuefn` },
-          { property: 'og:description', content: loaderData.description },
-        ]
-      : [],
-  }),
+  head: ({ loaderData }) => {
+    if (!loaderData) return {};
+    const url = `${SITE_URL}/docs/${loaderData.slug}`;
+    return {
+      meta: [
+        { title: `${loaderData.title} · vuefn` },
+        { name: 'description', content: loaderData.description },
+        { property: 'og:title', content: `${loaderData.title} · vuefn` },
+        { property: 'og:description', content: loaderData.description },
+        { property: 'og:url', content: url },
+      ],
+      links: [
+        { rel: 'canonical', href: url },
+        { rel: 'alternate', type: 'text/markdown', href: `/docs/${loaderData.slug}.md` },
+      ],
+    };
+  },
 });
 </script>
 
@@ -33,7 +41,7 @@ import DocSidebar from '@/components/docs/doc-sidebar.vue';
 import DocToc from '@/components/docs/doc-toc.vue';
 import SiteHeader from '@/components/site/site-header.vue';
 import type { Heading } from '@/lib/markdown';
-import { neighborsOf } from '@/utils/docs';
+import { neighborsOf, pageMarkdown } from '@/utils/docs';
 import { isManager, savedManager, showManager } from '@/utils/package-manager';
 
 // shortcut: every page ships in one chunk, split with a lazy glob when the docs grow past a few dozen pages
@@ -64,8 +72,7 @@ async function copyText(text: string) {
 
 async function copyPage() {
   const source = sources[`/src/content/docs/${page.value.slug}.md`] ?? '';
-  const body = source.replace(/^---\n[\s\S]*?\n---\n/, '');
-  copied.value = await copyText(`# ${page.value.title}\n\n${page.value.description}\n\n${body}`);
+  copied.value = await copyText(pageMarkdown(page.value, source));
   if (copied.value) setTimeout(() => (copied.value = false), 1400);
 }
 

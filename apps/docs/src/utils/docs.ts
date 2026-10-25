@@ -23,3 +23,9 @@ export function neighborsOf(slug: string) {
   const index = PAGES.findIndex((page) => page.slug === slug);
   return { prev: PAGES[index - 1], next: index < 0 ? undefined : PAGES[index + 1] };
 }
+
+/** A docs page as one Markdown file: its title, its description and its body without frontmatter. */
+export function pageMarkdown(page: { title: string; description: string }, source: string) {
+  const body = source.replace(/^---\n[\s\S]*?\n---\n/, '').trim();
+  return `# ${page.title}\n\n> ${page.description}\n\n${body}\n`;
+}

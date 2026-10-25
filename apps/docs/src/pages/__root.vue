@@ -2,6 +2,7 @@
 import { defineRootRoute } from '@vuefn/core';
 
 import NotFound from '@/components/site/not-found.vue';
+import { SITE_URL } from '@/content/site';
 
 import appCss from '@/styles/app.css?url';
 
@@ -11,6 +12,12 @@ export const route = defineRootRoute({
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { name: 'theme-color', content: '#fafafa' },
+      { property: 'og:site_name', content: 'vuefn' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:image', content: `${SITE_URL}/og.png` },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { name: 'twitter:card', content: 'summary_large_image' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
