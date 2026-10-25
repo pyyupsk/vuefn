@@ -61,8 +61,9 @@ const code = route.useLoaderData();
           class="inline-flex animate-rise items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
           href="/docs/introduction"
         >
-          <span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
-            >0.1.0</span
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
+            ><i class="size-1.5 rounded-full bg-brand-500" />0.1.0</span
           >
           TanStack Start for Vue on Cloudflare →
         </a>
@@ -78,7 +79,7 @@ const code = route.useLoaderData();
         </p>
         <div class="mt-8 flex animate-rise-late flex-wrap gap-3">
           <a
-            class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-primary/85 active:scale-98"
+            class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
             href="/docs/quick-start"
             >Get started</a
           >
@@ -130,18 +131,18 @@ const code = route.useLoaderData();
     </section>
 
     <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="cta-h">
-      <div class="rounded-3xl bg-primary px-8 py-14 text-primary-foreground md:px-14">
+      <div class="rounded-3xl bg-foreground px-8 py-14 text-background md:px-14">
         <h2 id="cta-h" class="max-w-xl text-section leading-tight font-semibold tracking-tight">
           vuefn is 0.1.0. Start with a side project, and open an issue when something breaks.
         </h2>
         <div class="mt-8 flex flex-wrap gap-3">
           <a
-            class="inline-flex h-11 items-center rounded-full bg-primary-foreground px-5 font-medium text-primary transition hover:bg-primary-foreground/85 active:scale-98"
+            class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
             href="/docs/quick-start"
             >Read the quick start</a
           >
           <a
-            class="inline-flex h-11 items-center rounded-full border border-primary-foreground/25 px-5 font-medium transition hover:bg-primary-foreground/10 active:scale-98"
+            class="inline-flex h-11 items-center rounded-full border border-background/25 px-5 font-medium transition hover:bg-background/10 active:scale-98"
             :href="`${REPO}/issues`"
             >Open an issue</a
           >

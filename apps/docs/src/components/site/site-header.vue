@@ -23,7 +23,7 @@ defineProps<{ current?: 'docs' }>();
         <a class="transition-colors hover:text-foreground" :href="REPO">GitHub</a>
       </nav>
       <a
-        class="ml-auto inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/85 active:scale-98"
+        class="ml-auto inline-flex h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
         href="/docs/quick-start"
         >Get started</a
       >

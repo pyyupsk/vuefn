@@ -24,7 +24,7 @@ const template = computed(() => props.templates[active.value]);
           :key="item.name"
           type="button"
           :aria-pressed="index === active"
-          class="cursor-pointer rounded-full px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+          class="cursor-pointer rounded-full px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-foreground aria-pressed:text-background"
           @click="active = index"
         >
           {{ item.name }}

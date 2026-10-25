@@ -8,25 +8,25 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 const theme: ThemeRegistration = {
   name: 'vuefn-dark',
   type: 'dark',
-  colors: { 'editor.background': '#0b0b0d', 'editor.foreground': '#d8dadc' },
+  colors: { 'editor.background': '#0b0b0d', 'editor.foreground': '#d4d4d8' },
   tokenColors: [
-    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#8b9096' } },
-    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#8fd6b4' } },
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#8b8b93' } },
+    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#86e1b2' } },
     {
       scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'],
-      settings: { foreground: '#f6a35c' },
+      settings: { foreground: '#fdba74' },
     },
     {
       scope: ['entity.name.function', 'support.function', 'meta.function-call'],
-      settings: { foreground: '#ece6d8' },
+      settings: { foreground: '#93c5fd' },
     },
-    { scope: ['entity.name.tag', 'support.class.component'], settings: { foreground: '#42b883' } },
-    { scope: ['entity.other.attribute-name'], settings: { foreground: '#c3c8ce' } },
+    { scope: ['entity.name.tag', 'support.class.component'], settings: { foreground: '#67e8f9' } },
+    { scope: ['entity.other.attribute-name'], settings: { foreground: '#fde68a' } },
     {
       scope: ['entity.name.type', 'support.type', 'support.type.primitive'],
-      settings: { foreground: '#9cc9e0' },
+      settings: { foreground: '#7dd3fc' },
     },
-    { scope: ['constant.numeric', 'constant.language'], settings: { foreground: '#f6a35c' } },
+    { scope: ['constant.numeric', 'constant.language'], settings: { foreground: '#fcd34d' } },
   ],
 };
 
@@ -36,7 +36,7 @@ const light: ThemeRegistration = {
   colors: { 'editor.background': '#ffffff', 'editor.foreground': '#18181b' },
   tokenColors: [
     { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#71717a' } },
-    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#15803d' } },
+    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#066e48' } },
     {
       scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'],
       settings: { foreground: '#c2410c' },

@@ -7,28 +7,36 @@
   --color-foreground: #09090b;
   --color-card: #ffffff;
   --color-card-foreground: #09090b;
-  --color-primary: #09090b;
-  --color-primary-foreground: #fafafa;
+  --color-primary: var(--color-brand-600);
+  --color-primary-foreground: #ffffff;
   --color-secondary: #f4f4f5;
   --color-secondary-foreground: #09090b;
   --color-muted: #f4f4f5;
-  --color-muted-foreground: #71717a;
+  --color-muted-foreground: #6b6b73;
   --color-accent: #f4f4f5;
   --color-accent-foreground: #09090b;
   --color-border: #e4e4e7;
   --color-input: #d4d4d8;
-  --color-ring: #09090b;
-  --color-brand: #15803d;
-  --color-brand-muted: #f0fdf4;
-  --color-brand-border: #bbf7d0;
+  --color-ring: var(--color-brand-600);
+  --color-brand-50: #ecfdf3;
+  --color-brand-100: #d4f9e4;
+  --color-brand-200: #b1f1ce;
+  --color-brand-300: #86e1b2;
+  --color-brand-400: #5dcc97;
+  --color-brand-500: #42b883;
+  --color-brand-600: #028557;
+  --color-brand-700: #066e48;
+  --color-brand-800: #075738;
+  --color-brand-900: #0c442d;
+  --color-brand-950: #072a1a;
   --color-worker: #f6821f;
-  --color-browser: #42b883;
+  --color-browser: var(--color-brand-500);
   --color-code: #0b0b0d;
   --color-code-foreground: #d4d4d8;
   --color-code-muted-foreground: #8b8b93;
   --color-code-header: #141417;
   --color-code-border: #232327;
-  --color-code-line-number: #4a4a52;
+  --color-code-line-number: #5f5f68;
   --color-code-active-foreground: #fafafa;
 
   --font-sans: 'Geist Variable', system-ui, sans-serif;
@@ -169,7 +177,7 @@
   }
 
   .doc a {
-    @apply font-medium underline decoration-input underline-offset-4 transition-colors hover:decoration-foreground;
+    @apply font-medium underline decoration-brand-500/50 underline-offset-4 transition-colors hover:decoration-brand-600;
   }
 
   .doc :not(pre) > code {
