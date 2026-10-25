@@ -31,5 +31,8 @@
     "oxlint-tsgolint": "^7.0.2005",
     "vitest": "^5.0.5"
   },
-  "packageManager": "bun@1.4.4"
+  "packageManager": "bun@1.4.4",
+  "patchedDependencies": {
+    "@tanstack/vue-router@1.170.42": "patches/@tanstack%2Fvue-router@1.170.42.patch"
+  }
 }

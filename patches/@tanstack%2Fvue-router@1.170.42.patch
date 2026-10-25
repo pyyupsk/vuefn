@@ -1,0 +1,21 @@
+diff --git a/dist/esm/Html.js b/dist/esm/Html.js
+index 716a9d3ddae1523977702048865e81e30e08f7a6..56f54511e93810b3cea35d43404d35d137f6bb16 100644
+--- a/dist/esm/Html.js
++++ b/dist/esm/Html.js
+@@ -31,10 +31,12 @@ var Html = Vue.defineComponent({
+ 				}
+ 				if (!bodyVnode) bodyVnode = vnode;
+ 			}
+-			const result = [];
+-			if (bodyVnode) result.push(bodyVnode);
+-			if (hydrated.value && headChildren.length > 0) result.push(Vue.h(Vue.Teleport, { to: "head" }, headChildren));
+-			return result.length === 1 ? result[0] : Vue.h(Vue.Fragment, result);
++			// keep the hydrated root vnode: switching it to a Fragment makes Vue unmount and remount the whole page
++			if (!hydrated.value || headChildren.length === 0) return bodyVnode;
++			const head = Vue.h(Vue.Teleport, { to: "head" }, headChildren);
++			if (!bodyVnode || bodyVnode.type !== Body) return Vue.h(Vue.Fragment, [bodyVnode, head]);
++			const slot = bodyVnode.children?.default;
++			return Vue.h(Body, bodyVnode.props, { default: () => [...(slot?.() ?? []), head] });
+ 		};
+ 	}
+ });

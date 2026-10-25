@@ -9,6 +9,22 @@ test('serves the landing page as prerendered HTML', async ({ request }) => {
   expect(html).not.toContain('createHighlighterCore');
 });
 
+test('plays the headline animation once through hydration', async ({ page }) => {
+  await page.addInitScript(() => {
+    const starts: string[] = [];
+    Object.assign(window, { starts });
+    addEventListener(
+      'animationstart',
+      (event: AnimationEvent) => starts.push(event.animationName),
+      true,
+    );
+  });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { starts: string[] }).starts))
+    .toEqual(['rise', 'rise', 'fade', 'fade']);
+});
+
 test('says where a line of the hero file runs', async ({ page }) => {
   await page.goto('/');
   const readout = page.locator('figcaption [aria-live]');
