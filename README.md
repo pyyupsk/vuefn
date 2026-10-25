@@ -199,7 +199,7 @@ useAppPlugins(createPinia());
 
 Every request builds a new app, so a plugin created in this call belongs to that request.
 
-vuefn and TanStack write `src/.vuefn/` and `src/routeTree.gen.ts` on every `vite dev` and `vite build`. Add both to `.gitignore`, and run `vue-tsc --noEmit` after one of those commands.
+vuefn and TanStack write `src/.vuefn/`, `src/routeTree.gen.ts` and the temp folder `.tanstack/` on every `vite dev` and `vite build`. Add all three to `.gitignore`, and run `vue-tsc --noEmit` after one of those commands.
 
 ## API
 

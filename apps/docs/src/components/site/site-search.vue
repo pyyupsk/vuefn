@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from '@tanstack/vue-router';
+import type { Pagefind } from 'vite-plugin-pagefind/types';
 import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue';
 
 type Result = { url: string; title: string; excerpt: string };
-type Pagefind = {
-  search: (query: string) => Promise<{
-    results: { data: () => Promise<{ url: string; excerpt: string; meta: { title?: string } }> }[];
-  }>;
-};
 
 const router = useRouter();
 const dialog = useTemplateRef<HTMLDialogElement>('dialog');
@@ -19,8 +15,8 @@ let pagefind: Pagefind | undefined;
 async function load() {
   if (pagefind) return pagefind;
   try {
-    // Pagefind writes its index after `vite build`, so it is a runtime URL that Vite must not touch
-    const url = '/pagefind/pagefind.js';
+    // a full URL, so Vite dev does not add ?import and serve the file as an asset URL
+    const url = new URL('/pagefind/pagefind.js', window.location.origin).href;
     pagefind = (await import(/* @vite-ignore */ url)) as Pagefind;
     return pagefind;
   } catch {
@@ -100,12 +96,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       </form>
       <div class="max-h-96 overflow-y-auto p-2" aria-live="polite">
         <p v-if="status === 'missing'" class="p-3 text-sm text-muted-foreground">
-          Search works on the built site. Run
-          <code
-            class="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-snippet text-foreground"
-            >bun run build</code
-          >
-          and open the preview.
+          Search could not load its index. Reload the page and try again.
         </p>
         <p
           v-else-if="query && !results.length && status === 'idle'"

@@ -35,6 +35,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # vuefn
 .vuefn
+# TanStack writes temp files here while it generates the route tree
+.tanstack
 routeTree.gen.ts
 .wrangler
 worker-configuration.d.ts
@@ -43,3 +45,6 @@ packages/vuefn/README.md
 packages/create/LICENSE
 test-results
 playwright-report
+
+# vite-plugin-pagefind copies the search index here during vite dev
+apps/docs/public/pagefind

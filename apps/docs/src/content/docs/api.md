@@ -22,7 +22,7 @@ export default defineConfig({
 });
 ```
 
-Use `vuefn()` in place of `tanstackStart()`. It takes the same options, such as `spa`, `prerender`, `pages` and `srcDirectory`, and passes them to TanStack Start.
+Use `vuefn()` in place of `tanstackStart()`. It takes the same options, such as `spa`, `prerender`, `pages`, `sitemap` and `srcDirectory`, and passes them to TanStack Start.
 
 vuefn sets `router.routesDirectory` to `src/.vuefn/routes` itself. If you pass `router.routesDirectory`, the build stops with an error.
 

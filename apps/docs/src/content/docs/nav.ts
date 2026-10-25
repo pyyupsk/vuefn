@@ -51,6 +51,12 @@ export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
         description: 'Read and write a Cloudflare D1 database from a page, with the d1 template.',
       },
       {
+        slug: 'vite-plugins',
+        title: 'Vite plugins',
+        description:
+          'The Vite, Vue and TanStack plugins of your project keep working next to vuefn.',
+      },
+      {
         slug: 'vue-plugins',
         title: 'Vue plugins',
         description: 'Install Pinia and other Vue plugins on the app that Vue Start creates.',

@@ -34,7 +34,7 @@ const post = route.useLoaderData();
 
 During `vite dev` and `vite build`, vuefn copies the route block to `src/.vuefn/routes/posts/$id.ts`. That file calls `createFileRoute('/posts/$id')` with your options and with the page as its component. The page then imports `route` from that file, so `<script setup>` and the template can use it.
 
-Do not edit `src/.vuefn/`. vuefn writes it again on every start and build. Add `src/.vuefn/` and `src/routeTree.gen.ts` to `.gitignore`.
+Do not edit `src/.vuefn/`. vuefn writes it again on every start and build. Add `src/.vuefn/`, `src/routeTree.gen.ts` and `.tanstack/`, a temp folder of TanStack, to `.gitignore`.
 
 ## Names the page can use
 
