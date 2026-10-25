@@ -226,6 +226,7 @@ The `defineRoute` options are the TanStack route options: `loader`, `beforeLoad`
 - Tested with flat and folder routes, layouts and pathless layouts on Cloudflare Workers and on Node with [srvx](https://srvx.h3.dev)
 - Vue Start creates the Vue app itself, so `app.use()` goes through `useAppPlugins` in `__root.vue`. A plugin that needs the client entry rather than the app still needs `client.entry`
 - Vite only. TanStack Start also has an Rsbuild plugin, which vuefn does not support
+- `Html` from `@tanstack/vue-router` 1.170.42 remounts the page after hydration, so every component mounts twice and CSS animations start again. The fix is in [TanStack/router#8816](https://github.com/TanStack/router/pull/8816) and is not released yet ([#8815](https://github.com/TanStack/router/issues/8815))
 
 ## Why?
 
