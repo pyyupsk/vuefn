@@ -75,7 +75,7 @@ test('shows a page for a path that does not exist', async ({ page }) => {
 test('switches every command block to the chosen package manager', async ({ page }) => {
   await page.goto('/docs/quick-start');
   await page.getByRole('button', { name: 'pnpm' }).first().click();
-  await expect(page.getByText('pnpm create @vuefn my-app', { exact: true })).toBeVisible();
+  await expect(page.getByText('pnpm create vuefn my-app', { exact: true })).toBeVisible();
   await expect(page.getByText('pnpm db:migrate')).toHaveCount(0);
   await page.reload();
   await expect(page.getByRole('button', { name: 'pnpm' }).first()).toHaveAttribute(

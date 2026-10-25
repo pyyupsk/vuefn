@@ -1,5 +1,5 @@
 {
-  "name": "@vuefn/create",
+  "name": "create-vuefn",
   "version": "0.1.0",
   "description": "Create a Vue app with vuefn on Cloudflare Workers",
   "keywords": [

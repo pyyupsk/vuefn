@@ -7,7 +7,7 @@ You need Node `^22.23.4`, `^24.22.1` or `>=26.12.1`, and a package manager: npm,
 ## Create the app
 
 ```bash
-npm create @vuefn@latest my-app
+npm create vuefn@latest my-app
 ```
 
 The CLI asks for a template and offers to install the dependencies and to start a git repository. Pick one of these templates:
@@ -21,7 +21,7 @@ The CLI asks for a template and offers to install the dependencies and to start 
 To skip the question, add the template to the command:
 
 ```bash
-npm create @vuefn@latest my-app -- --template tailwind
+npm create vuefn@latest my-app -- --template tailwind
 ```
 
 ## Start the server

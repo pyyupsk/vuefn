@@ -15,10 +15,10 @@ One `.vue` file per route for TanStack Vue Start on Cloudflare Workers.
 ## Quick start
 
 ```bash
-npm create @vuefn@latest my-app
+npm create vuefn@latest my-app
 ```
 
-The CLI asks for a template (`minimal`, `tailwind` or `d1`) and can install dependencies for you. See [`@vuefn/create`](https://github.com/pyyupsk/vuefn/tree/main/packages/create) for the options.
+The CLI asks for a template (`minimal`, `tailwind` or `d1`) and can install dependencies for you. See [`create-vuefn`](https://github.com/pyyupsk/vuefn/tree/main/packages/create) for the options.
 
 ## Install
 

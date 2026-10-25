@@ -203,7 +203,7 @@ export const CLI_STEPS = [
   {
     title: 'Run one command.',
     text: 'The CLI asks for a folder. In CI, pass the folder as an argument and nothing is asked.',
-    screen: `$ npm create @vuefn@latest
+    screen: `$ npm create vuefn@latest
 
 ┌  create-vuefn
 │

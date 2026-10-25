@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue';
 
 const commands = {
-  npm: 'npm create @vuefn@latest',
-  pnpm: 'pnpm create @vuefn',
-  bun: 'bun create @vuefn',
-  yarn: 'yarn create @vuefn',
+  npm: 'npm create vuefn@latest',
+  pnpm: 'pnpm create vuefn@latest',
+  bun: 'bun create vuefn@latest',
+  yarn: 'yarn create vuefn@latest',
 } as const;
 type Manager = keyof typeof commands;
 

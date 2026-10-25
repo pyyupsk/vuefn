@@ -48,7 +48,7 @@ jobs:
               echo "$name@$version: publish"
             fi
           done
-      # @vuefn/core first: the starter that @vuefn/create writes points at its version
+      # @vuefn/core first: the starter that create-vuefn writes points at its version
       - name: Publish
         run: |
           for dir in vuefn create; do

@@ -74,7 +74,7 @@ export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
       {
         slug: 'cli',
         title: 'CLI',
-        description: 'The options of npm create @vuefn and how it behaves in a terminal and in CI.',
+        description: 'The options of npm create vuefn and how it behaves in a terminal and in CI.',
       },
       {
         slug: 'limits',

@@ -34,7 +34,7 @@ const template = computed(() => props.templates[active.value]);
       <code
         class="mt-4 block max-w-full overflow-x-auto rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm whitespace-nowrap"
       >
-        npm create @vuefn@latest my-app -- --template {{ template?.name }}
+        npm create vuefn@latest my-app -- --template {{ template?.name }}
       </code>
     </div>
     <Transition

@@ -1,4 +1,4 @@
-# @vuefn/create
+# create-vuefn
 
 Create a Vue app with vuefn on Cloudflare Workers.
 
@@ -12,7 +12,7 @@ Create a Vue app with vuefn on Cloudflare Workers.
 ## Usage
 
 ```bash
-npm create @vuefn@latest my-app
+npm create vuefn@latest my-app
 cd my-app
 npm install
 npm run dev

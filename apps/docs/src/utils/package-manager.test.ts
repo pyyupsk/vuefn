@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 
 import { forManager, hasNpmCommand } from './package-manager';
 
-const block = `npm create @vuefn@latest my-app -- --template d1
+const block = `npm create vuefn@latest my-app -- --template d1
 cd my-app
 npm install
 npm install -D wrangler
@@ -10,7 +10,7 @@ npm run db:migrate
 npx wrangler d1 create my-app-db`;
 
 it('rewrites npm commands for pnpm', () => {
-  expect(forManager(block, 'pnpm')).toBe(`pnpm create @vuefn my-app --template d1
+  expect(forManager(block, 'pnpm')).toBe(`pnpm create vuefn my-app --template d1
 cd my-app
 pnpm install
 pnpm add -D wrangler
@@ -20,7 +20,7 @@ pnpm dlx wrangler d1 create my-app-db`);
 
 it('rewrites npm commands for bun and yarn', () => {
   expect(forManager(block, 'bun').split('\n')).toEqual([
-    'bun create @vuefn my-app --template d1',
+    'bun create vuefn my-app --template d1',
     'cd my-app',
     'bun install',
     'bun add -D wrangler',
@@ -28,7 +28,7 @@ it('rewrites npm commands for bun and yarn', () => {
     'bunx wrangler d1 create my-app-db',
   ]);
   expect(forManager(block, 'yarn').split('\n')).toEqual([
-    'yarn create @vuefn my-app --template d1',
+    'yarn create vuefn my-app --template d1',
     'cd my-app',
     'yarn',
     'yarn add -D wrangler',

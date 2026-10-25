@@ -1,10 +1,10 @@
 ## Usage
 
 ```bash
-npm create @vuefn@latest [directory] -- [--template minimal|tailwind|d1]
+npm create vuefn@latest [directory] -- [--template minimal|tailwind|d1]
 ```
 
-With pnpm, Bun or Yarn, run `pnpm create @vuefn`, `bun create @vuefn` or `yarn create @vuefn` with the same options. npm needs `--` before the options, so that it passes them on to the CLI.
+With pnpm, Bun or Yarn, run `pnpm create vuefn`, `bun create vuefn` or `yarn create vuefn` with the same options. npm needs `--` before the options, so that it passes them on to the CLI.
 
 | Option       | Short | Description                                                        |
 | ------------ | ----- | ------------------------------------------------------------------ |

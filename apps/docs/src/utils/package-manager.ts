@@ -28,7 +28,7 @@ const ADD: Record<Manager, string> = {
 };
 
 function line(text: string, manager: Manager) {
-  const create = /^npm create (@[\w-]+)@latest(.*)$/.exec(text);
+  const create = /^npm create ([@\w-]+)@latest(.*)$/.exec(text);
   if (create) {
     const [, pkg, rest = ''] = create;
     // only npm needs `--` to pass options on to the create package

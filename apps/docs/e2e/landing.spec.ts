@@ -43,7 +43,7 @@ test('says where a line of the hero file runs', async ({ page }) => {
 test('switches the template sheet', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'd1', exact: true }).click();
-  await expect(page.getByText('npm create @vuefn@latest my-app -- --template d1')).toBeVisible();
+  await expect(page.getByText('npm create vuefn@latest my-app -- --template d1')).toBeVisible();
   await expect(page.getByRole('list', { name: 'Files in the d1 template' })).toContainText(
     'migrations/0001_init.sql',
   );
@@ -52,10 +52,8 @@ test('switches the template sheet', async ({ page }) => {
 test('copies the create command', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
-  await page.getByRole('button', { name: /npm create @vuefn@latest/ }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    'npm create @vuefn@latest',
-  );
+  await page.getByRole('button', { name: /npm create vuefn@latest/ }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('npm create vuefn@latest');
   await expect(page.getByText('Copied')).toBeVisible();
 });
 
