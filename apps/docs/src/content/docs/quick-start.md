@@ -1,8 +1,6 @@
-# Quick start
-
-This page creates a vuefn app, adds a page and deploys the app to Cloudflare Workers.
-
-## Before you start
+---
+steps: true
+---
 
 You need Node `^22.23.4`, `^24.22.1` or `>=26.12.1`, and a package manager: npm, pnpm, Yarn, Bun or Deno. To deploy, you also need a [Cloudflare account](https://dash.cloudflare.com/sign-up).
 
@@ -40,7 +38,7 @@ Open `http://localhost:3000`. The page that you see is `src/pages/index.vue`.
 
 Make a file `src/pages/about.vue`:
 
-```vue
+```vue src/pages/about.vue
 <script lang="ts">
 import { defineRoute } from '@vuefn/core';
 
@@ -62,7 +60,7 @@ The file name gives the path. `index.vue` is `/`, `about.vue` is `/about` and `p
 
 Add a server function to the route block of `src/pages/about.vue`:
 
-```vue
+```vue src/pages/about.vue
 <script lang="ts">
 import { createServerFn } from '@tanstack/vue-start';
 import { defineRoute } from '@vuefn/core';
@@ -98,7 +96,7 @@ npm run deploy
 
 `npm run preview` serves the build on your computer with workerd, the runtime of Cloudflare Workers. `npm run deploy` builds the app again and deploys it with Wrangler. The first deploy asks you to log in to Cloudflare.
 
-## All commands
+### All commands
 
 | Command             | What it does                                   |
 | ------------------- | ---------------------------------------------- |

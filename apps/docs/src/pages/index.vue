@@ -36,98 +36,119 @@ export const route = defineRoute({
 <script setup lang="ts">
 import ApiList from '@/components/landing/api-list.vue';
 import CliSteps from '@/components/landing/cli-steps.vue';
-import CopyCommand from '@/components/landing/copy-command.vue';
 import HeroFile from '@/components/landing/hero-file.vue';
+import InstallBox from '@/components/landing/install-box.vue';
 import ProofTiles from '@/components/landing/proof-tiles.vue';
 import TemplatePicker from '@/components/landing/template-picker.vue';
-import { API, CLI_FLAGS, CLI_STEPS, PROOF, REPO } from '@/content/landing';
-import { useReveal } from '@/hooks/useReveal';
+import SiteFooter from '@/components/site/site-footer.vue';
+import SiteHeader from '@/components/site/site-header.vue';
+import { API, CLI_FLAGS, CLI_STEPS, FEATURES, PROOF } from '@/content/landing';
+import { REPO } from '@/content/site';
 
 const code = route.useLoaderData();
-useReveal('main > section');
 </script>
 
 <template>
-  <header class="relative grid min-h-svh bg-field text-field-ink lg:grid-cols-2">
-    <div class="flex flex-col justify-between gap-10 px-margin pt-8 pb-12 lg:p-margin">
-      <a
-        class="absolute top-4.5 left-5 z-1 text-xl font-semibold tracking-tight no-underline lg:static"
-        href="/"
-        >vuefn</a
-      >
-      <div>
-        <h1 class="max-w-headline text-display leading-none font-normal tracking-display">
-          <span class="block overflow-hidden pb-1"
-            ><span class="inline-block animate-rise">One .vue file</span></span
+  <SiteHeader />
+
+  <main id="main">
+    <section
+      class="mx-auto grid max-w-page grid-cols-1 items-center gap-12 px-margin pt-16 pb-section lg:grid-cols-12 lg:pt-24"
+      aria-labelledby="hero-h"
+    >
+      <div class="lg:col-span-5">
+        <a
+          class="inline-flex animate-rise items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          href="/docs/introduction"
+        >
+          <span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
+            >0.1.0</span
           >
-          <span class="block overflow-hidden pb-1"
-            ><span class="inline-block animate-rise-late">per route</span></span
-          >
+          TanStack Start for Vue on Cloudflare →
+        </a>
+        <h1
+          id="hero-h"
+          class="mt-6 animate-rise text-display leading-none font-semibold tracking-display"
+        >
+          One .vue file<br /><span class="text-muted-foreground">per route.</span>
         </h1>
-        <p class="mt-6 mb-8 max-w-lede animate-fade text-field-muted">
+        <p class="mt-6 max-w-lede animate-rise-late text-lg text-muted-foreground">
           The loader, the server functions and the page live in one file. vuefn turns it into a
           TanStack Start route that runs on Cloudflare Workers.
         </p>
-        <CopyCommand class="animate-fade-late" command="npm create @vuefn@latest" />
+        <div class="mt-8 flex animate-rise-late flex-wrap gap-3">
+          <a
+            class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-primary/85 active:scale-98"
+            href="/docs/quick-start"
+            >Get started</a
+          >
+          <a
+            class="inline-flex h-11 items-center rounded-full border border-border bg-card px-5 font-medium transition hover:bg-accent active:scale-98"
+            href="/docs/introduction"
+            >Read the docs</a
+          >
+        </div>
+        <InstallBox class="mt-8 animate-rise-late" />
       </div>
-    </div>
-    <div
-      class="relative -order-1 grid min-w-0 place-items-center bg-field-2 px-4 pt-16 pb-6 lg:order-0 lg:px-margin lg:pt-22 lg:pb-margin"
-    >
-      <a
-        class="absolute top-5 right-5 text-ui lg:top-margin lg:right-margin"
-        href="/docs/introduction"
-        >Read the docs</a
-      >
-      <HeroFile :files="HERO_FILES" :html="code.hero" />
-    </div>
-  </header>
+      <div class="min-w-0 lg:col-span-7">
+        <HeroFile :files="HERO_FILES" :html="code.hero" />
+      </div>
+    </section>
 
-  <main id="main">
-    <section class="px-margin py-section" aria-labelledby="templates-h">
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="features-h">
+      <h2 id="features-h" class="sr-only">What you get</h2>
+      <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <li
+          v-for="feature in FEATURES"
+          :key="feature.title"
+          class="flex flex-col rounded-2xl border border-border bg-card p-6"
+        >
+          <h3 class="font-medium">{{ feature.title }}</h3>
+          <p class="mt-2 text-sm text-muted-foreground">{{ feature.text }}</p>
+          <code
+            class="mt-auto self-start rounded-lg bg-muted px-2 py-1 pt-1 font-mono text-xs text-muted-foreground"
+            >{{ feature.code }}</code
+          >
+        </li>
+      </ul>
+    </section>
+
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="templates-h">
       <TemplatePicker :templates="TEMPLATES" :html="code.templates" />
     </section>
 
-    <section class="bg-field px-margin py-section text-field-ink" aria-labelledby="cli-h">
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="cli-h">
       <CliSteps :steps="CLI_STEPS" />
     </section>
 
-    <section class="px-margin py-section" aria-labelledby="api-h">
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="api-h">
       <ApiList :rows="API" :flags="CLI_FLAGS" :config="code.config" />
     </section>
 
-    <section class="px-margin py-section" aria-labelledby="proof-h">
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="proof-h">
       <ProofTiles :items="PROOF" />
     </section>
 
-    <section class="px-margin py-section" aria-labelledby="cta-h">
-      <h2 id="cta-h" class="max-w-lede text-lead leading-snug">
-        vuefn is 0.1.0. Start with a side project, and open an issue when something breaks.
-      </h2>
-      <div class="mt-6 flex items-center gap-6">
-        <a
-          class="inline-block bg-accent px-4.5 py-2.5 text-base font-semibold text-accent-ink no-underline transition active:scale-97"
-          href="/docs/quick-start"
-          >Read the quick start</a
-        >
-        <a :href="`${REPO}/issues`">Open an issue</a>
+    <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="cta-h">
+      <div class="rounded-3xl bg-primary px-8 py-14 text-primary-foreground md:px-14">
+        <h2 id="cta-h" class="max-w-xl text-section leading-tight font-semibold tracking-tight">
+          vuefn is 0.1.0. Start with a side project, and open an issue when something breaks.
+        </h2>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            class="inline-flex h-11 items-center rounded-full bg-primary-foreground px-5 font-medium text-primary transition hover:bg-primary-foreground/85 active:scale-98"
+            href="/docs/quick-start"
+            >Read the quick start</a
+          >
+          <a
+            class="inline-flex h-11 items-center rounded-full border border-primary-foreground/25 px-5 font-medium transition hover:bg-primary-foreground/10 active:scale-98"
+            :href="`${REPO}/issues`"
+            >Open an issue</a
+          >
+        </div>
       </div>
     </section>
   </main>
 
-  <footer
-    class="grid gap-2 px-margin pt-10 pb-7.5 text-ui text-muted md:grid-cols-footer md:items-baseline"
-  >
-    <span>One .vue file per route</span>
-    <nav class="flex gap-6" aria-label="Footer">
-      <a class="text-ink no-underline hover:underline" :href="REPO">GitHub</a>
-      <a
-        class="text-ink no-underline hover:underline"
-        href="https://www.npmjs.com/package/@vuefn/core"
-        >npm</a
-      >
-      <a class="text-ink no-underline hover:underline" :href="`${REPO}/releases`">Releases</a>
-    </nav>
-    <span class="md:text-right">MIT, 2026</span>
-  </footer>
+  <SiteFooter />
 </template>

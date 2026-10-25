@@ -1,56 +1,43 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{ steps: readonly { title: string; text: string; screen: string }[] }>();
 
 const active = ref(0);
-const blocks = useTemplateRef<HTMLElement[]>('blocks');
-let observer: IntersectionObserver | undefined;
-
-onMounted(() => {
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) active.value = Number((entry.target as HTMLElement).dataset.step);
-      }
-    },
-    { rootMargin: '-45% 0px -45% 0px' },
-  );
-  for (const block of blocks.value ?? []) observer.observe(block);
-});
-onBeforeUnmount(() => observer?.disconnect());
 </script>
 
 <template>
-  <div class="flex flex-col-reverse lg:grid lg:grid-cols-12 lg:items-start lg:gap-6">
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
     <div class="lg:col-span-5">
-      <h2 id="cli-h" class="text-lead text-field-muted">From zero to a page</h2>
-      <ol>
-        <li
-          v-for="(step, index) in steps"
-          ref="blocks"
-          :key="step.title"
-          :data-step="index"
-          class="group flex min-h-step flex-col justify-center"
-          :data-on="index === active || undefined"
-        >
-          <p
-            class="max-w-step text-step leading-tight tracking-tight text-field-muted transition-colors group-data-on:text-field-ink"
+      <h2 id="cli-h" class="text-section font-semibold tracking-tight">From zero to a page</h2>
+      <ol class="mt-8 space-y-2">
+        <li v-for="(step, index) in steps" :key="step.title">
+          <button
+            type="button"
+            :aria-pressed="index === active"
+            class="w-full cursor-pointer rounded-xl border border-transparent p-4 text-left transition-colors hover:bg-card aria-pressed:border-border aria-pressed:bg-card"
+            @click="active = index"
           >
-            {{ step.title }}
-          </p>
-          <p class="mt-3 max-w-note text-base text-field-muted">{{ step.text }}</p>
+            <span class="flex items-baseline gap-3">
+              <span class="font-mono text-xs text-muted-foreground">{{ index + 1 }}</span>
+              <span class="font-medium">{{ step.title }}</span>
+            </span>
+            <span class="mt-1 block pl-6 text-sm text-muted-foreground">{{ step.text }}</span>
+          </button>
         </li>
       </ol>
     </div>
-    <div
-      class="sticky top-0 z-1 grid w-full place-items-center bg-field-2 p-4 lg:top-sticky lg:col-span-6 lg:col-start-7 lg:mt-nudge lg:min-h-stage lg:p-12"
-    >
-      <pre
-        class="min-h-62 w-full max-w-140 overflow-x-auto bg-term px-6.5 py-6 text-small leading-relaxed text-code-ink lg:min-h-95 lg:text-ui"
-        data-ui
-        aria-live="polite"
-        >{{ props.steps[active]?.screen }}</pre>
+    <div class="lg:col-span-7">
+      <div class="overflow-hidden rounded-2xl bg-code shadow-2xl shadow-foreground/15" data-ui>
+        <div class="flex h-10 items-center gap-1.5 border-b border-code-border bg-code-header px-4">
+          <i v-for="dot in 3" :key="dot" class="size-2.5 rounded-full bg-code-border" />
+          <span class="ml-3 font-mono text-xs text-code-muted-foreground">Terminal</span>
+        </div>
+        <pre
+          class="min-h-80 overflow-x-auto px-5 py-4 font-mono text-xs leading-6 text-code-foreground"
+          aria-live="polite"
+          >{{ props.steps[active]?.screen }}</pre>
+      </div>
     </div>
   </div>
 </template>

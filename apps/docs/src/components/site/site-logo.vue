@@ -1,0 +1,16 @@
+<template>
+  <a class="flex items-center gap-2 text-lg font-semibold tracking-tight" href="/">
+    <svg class="size-7" viewBox="0 0 256 256" aria-hidden="true">
+      <g fill="currentColor" transform="translate(0 -15)">
+        <path
+          transform="translate(52.5 0) skewX(-15)"
+          d="M62 80A44 44 0 0 1 106 36H128V62H106A18 18 0 0 0 88 80V206A44 44 0 0 1 44 250H24V224H44A18 18 0 0 0 62 206Z"
+        />
+        <path
+          d="M40 96H186A54 54 0 0 1 240 150V196H214V150A28 28 0 0 0 186 122H162V196H136V122H40Z"
+        />
+      </g>
+    </svg>
+    vuefn
+  </a>
+</template>

@@ -6,9 +6,9 @@ import type { HighlighterCore, ThemeRegistration } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
 const theme: ThemeRegistration = {
-  name: 'vuefn',
+  name: 'vuefn-dark',
   type: 'dark',
-  colors: { 'editor.background': '#0e1012', 'editor.foreground': '#d8dadc' },
+  colors: { 'editor.background': '#0b0b0d', 'editor.foreground': '#d8dadc' },
   tokenColors: [
     { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#8b9096' } },
     { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#8fd6b4' } },
@@ -30,11 +30,36 @@ const theme: ThemeRegistration = {
   ],
 };
 
+const light: ThemeRegistration = {
+  name: 'vuefn-light',
+  type: 'light',
+  colors: { 'editor.background': '#ffffff', 'editor.foreground': '#18181b' },
+  tokenColors: [
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#71717a' } },
+    { scope: ['string', 'string.quoted', 'string.template'], settings: { foreground: '#15803d' } },
+    {
+      scope: ['keyword', 'storage', 'storage.type', 'keyword.control', 'keyword.operator.new'],
+      settings: { foreground: '#c2410c' },
+    },
+    {
+      scope: ['entity.name.function', 'support.function', 'meta.function-call'],
+      settings: { foreground: '#1d4ed8' },
+    },
+    { scope: ['entity.name.tag', 'support.class.component'], settings: { foreground: '#0e7490' } },
+    { scope: ['entity.other.attribute-name'], settings: { foreground: '#a16207' } },
+    {
+      scope: ['entity.name.type', 'support.type', 'support.type.primitive'],
+      settings: { foreground: '#0369a1' },
+    },
+    { scope: ['constant.numeric', 'constant.language'], settings: { foreground: '#b45309' } },
+  ],
+};
+
 let highlighter: Promise<HighlighterCore> | undefined;
 
 export function load() {
   highlighter ??= createHighlighterCore({
-    themes: [theme],
+    themes: [theme, light],
     langs: [vue, ts, bash],
     engine: createJavaScriptRegexEngine(),
   });
@@ -44,10 +69,15 @@ export function load() {
 export type Lang = 'vue' | 'ts' | 'bash';
 
 /** Highlights code as HTML lines. `lineData` returns a data attribute value for a 1-based line. */
-export async function highlight(code: string, lang: Lang, lineData?: (line: number) => string) {
+export async function highlight(
+  code: string,
+  lang: Lang,
+  lineData?: (line: number) => string,
+  themeName: 'vuefn-dark' | 'vuefn-light' = 'vuefn-dark',
+) {
   return (await load()).codeToHtml(code.trimEnd(), {
     lang,
-    theme: 'vuefn',
+    theme: themeName,
     transformers: lineData
       ? [
           {

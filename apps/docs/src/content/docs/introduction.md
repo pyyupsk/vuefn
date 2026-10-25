@@ -1,7 +1,3 @@
-# Introduction
-
-vuefn is a Vite plugin for [TanStack Vue Start](https://tanstack.com/start/latest). It puts the loader, the server functions and the page of a route in one `.vue` file, and the app runs on Cloudflare Workers.
-
 ## Why one file
 
 TanStack Vue Start needs two files for each route today: a `.ts` file for the route and a `.vue` file for the page. A `createServerFn()` that you write in a `.vue` file also loses its server code.
@@ -12,8 +8,7 @@ vuefn moves the route block of the page into a real `.ts` file before TanStack S
 
 The route goes in `<script lang="ts">`. The view goes in `<script setup>` and `<template>`:
 
-```vue
-<!-- src/pages/posts/$id.vue -->
+```vue src/pages/posts/$id.vue
 <script lang="ts">
 import { createServerFn } from '@tanstack/vue-start';
 import { defineRoute } from '@vuefn/core';

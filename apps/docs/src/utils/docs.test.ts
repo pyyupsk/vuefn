@@ -3,7 +3,7 @@ import { readdirSync } from 'node:fs';
 import { expect, it } from 'vitest';
 
 import { DOCS } from '../content/docs/nav';
-import { neighborsOf, pageOf, slugOf } from './docs';
+import { groupOf, neighborsOf, pageOf, slugOf } from './docs';
 
 it('has one Markdown file for each page in the sidebar', () => {
   const files = readdirSync(new URL('../content/docs', import.meta.url)).filter((file) =>
@@ -22,4 +22,9 @@ it('finds the pages around a page', () => {
 it('turns a heading into an id', () => {
   expect(slugOf('Add a `createServerFn()` call')).toBe('add-a-createserverfn-call');
   expect(slugOf('  Build & deploy!  ')).toBe('build-deploy');
+});
+
+it('finds the sidebar group of a page', () => {
+  expect(groupOf('quick-start')?.title).toBe('Getting started');
+  expect(groupOf('missing')).toBeUndefined();
 });

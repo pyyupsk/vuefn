@@ -33,13 +33,28 @@ function headings(md: Markdown) {
   });
 }
 
+/** Wraps each fenced block in a card with its file name (or "Terminal") and a copy button. */
+function codeBlocks(md: Markdown) {
+  const fence = md.renderer.rules.fence;
+  if (!fence) return;
+  md.renderer.rules.fence = (tokens, index, options, env, self) => {
+    const [lang = '', ...rest] = (tokens[index]?.info ?? '').trim().split(/\s+/);
+    const title = md.utils.escapeHtml(rest.join(' ') || (lang === 'bash' ? 'Terminal' : lang));
+    const wrap = (html: string) =>
+      `<figure class="code-block"><figcaption class="code-head"><span>${title}</span><button type="button" class="code-copy" data-copy>Copy</button></figcaption>${html}</figure>`;
+    const html = fence(tokens, index, options, env, self);
+    return typeof html === 'string' ? wrap(html) : (async () => wrap(await html))();
+  };
+}
+
 export async function setupMarkdown(md: Markdown) {
   const highlighter = await load();
   const langs = highlighter.getLoadedLanguages();
   md.options.highlight = (code, lang) =>
     highlighter.codeToHtml(code.trimEnd(), {
       lang: langs.includes(lang) ? lang : 'text',
-      theme: 'vuefn',
+      theme: 'vuefn-light',
     });
   md.use(headings);
+  md.use(codeBlocks);
 }

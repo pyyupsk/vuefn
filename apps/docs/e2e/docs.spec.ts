@@ -12,9 +12,11 @@ test('serves a docs page as prerendered HTML', async ({ request }) => {
 test('links every heading from On this page', async ({ page }) => {
   await page.goto('/docs/quick-start');
   const links = page.getByRole('navigation', { name: 'On this page' }).getByRole('link');
-  await expect(links).toHaveCount(7);
+  await expect(links).toHaveCount(6);
   const ids = await links.evaluateAll((all) => all.map((a) => a.getAttribute('href')?.slice(1)));
-  const headings = await page.locator('main h2').evaluateAll((all) => all.map((h) => h.id));
+  const headings = await page
+    .locator('main article :is(h2, h3)')
+    .evaluateAll((all) => all.map((h) => h.id));
   expect(ids).toEqual(headings);
 });
 

@@ -3,6 +3,10 @@ export type Where = 'worker' | 'both' | 'browser';
 export type HeroFile = Readonly<{
   id: string;
   label: string;
+  /** Where the file sits in the editor's file tree, its name there and an optional tag. */
+  folder: string;
+  name: string;
+  tag?: string;
   lang: 'vue' | 'ts';
   code: string;
   /** 1-based inclusive line ranges and where those lines run. */
@@ -74,6 +78,8 @@ export const HERO_FILES: readonly HeroFile[] = [
   {
     id: 'page',
     label: 'pages/posts/$id.vue',
+    folder: 'src/pages/posts',
+    name: '$id.vue',
     lang: 'vue',
     code: PAGE_SOURCE,
     ranges: [
@@ -90,6 +96,9 @@ export const HERO_FILES: readonly HeroFile[] = [
   {
     id: 'route',
     label: '.vuefn/routes/posts/$id.ts',
+    folder: 'src/.vuefn/routes/posts',
+    name: '$id.ts',
+    tag: 'generated',
     lang: 'ts',
     code: ROUTE_MODULE,
     ranges: [
@@ -103,6 +112,9 @@ export const HERO_FILES: readonly HeroFile[] = [
   {
     id: 'browser',
     label: 'In the browser',
+    folder: 'browser bundle',
+    name: 'getPost',
+    tag: 'built',
     lang: 'ts',
     code: `// what the browser bundle keeps of getPost, simplified
 export const getPost = createServerFn().handler(
@@ -274,4 +286,25 @@ export const PROOF: readonly (readonly [string, string])[] = [
   ['MIT', 'no runtime of its own'],
 ];
 
-export const REPO = 'https://github.com/pyyupsk/vuefn';
+export const FEATURES: readonly Readonly<{ title: string; text: string; code: string }>[] = [
+  {
+    title: 'Server code in the page',
+    text: 'A createServerFn in the route block runs on the Worker. The browser gets only the call.',
+    code: 'createServerFn()',
+  },
+  {
+    title: 'Typed from the file name',
+    text: 'useLoaderData, useParams and Link know the route, and you never write its path.',
+    code: 'route.useParams()',
+  },
+  {
+    title: 'Cloudflare Workers',
+    text: 'D1 and env come in through the Worker. Prerendered pages are served as static files.',
+    code: 'cloudflare:workers',
+  },
+  {
+    title: 'No runtime of its own',
+    text: 'TanStack Start does the routing and the server render. vuefn only moves one block.',
+    code: '@vuefn/core/vite',
+  },
+];

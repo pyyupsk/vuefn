@@ -9,59 +9,65 @@ defineProps<{
 </script>
 
 <template>
-  <div class="lg:grid lg:grid-cols-12 lg:gap-6">
-    <div class="max-w-140 lg:col-span-6">
-      <h2 id="api-h" class="mb-8 text-lead">The whole API</h2>
-      <ul aria-label="Exports">
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-6">
+      <h2 id="api-h" class="text-section font-semibold tracking-tight">The whole API</h2>
+      <ul
+        class="mt-8 overflow-hidden rounded-2xl border border-border bg-card"
+        aria-label="Exports"
+      >
         <li
           v-for="row in rows"
           :key="row.name"
-          class="flex min-h-10 items-baseline justify-between gap-4 py-1.75"
+          class="flex items-center justify-between gap-4 border-b border-border px-5 py-3 last:border-b-0"
         >
-          <span class="flex items-center gap-2.5">
-            <i v-if="row.where === 'build'" class="size-2.25 flex-none rounded-full bg-muted" />
-            <i v-else class="flex size-2.25 flex-none overflow-hidden rounded-full"
+          <span class="flex items-center gap-3">
+            <i v-if="row.where === 'build'" class="size-2 flex-none rounded-full bg-input" />
+            <i v-else class="flex size-2 flex-none overflow-hidden rounded-full"
               ><i class="w-1/2 bg-worker" /><i class="w-1/2 bg-browser"
             /></i>
-            <code class="text-ui">{{ row.name }}</code>
+            <code class="font-mono text-sm">{{ row.name }}</code>
           </span>
-          <span class="text-right text-sm text-muted">{{ row.from }}</span>
+          <span class="text-right text-xs text-muted-foreground">{{ row.from }}</span>
         </li>
       </ul>
-      <h3 class="mt-10 text-ui text-muted">The CLI</h3>
-      <ul aria-label="CLI flags">
+      <h3 class="mt-8 text-sm font-medium text-muted-foreground">The CLI</h3>
+      <ul
+        class="mt-3 overflow-hidden rounded-2xl border border-border bg-card"
+        aria-label="CLI flags"
+      >
         <li
           v-for="[flag, what] in flags"
           :key="flag"
-          class="flex min-h-10 items-baseline justify-between gap-4 py-1.75"
+          class="flex items-center justify-between gap-4 border-b border-border px-5 py-3 last:border-b-0"
         >
-          <span class="flex items-center gap-2.5">
-            <i class="size-2.25 flex-none rounded-full bg-muted" />
-            <code class="text-ui">{{ flag }}</code>
-          </span>
-          <span class="text-right text-sm text-muted">{{ what }}</span>
+          <code class="font-mono text-sm">{{ flag }}</code>
+          <span class="text-right text-xs text-muted-foreground">{{ what }}</span>
         </li>
       </ul>
-      <p class="mt-8 flex gap-6 text-sm text-muted">
+      <p class="mt-4 flex gap-5 text-xs text-muted-foreground">
         <span class="inline-flex items-center gap-2"
-          ><i class="flex size-2.25 overflow-hidden rounded-full"
+          ><i class="flex size-2 overflow-hidden rounded-full"
             ><i class="w-1/2 bg-worker" /><i class="w-1/2 bg-browser" /></i
           >Worker and browser</span
         >
         <span class="inline-flex items-center gap-2"
-          ><i class="size-2.25 rounded-full bg-muted" />Build time</span
+          ><i class="size-2 rounded-full bg-input" />Build time</span
         >
       </p>
     </div>
-    <div class="mt-14 lg:col-span-5 lg:col-start-8 lg:mt-0">
-      <figure class="bg-code text-code-ink" data-ui>
-        <figcaption class="bg-code-bar px-3.5 py-2.5 text-snippet text-code-strong">
-          <code>vite.config.ts</code>
+    <div class="lg:col-span-6">
+      <figure class="overflow-hidden rounded-2xl bg-code text-code-foreground" data-ui>
+        <figcaption
+          class="border-b border-code-border bg-code-header px-4 py-2.5 font-mono text-xs text-code-muted-foreground"
+        >
+          vite.config.ts
         </figcaption>
-        <div class="code-plain px-5 py-4.5 text-sm leading-relaxed" v-html="config" />
+        <div class="code-plain px-5 py-4 font-mono text-xs leading-6" v-html="config" />
       </figure>
-      <p class="mt-5 max-w-lede text-base">
-        <code>vuefn()</code> takes the place of <code>tanstackStart()</code> and takes the same
+      <p class="mt-5 max-w-lede text-muted-foreground">
+        <code class="font-mono text-sm text-foreground">vuefn()</code> takes the place of
+        <code class="font-mono text-sm text-foreground">tanstackStart()</code> and takes the same
         options. Every other option is a TanStack route or Start option. vuefn adds none of its own.
       </p>
     </div>

@@ -22,7 +22,7 @@ test('plays the headline animation once through hydration', async ({ page }) => 
   await page.goto('/', { waitUntil: 'networkidle' });
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { starts: string[] }).starts))
-    .toEqual(['rise', 'rise', 'fade', 'fade']);
+    .toEqual(['rise', 'rise', 'rise', 'rise', 'rise']);
 });
 
 test('says where a line of the hero file runs', async ({ page }) => {
@@ -43,7 +43,7 @@ test('says where a line of the hero file runs', async ({ page }) => {
 test('switches the template sheet', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'd1', exact: true }).click();
-  await expect(page.getByText('npm create @vuefn@latest my-app --template d1')).toBeVisible();
+  await expect(page.getByText('npm create @vuefn@latest my-app -- --template d1')).toBeVisible();
   await expect(page.getByRole('list', { name: 'Files in the d1 template' })).toContainText(
     'migrations/0001_init.sql',
   );
@@ -56,7 +56,7 @@ test('copies the create command', async ({ page, context }) => {
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'npm create @vuefn@latest',
   );
-  await expect(page.getByRole('button', { name: /Copied/ })).toBeVisible();
+  await expect(page.getByText('Copied')).toBeVisible();
 });
 
 test('hydrates without console errors on a phone', async ({ browser }) => {

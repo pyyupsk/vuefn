@@ -23,48 +23,70 @@ function onPoint(event: PointerEvent) {
 }
 
 function onKey(event: KeyboardEvent) {
-  const next = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+  const next = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
   if (!next) return;
+  event.preventDefault();
   pick((active.value + next + props.files.length) % props.files.length);
+  (event.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-selected=true]')?.focus();
 }
 </script>
 
 <template>
-  <figure class="w-full max-w-150 min-w-0 bg-code text-code-ink" data-ui :data-hover="hovered">
-    <div
-      class="flex overflow-x-auto bg-code-bar"
-      role="tablist"
-      aria-label="Files"
-      @keydown="onKey"
-    >
-      <button
-        v-for="(item, index) in files"
-        :id="`tab-${item.id}`"
-        :key="item.id"
-        type="button"
-        role="tab"
-        :aria-selected="index === active"
-        :aria-controls="`panel-${item.id}`"
-        :tabindex="index === active ? 0 : -1"
-        class="flex-none cursor-pointer px-3.5 py-2.5 text-small font-medium whitespace-nowrap text-code-muted aria-selected:bg-code aria-selected:text-code-strong"
-        @click="pick(index)"
-      >
-        <code v-if="item.label.includes('.')" class="text-snippet">{{ item.label }}</code>
-        <template v-else>{{ item.label }}</template>
-      </button>
+  <figure
+    class="w-full min-w-0 overflow-hidden rounded-2xl bg-code text-code-foreground shadow-2xl shadow-foreground/15"
+    data-ui
+    :data-hover="hovered"
+  >
+    <div class="flex h-10 items-center gap-1.5 border-b border-code-border bg-code-header px-4">
+      <i v-for="dot in 3" :key="dot" class="size-2.5 rounded-full bg-code-border" />
+      <span class="ml-3 font-mono text-xs text-code-muted-foreground">{{ file?.label }}</span>
     </div>
-    <div
-      :id="`panel-${file?.id}`"
-      class="code-lines h-90 overflow-auto py-3.5 text-snippet leading-relaxed lg:h-120"
-      role="tabpanel"
-      tabindex="0"
-      :aria-labelledby="`tab-${file?.id}`"
-      @pointerover="onPoint"
-      @pointerleave="hovered = ''"
-      v-html="html[active]"
-    />
+    <div class="md:grid md:grid-cols-editor">
+      <div
+        class="flex gap-1 overflow-x-auto border-b border-code-border p-2 md:flex-col md:border-r md:border-b-0 md:p-3"
+        role="tablist"
+        aria-label="Files"
+        aria-orientation="vertical"
+        @keydown="onKey"
+      >
+        <template v-for="(item, index) in files" :key="item.id">
+          <span
+            class="hidden px-2 pt-2 pb-1 font-mono text-xs text-code-muted-foreground first:pt-0 md:block"
+            >{{ item.folder }}</span
+          >
+          <button
+            :id="`tab-${item.id}`"
+            type="button"
+            role="tab"
+            :aria-label="item.label"
+            :aria-selected="index === active"
+            :aria-controls="`panel-${item.id}`"
+            :tabindex="index === active ? 0 : -1"
+            class="flex flex-none cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 font-mono text-xs whitespace-nowrap text-code-muted-foreground transition-colors hover:text-code-active-foreground aria-selected:bg-code-border aria-selected:text-code-active-foreground md:pl-4"
+            @click="pick(index)"
+          >
+            {{ item.name }}
+            <span
+              v-if="item.tag"
+              class="rounded-full border border-code-border px-1.5 font-sans text-tag text-code-muted-foreground"
+              >{{ item.tag }}</span
+            >
+          </button>
+        </template>
+      </div>
+      <div
+        :id="`panel-${file?.id}`"
+        class="code-lines h-90 overflow-auto py-3 font-mono text-xs leading-6 lg:h-110"
+        role="tabpanel"
+        tabindex="0"
+        :aria-labelledby="`tab-${file?.id}`"
+        @pointerover="onPoint"
+        @pointerleave="hovered = ''"
+        v-html="html[active]"
+      />
+    </div>
     <figcaption
-      class="flex min-h-10 justify-between gap-3 bg-code-bar px-3.5 py-2.5 text-small text-field-muted"
+      class="flex min-h-10 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-code-border px-4 py-2.5 text-xs text-code-muted-foreground"
     >
       <span aria-live="polite">{{ readout }}</span>
       <span class="inline-flex flex-none items-center gap-1.5">

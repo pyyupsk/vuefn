@@ -8,20 +8,18 @@ defineProps<{ current: string }>();
 
 <template>
   <nav aria-label="Docs">
-    <section v-for="group in DOCS" :key="group.title" class="mb-8">
-      <h2 class="mb-2 text-small font-semibold tracking-wide text-muted uppercase">
-        {{ group.title }}
-      </h2>
+    <section v-for="group in DOCS" :key="group.title" class="mb-6">
+      <h2 class="mb-1 px-3 text-xs font-medium text-muted-foreground">{{ group.title }}</h2>
       <ul>
         <li v-for="page in group.pages" :key="page.slug">
           <Link
             to="/docs/$slug"
             :params="{ slug: page.slug }"
-            class="block border-l-3 py-1.5 pl-3 text-ui no-underline transition-colors"
+            class="block rounded-lg px-3 py-1.5 text-sm transition-colors"
             :class="
               page.slug === current
-                ? 'border-accent font-semibold text-ink'
-                : 'border-transparent text-muted hover:text-ink'
+                ? 'bg-secondary font-medium text-secondary-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
             "
             :aria-current="page.slug === current ? 'page' : undefined"
             >{{ page.title }}</Link

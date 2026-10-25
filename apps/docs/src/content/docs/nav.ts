@@ -7,7 +7,7 @@ export interface DocPage {
 /** The sidebar, in reading order. Each slug has a `<slug>.md` next to this file. */
 export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
   {
-    title: 'Start here',
+    title: 'Getting started',
     pages: [
       {
         slug: 'introduction',

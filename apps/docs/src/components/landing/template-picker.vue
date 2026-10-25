@@ -10,58 +10,61 @@ const template = computed(() => props.templates[active.value]);
 </script>
 
 <template>
-  <div class="lg:grid lg:grid-cols-12 lg:gap-6">
-    <div class="flex flex-col items-start gap-2 lg:col-span-5">
-      <h2 id="templates-h" class="mb-6 text-lead text-muted">Start from a template</h2>
-      <button
-        v-for="(item, index) in templates"
-        :key="item.name"
-        type="button"
-        :aria-pressed="index === active"
-        class="cursor-pointer text-pick leading-tight tracking-display text-muted transition-colors hover:text-ink aria-pressed:text-ink"
-        @click="active = index"
-      >
-        {{ item.name }}
-      </button>
-      <p class="mt-6 max-w-measure">{{ template?.description }}</p>
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-5">
+      <h2 id="templates-h" class="text-section font-semibold tracking-tight">
+        Start from a template
+      </h2>
+      <p class="mt-3 max-w-lede text-muted-foreground">
+        The CLI asks which one you want and can install the dependencies for you.
+      </p>
+      <div class="mt-8 inline-flex rounded-full border border-border bg-card p-1">
+        <button
+          v-for="(item, index) in templates"
+          :key="item.name"
+          type="button"
+          :aria-pressed="index === active"
+          class="cursor-pointer rounded-full px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+          @click="active = index"
+        >
+          {{ item.name }}
+        </button>
+      </div>
+      <p class="mt-6 max-w-lede">{{ template?.description }}</p>
       <code
-        class="mt-4 max-w-full overflow-x-auto bg-surface px-3 py-2.5 text-sm whitespace-nowrap"
+        class="mt-4 block max-w-full overflow-x-auto rounded-xl border border-border bg-card px-4 py-3 font-mono text-sm whitespace-nowrap"
       >
-        npm create @vuefn@latest my-app --template {{ template?.name }}
+        npm create @vuefn@latest my-app -- --template {{ template?.name }}
       </code>
     </div>
-    <div
-      class="relative mt-10 min-h-120 overflow-hidden bg-surface lg:col-span-6 lg:col-start-7 lg:mt-0 lg:min-h-140"
+    <Transition
+      enter-active-class="transition duration-200 ease-soft"
+      leave-active-class="transition duration-150"
+      enter-from-class="translate-y-2 opacity-0"
+      leave-to-class="opacity-0"
+      mode="out-in"
     >
-      <Transition
-        enter-active-class="transition-opacity duration-150"
-        leave-active-class="transition-opacity duration-150"
-        enter-from-class="opacity-0"
-        leave-to-class="opacity-0"
-        mode="out-in"
+      <div
+        :key="template?.name"
+        class="overflow-hidden rounded-2xl border border-border bg-card lg:col-span-7"
+        data-ui
       >
-        <div
-          :key="template?.name"
-          class="absolute top-4 -right-30 left-4 bg-sheet lg:top-14 lg:-right-10 lg:left-14"
-          data-ui
+        <ul
+          class="space-y-1 border-b border-border px-5 py-4 text-sm text-muted-foreground"
+          :aria-label="`Files in the ${template?.name} template`"
         >
-          <ul
-            class="px-6 py-5.5 text-ui leading-loose text-muted"
-            :aria-label="`Files in the ${template?.name} template`"
-          >
-            <li v-for="[path, why, main] in template?.files" :key="path">
-              <code class="mr-3 text-sm" :class="main ? 'font-semibold text-ink' : 'text-tree'">{{
-                path
-              }}</code>
-              <span>{{ why }}</span>
-            </li>
-          </ul>
-          <div
-            class="code-plain min-h-60 bg-code px-6 py-5.5 text-sm leading-relaxed"
-            v-html="html[active]"
-          />
-        </div>
-      </Transition>
-    </div>
+          <li v-for="[path, why, main] in template?.files" :key="path" class="flex gap-3">
+            <code class="font-mono" :class="main ? 'font-medium text-foreground' : ''">{{
+              path
+            }}</code>
+            <span>{{ why }}</span>
+          </li>
+        </ul>
+        <div
+          class="code-plain min-h-60 bg-code px-5 py-4 font-mono text-xs leading-6"
+          v-html="html[active]"
+        />
+      </div>
+    </Transition>
   </div>
 </template>

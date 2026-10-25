@@ -9,6 +9,11 @@ export function slugOf(text: string) {
     .replace(/^-|-$/g, '');
 }
 
+/** The sidebar group that holds `slug`. */
+export function groupOf(slug: string) {
+  return DOCS.find((group) => group.pages.some((page) => page.slug === slug));
+}
+
 export function pageOf(slug: string) {
   return PAGES.find((page) => page.slug === slug);
 }
