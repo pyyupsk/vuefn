@@ -76,7 +76,7 @@ useReveal('main > section');
     >
       <a
         class="absolute top-5 right-5 text-ui lg:top-margin lg:right-margin"
-        :href="`${REPO}#readme`"
+        href="/docs/introduction"
         >Read the docs</a
       >
       <HeroFile :files="HERO_FILES" :html="code.hero" />
@@ -107,7 +107,7 @@ useReveal('main > section');
       <div class="mt-6 flex items-center gap-6">
         <a
           class="inline-block bg-accent px-4.5 py-2.5 text-base font-semibold text-accent-ink no-underline transition active:scale-97"
-          :href="`${REPO}#quick-start`"
+          href="/docs/quick-start"
           >Read the quick start</a
         >
         <a :href="`${REPO}/issues`">Open an issue</a>

@@ -32,7 +32,7 @@ const theme: ThemeRegistration = {
 
 let highlighter: Promise<HighlighterCore> | undefined;
 
-function load() {
+export function load() {
   highlighter ??= createHighlighterCore({
     themes: [theme],
     langs: [vue, ts, bash],

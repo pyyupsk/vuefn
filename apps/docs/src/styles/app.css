@@ -47,6 +47,7 @@
   --container-measure: 34ch;
   --container-note: 36ch;
   --container-lede: 44ch;
+  --container-prose: 70ch;
 
   --spacing-margin: clamp(20px, 3vw, 40px);
   --spacing-section: clamp(80px, 10vw, 150px);
@@ -125,6 +126,70 @@
 
   .code-plain pre {
     @apply overflow-x-auto bg-transparent!;
+  }
+
+  .doc {
+    @apply max-w-prose;
+  }
+
+  .doc h1 {
+    @apply mb-6 text-step leading-tight font-semibold tracking-tight;
+  }
+
+  .doc h2 {
+    @apply mt-14 mb-4 scroll-mt-20 text-lead leading-snug font-semibold;
+  }
+
+  .doc h3 {
+    @apply mt-10 mb-3 scroll-mt-20 text-body font-semibold;
+  }
+
+  .doc p,
+  .doc ul,
+  .doc ol,
+  .doc table {
+    @apply my-4 leading-relaxed;
+  }
+
+  .doc ul {
+    @apply list-disc pl-6;
+  }
+
+  .doc ol {
+    @apply list-decimal pl-6;
+  }
+
+  .doc li {
+    @apply my-1.5;
+  }
+
+  .doc a {
+    @apply underline decoration-accent decoration-2 underline-offset-3 hover:decoration-ink;
+  }
+
+  /* JetBrains Mono would draw >= as one glyph, which misreads as a version range */
+  .doc code {
+    font-variant-ligatures: none;
+  }
+
+  .doc :not(pre) > code {
+    @apply bg-surface px-1 py-0.5 font-mono text-small;
+  }
+
+  .doc pre {
+    @apply my-6 overflow-x-auto bg-code! px-5 py-4 font-mono text-small leading-relaxed;
+  }
+
+  .doc table {
+    @apply block w-full overflow-x-auto text-ui;
+  }
+
+  .doc th {
+    @apply border-b-2 border-ink py-2 pr-6 text-left font-semibold;
+  }
+
+  .doc td {
+    @apply border-b border-surface-2 py-2 pr-6 align-top;
   }
 
   .reveal > * {
