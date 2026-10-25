@@ -70,6 +70,9 @@ function onKey(event: KeyboardEvent) {
       <span class="inline-flex flex-none items-center gap-1.5">
         <i class="size-2 rounded-full bg-worker" />Worker
         <i class="ml-2 size-2 rounded-full bg-browser" />Browser
+        <i class="ml-2 flex size-2 overflow-hidden rounded-full"
+          ><i class="w-1/2 bg-worker" /><i class="w-1/2 bg-browser" /></i
+        >Both
       </span>
     </figcaption>
   </figure>

@@ -109,9 +109,13 @@
     content: counter(line);
   }
 
-  .code-lines [data-where='worker'],
+  .code-lines [data-where='worker'] {
+    @apply border-worker;
+  }
+
   .code-lines [data-where='both'] {
     @apply border-worker;
+    box-shadow: inset 3px 0 var(--color-browser);
   }
 
   .code-lines [data-where='browser'] {

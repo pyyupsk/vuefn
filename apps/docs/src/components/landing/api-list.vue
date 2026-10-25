@@ -19,10 +19,10 @@ defineProps<{
           class="flex min-h-10 items-baseline justify-between gap-4 py-1.75"
         >
           <span class="flex items-center gap-2.5">
-            <i
-              class="size-2.25 flex-none rounded-full"
-              :class="row.where === 'build' ? 'bg-muted' : 'bg-worker'"
-            />
+            <i v-if="row.where === 'build'" class="size-2.25 flex-none rounded-full bg-muted" />
+            <i v-else class="flex size-2.25 flex-none overflow-hidden rounded-full"
+              ><i class="w-1/2 bg-worker" /><i class="w-1/2 bg-browser"
+            /></i>
             <code class="text-ui">{{ row.name }}</code>
           </span>
           <span class="text-right text-sm text-muted">{{ row.from }}</span>
@@ -44,7 +44,9 @@ defineProps<{
       </ul>
       <p class="mt-8 flex gap-6 text-sm text-muted">
         <span class="inline-flex items-center gap-2"
-          ><i class="size-2.25 rounded-full bg-worker" />Worker and browser</span
+          ><i class="flex size-2.25 overflow-hidden rounded-full"
+            ><i class="w-1/2 bg-worker" /><i class="w-1/2 bg-browser" /></i
+          >Worker and browser</span
         >
         <span class="inline-flex items-center gap-2"
           ><i class="size-2.25 rounded-full bg-muted" />Build time</span
