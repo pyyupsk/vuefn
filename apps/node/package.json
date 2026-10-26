@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "dev": "vite dev --host 127.0.0.1 --port 3002",
     "start": "srvx serve --prod --entry dist/server/server.js --static ../client",
     "test:e2e": "playwright test",
     "typecheck": "vite build --logLevel error && vue-tsc --noEmit"

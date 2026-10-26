@@ -9,7 +9,7 @@
   "scripts": {
     "build": "bun run --filter './packages/*' build",
     "changeset": "changeset",
-    "dev": "bun run build && bun run --filter playground dev",
+    "dev": "bun run --filter './apps/*' dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
