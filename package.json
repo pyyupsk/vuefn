@@ -33,6 +33,7 @@
   },
   "packageManager": "bun@1.4.5",
   "patchedDependencies": {
-    "@tanstack/vue-router@1.170.42": "patches/@tanstack%2Fvue-router@1.170.42.patch"
+    "@tanstack/vue-router@1.170.42": "patches/@tanstack%2Fvue-router@1.170.42.patch",
+    "@pyyupsk/vite-fonts@0.4.1": "patches/@pyyupsk%2Fvite-fonts@0.4.1.patch"
   }
 }

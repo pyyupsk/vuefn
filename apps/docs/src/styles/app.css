@@ -1,6 +1,4 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/geist';
-@import '@fontsource-variable/geist-mono';
 
 @theme {
   --color-background: #fafafa;
@@ -39,8 +37,8 @@
   --color-code-line-number: #5f5f68;
   --color-code-active-foreground: #fafafa;
 
-  --font-sans: 'Geist Variable', system-ui, sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
 
   --text-body: 0.9375rem;
   --text-heading: 1.375rem;

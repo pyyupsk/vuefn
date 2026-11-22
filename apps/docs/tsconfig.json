@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "@pyyupsk/vite-fonts/client"],
     "strict": true,
     "noEmit": true,
     "isolatedModules": true,

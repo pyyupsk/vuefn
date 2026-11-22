@@ -1,4 +1,6 @@
 <script lang="ts">
+import fontsCss from '@pyyupsk/fonts?url';
+import { preloads } from '@pyyupsk/fonts/meta';
 import { defineRootRoute } from '@vuefn/core';
 
 import NotFound from '@/components/site/not-found.vue';
@@ -21,6 +23,14 @@ export const route = defineRootRoute({
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
+      { rel: 'stylesheet', href: fontsCss },
+      ...preloads.map(({ href, type }) => ({
+        rel: 'preload',
+        as: 'font',
+        type,
+        href,
+        crossOrigin: 'anonymous',
+      })),
       { rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
       { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },

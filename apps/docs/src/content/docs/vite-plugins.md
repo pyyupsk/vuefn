@@ -21,6 +21,7 @@ These docs are a vuefn app. This is their `vite.config.ts`, shortened:
 
 ```ts vite.config.ts
 import { cloudflare } from '@cloudflare/vite-plugin';
+import { fonts } from '@pyyupsk/vite-fonts';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { vuefn } from '@vuefn/core/vite';
@@ -37,6 +38,7 @@ export default defineConfig({
     }),
     Markdown({ headEnabled: false }),
     vue({ include: [/\.vue$/, /\.md$/] }),
+    fonts({ inject: 'manual', families: ['Geist:variable', 'Geist Mono:variable'] }),
     tailwindcss(),
     pagefind({ outputDirectory: 'dist/client' }),
   ],
@@ -49,6 +51,7 @@ export default defineConfig({
 | `vuefn`                   | Turns the pages into TanStack Start routes. `prerender` and `sitemap` are TanStack Start options |
 | `unplugin-vue-markdown`   | Compiles the Markdown of these docs to Vue components, with Shiki for the code                   |
 | `@vitejs/plugin-vue`      | Compiles the `.vue` files and the compiled Markdown                                              |
+| `@pyyupsk/vite-fonts`     | Downloads the Geist fonts at build time and serves them from the site                            |
 | `@tailwindcss/vite`       | Builds the CSS with Tailwind CSS v4                                                              |
 | `vite-plugin-pagefind`    | Serves the Pagefind search index during `vite dev`                                               |
 

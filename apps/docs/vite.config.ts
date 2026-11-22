@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
+import { fonts } from '@pyyupsk/vite-fonts';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { vuefn } from '@vuefn/core/vite';
@@ -24,6 +25,25 @@ export default defineConfig({
     }),
     Markdown({ headEnabled: false, wrapperClasses: 'doc', markdownSetup: setupMarkdown }),
     vue({ include: [/\.vue$/, /\.md$/] }),
+    fonts({
+      inject: 'manual',
+      families: {
+        sans: {
+          family: 'Geist',
+          weights: ['variable'],
+          variable: '--font-geist',
+          fallback: ['system-ui', 'sans-serif'],
+          adjustFontFallback: true,
+        },
+        mono: {
+          family: 'Geist Mono',
+          weights: ['variable'],
+          variable: '--font-geist-mono',
+          fallback: ['ui-monospace', 'monospace'],
+          adjustFontFallback: true,
+        },
+      },
+    }),
     tailwindcss(),
     // the build script runs pagefind; in dev the plugin builds once and serves the index from public/
     // not in the preview server that prerender starts, or the build runs itself again

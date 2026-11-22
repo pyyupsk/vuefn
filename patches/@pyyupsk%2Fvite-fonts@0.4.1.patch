@@ -1,0 +1,82 @@
+diff --git a/dist/src-BG3zbU2n.js b/dist/src-BG3zbU2n.js
+index 1889d63b5a828083a4b817abb5e66134a54d423d..1def49f0c6241db5623a9179e8c21f1793ef5190 100644
+--- a/dist/src-BG3zbU2n.js
++++ b/dist/src-BG3zbU2n.js
+@@ -118,10 +118,13 @@ function buildSidecarFontFace(family, metricsMap) {
+ function rootVar(family, metricsMap) {
+ 	const fallbackStack = [
+ 		...resolveFallbackName(family, metricsMap) ? [`'${family.family} Fallback'`] : [],
+-		...family.fallback,
+-		"sans-serif"
+-	].join(", ");
+-	return `  ${family.variable}: '${family.family}', ${fallbackStack};`;
++		...family.fallback
++	];
++	// end with the generic family of the font's category, once, instead of always sans-serif
++	const category = lookupMetrics(family.family, metricsMap)?.category;
++	const generic = category === "monospace" || category === "serif" ? category : "sans-serif";
++	if (!fallbackStack.includes(generic)) fallbackStack.push(generic);
++	return `  ${family.variable}: '${family.family}', ${fallbackStack.join(", ")};`;
+ }
+ function generateCss(families, filesMap, assetMap, metricsMap = {}) {
+ 	const parts = [];
+@@ -2584,13 +2587,24 @@ async function extractMetrics(files, cacheDir) {
+ 			descent: font.descent,
+ 			lineGap: font.lineGap,
+ 			unitsPerEm: font.unitsPerEm,
+-			xWidthAvg: os2?.xAvgCharWidth ?? 0,
++			xWidthAvg: weightedAvgWidth(font),
+ 			category: resolveCategory(os2?.sFamilyClass ?? 0, post?.isFixedPitch ?? 0)
+ 		};
+ 	} catch {
+ 		return null;
+ 	}
+ }
++// SYSTEM_METRICS hold the letter-frequency average of lowercase and space (as Capsize does), not OS/2 xAvgCharWidth
++const LETTER_FREQUENCY = { " ": 18.3, e: 10.2, t: 7.5, a: 6.5, o: 6.2, n: 5.7, i: 5.7, s: 5.3, r: 5, h: 5, l: 3.3, d: 3.4, u: 2.3, c: 2.2, m: 2, f: 1.8, w: 1.9, g: 1.6, y: 1.6, p: 1.5, b: 1.3, v: 0.8, k: 0.6, j: 0.1, x: 0.1, q: 0.1, z: 0.1 };
++function weightedAvgWidth(font) {
++	let width = 0;
++	let total = 0;
++	for (const [char, weight] of Object.entries(LETTER_FREQUENCY)) {
++		width += font.glyphForCodePoint(char.codePointAt(0)).advanceWidth * weight;
++		total += weight;
++	}
++	return width / total;
++}
+ function resolveCategory(sFamilyClass, isFixedPitch) {
+ 	if (isFixedPitch) return "monospace";
+ 	const classId = sFamilyClass >> 8;
+@@ -2819,9 +2833,11 @@ function injectSnippetIntoHtmlFiles(outDir, snippet) {
+ }
+ const RESOLVED_ID = "\0@pyyupsk/fonts.css";
+ const META_RESOLVED_ID = "\0@pyyupsk/fonts-meta.js";
++const URL_RESOLVED_ID = "\0@pyyupsk/fonts-url.js";
+ function handleResolveId(id) {
+ 	if (id === "@pyyupsk/fonts" || id === "@pyyupsk/fonts.css") return RESOLVED_ID;
+ 	if (id === "@pyyupsk/fonts/meta") return META_RESOLVED_ID;
++	if (id === "@pyyupsk/fonts?url") return URL_RESOLVED_ID;
+ }
+ //#endregion
+ //#region ../src/hooks/load.ts
+@@ -2963,6 +2979,8 @@ function fonts(input) {
+ 		load(id) {
+ 			const env = this.environment?.name ?? "client";
+ 			if (id === "\0@pyyupsk/fonts.css") return env === "client" ? handleLoad(id, state, this, env) : "";
++			// the dev server serves the CSS at /fonts.css, and the build writes it there
++			if (id === URL_RESOLVED_ID) return "export default \"/fonts.css\";";
+ 			return handleLoadMeta(id, state, this, env);
+ 		},
+ 		generateBundle(options, bundle) {
+diff --git a/package.json b/package.json
+index db5fdf45f3b0802dbe869b8ecc09f9ee857d217e..e9c1f81df6c4c55609515b98f9bd6ed9f0a5de1c 100644
+--- a/package.json
++++ b/package.json
+@@ -76,7 +76,7 @@
+   },
+   "peerDependencies": {
+     "astro": ">=3.5.0",
+-    "typescript": "^5",
++    "typescript": "^5 || ^6",
+     "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0"
+   },
+   "peerDependenciesMeta": {
