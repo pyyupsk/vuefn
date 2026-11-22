@@ -9,8 +9,10 @@ defineProps<{ current?: 'docs' }>();
 </script>
 
 <template>
-  <header class="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md">
-    <div class="mx-auto flex h-header max-w-page items-center gap-6 px-margin">
+  <header
+    class="sticky top-0 z-20 h-header border-b border-border bg-background/80 backdrop-blur-md"
+  >
+    <div class="mx-auto flex h-full max-w-page items-center gap-6 px-margin">
       <SiteLogo />
       <span
         class="hidden rounded-full border border-border bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground sm:inline"

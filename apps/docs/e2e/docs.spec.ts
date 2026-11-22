@@ -74,6 +74,19 @@ test('scrolls a wide table inside its box on a phone', async ({ browser }) => {
   await context.close();
 });
 
+test('keeps the sidebar and On this page still while the page scrolls', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await context.newPage();
+  await page.goto('/docs/api');
+  const tops = () =>
+    page.locator('aside > *').evaluateAll((all) => all.map((el) => el.getBoundingClientRect().top));
+  const before = await tops();
+  await page.mouse.wheel(0, 600);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
+  expect(await tops()).toEqual(before);
+  await context.close();
+});
+
 test('sends /docs to the introduction', async ({ page }) => {
   await page.goto('/docs');
   await expect(page).toHaveURL('/docs/introduction');
