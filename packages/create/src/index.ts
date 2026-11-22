@@ -19,6 +19,7 @@ import {
 import { createApp } from '#lib/create';
 import { getInstall, getNextSteps } from '#lib/package-manager';
 import { run } from '#lib/run';
+import { cdCommand } from '#utils/cd-command';
 import { TEMPLATES, isTemplate } from '#utils/templates';
 import type { TemplateName } from '#utils/templates';
 import { validateName } from '#utils/validate-name';
@@ -82,7 +83,7 @@ async function main() {
   const target = resolve(directory);
   const name = basename(target);
   const templateDir = fileURLToPath(new URL(`../template/${template}`, import.meta.url));
-  const cd = target === process.cwd() ? '' : `  cd '${directory.replaceAll("'", "'\\''")}'\n`;
+  const cd = target === process.cwd() ? '' : `  ${cdCommand(directory)}\n`;
   let overwrite = false;
   const stat = await lstat(target).catch(() => null);
   if (interactive && stat?.isDirectory() && (await readdir(target)).length > 0) {
