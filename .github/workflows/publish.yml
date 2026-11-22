@@ -70,13 +70,8 @@ jobs:
               echo "$tag already has a release."
               continue
             fi
-            # the notes start at the last release of this package, or at the first commit
-            from=$(git tag --list "$name@*" --sort=-v:refname | grep -vxF "$tag" | head -n 1 || true)
-            from=${from:-$(git rev-list --max-parents=0 HEAD | tail -n 1)}
             git tag --force "$tag" "$GITHUB_SHA"
-            # the path twice: changelogithub 15.0.5 splits a single path into letters
-            bun x changelogithub@15.0.5 --from "$from" --to "$tag" --output notes.md \
-              --commit-filter-by-paths "packages/$dir" --commit-filter-by-paths "packages/$dir"
+            bun scripts/release-notes.ts "$dir" "$tag" notes.md
             latest=false
             if [ "$dir" = vuefn ]; then latest=true; fi
             gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md --latest="$latest"
