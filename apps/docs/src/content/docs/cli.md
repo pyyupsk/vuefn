@@ -26,7 +26,7 @@ In a terminal, the CLI asks for the folder and the template. Then it offers to i
 
 The folder name can have lowercase letters, numbers and hyphens, up to 63 characters. A nested path or `.` works too.
 
-If the folder is not empty, the CLI lists what it will write and asks before it replaces files with the same names. Other files stay.
+If the folder is not empty, the CLI asks before it replaces files with the same names. Other files stay.
 
 ## In scripts and CI
 

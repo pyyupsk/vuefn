@@ -94,7 +94,7 @@ npm run preview
 npm run deploy
 ```
 
-`npm run preview` serves the build on your computer with workerd, the runtime of Cloudflare Workers. `npm run deploy` builds the app again and deploys it with Wrangler. The first deploy asks you to log in to Cloudflare.
+`npm run preview` builds the app and serves it on your computer with workerd, the runtime of Cloudflare Workers. `npm run deploy` builds the app again and deploys it with Wrangler. The first deploy asks you to log in to Cloudflare.
 
 ### All commands
 
@@ -102,7 +102,7 @@ npm run deploy
 | ------------------- | ---------------------------------------------- |
 | `npm run dev`       | Starts the Vite server on port 3000            |
 | `npm run build`     | Builds the app for Cloudflare Workers          |
-| `npm run preview`   | Serves the build locally with workerd          |
+| `npm run preview`   | Builds and serves the app locally with workerd |
 | `npm run typecheck` | Generates the route tree and checks TypeScript |
 | `npm run deploy`    | Builds and deploys the app with Wrangler       |
 
