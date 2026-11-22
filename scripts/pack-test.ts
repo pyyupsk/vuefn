@@ -9,6 +9,17 @@ import { $ } from 'bun';
 const pkg = join(import.meta.dir, '..', 'packages', 'vuefn');
 const dir = await mkdtemp(join(tmpdir(), 'vuefn-pack-'));
 try {
+  // npm publish drops a package.json field it rejects (a bin path, for one), and npm pack does not
+  await Promise.all(
+    ['vuefn', 'create'].map(async (name) => {
+      const warnings = (
+        await $`npm publish --dry-run`.cwd(join(pkg, '..', name)).quiet()
+      ).stderr.toString();
+      if (warnings.includes('auto-corrected')) {
+        throw new Error(`npm publish would change packages/${name}/package.json:\n${warnings}`);
+      }
+    }),
+  );
   const tarball = (await $`npm pack --silent --pack-destination ${dir}`.cwd(pkg).text()).trim();
   const cli = (
     await $`npm pack --silent --pack-destination ${dir}`.cwd(join(pkg, '..', 'create')).text()

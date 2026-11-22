@@ -15,7 +15,7 @@
     "directory": "packages/create"
   },
   "bin": {
-    "create-vuefn": "./dist/index.mjs"
+    "create-vuefn": "dist/index.mjs"
   },
   "files": [
     "dist",
