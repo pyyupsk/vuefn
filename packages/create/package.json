@@ -8,6 +8,7 @@
     "tanstack-start",
     "vue"
   ],
+  "homepage": "https://vuefn.fasu.dev/docs/cli",
   "license": "MIT",
   "repository": {
     "type": "git",

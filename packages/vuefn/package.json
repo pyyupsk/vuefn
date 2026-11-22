@@ -8,6 +8,7 @@
     "vite-plugin",
     "vue"
   ],
+  "homepage": "https://vuefn.fasu.dev",
   "license": "MIT",
   "repository": {
     "type": "git",
