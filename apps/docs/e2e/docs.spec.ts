@@ -115,8 +115,13 @@ test('finds a page with the search dialog', async ({ page }) => {
   await page.keyboard.press('ControlOrMeta+k');
   const dialog = page.getByRole('dialog', { name: 'Search the docs' });
   await expect(dialog).toBeVisible();
+  // an empty search shows only the input, without a divider or a results area under it
+  const results = dialog.locator('[aria-live] > *');
+  await expect(results).toHaveCount(0);
   await dialog.getByRole('searchbox').fill('validator');
   await expect(dialog.getByRole('link', { name: /Server functions/ })).toBeVisible();
+  await dialog.getByRole('searchbox').fill('');
+  await expect(results).toHaveCount(0);
 });
 
 test('moves between pages without a full reload', async ({ page }) => {

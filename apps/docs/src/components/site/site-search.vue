@@ -84,7 +84,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
       aria-label="Search the docs"
       @click.self="dialog?.close()"
     >
-      <form method="dialog" class="border-b border-border" @submit.prevent="go()">
+      <form method="dialog" @submit.prevent="go()">
         <input
           v-model="query"
           type="search"
@@ -94,31 +94,33 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
           autofocus
         />
       </form>
-      <div class="max-h-96 overflow-y-auto p-2" aria-live="polite">
-        <p v-if="status === 'missing'" class="p-3 text-sm text-muted-foreground">
-          Search could not load its index. Reload the page and try again.
-        </p>
-        <p
-          v-else-if="query && !results.length && status === 'idle'"
-          class="p-3 text-sm text-muted-foreground"
+      <div aria-live="polite">
+        <div
+          v-if="status === 'missing' || results.length || (query.trim() && status === 'idle')"
+          class="max-h-96 overflow-y-auto border-t border-border p-2"
         >
-          Nothing matches "{{ query }}".
-        </p>
-        <ul v-else>
-          <li v-for="result in results" :key="result.url">
-            <a
-              :href="result.url"
-              @click.prevent="go(result.url)"
-              class="block rounded-lg px-3 py-2.5 transition-colors hover:bg-accent focus:bg-accent focus:outline-none"
-            >
-              <span class="block text-sm font-medium">{{ result.title }}</span>
-              <span
-                class="search-excerpt mt-0.5 line-clamp-2 block text-xs text-muted-foreground"
-                v-html="result.excerpt"
-              />
-            </a>
-          </li>
-        </ul>
+          <p v-if="status === 'missing'" class="p-3 text-sm text-muted-foreground">
+            Search could not load its index. Reload the page and try again.
+          </p>
+          <p v-else-if="!results.length" class="p-3 text-sm text-muted-foreground">
+            Nothing matches "{{ query }}".
+          </p>
+          <ul v-else>
+            <li v-for="result in results" :key="result.url">
+              <a
+                :href="result.url"
+                @click.prevent="go(result.url)"
+                class="block rounded-lg px-3 py-2.5 transition-colors hover:bg-accent focus:bg-accent focus:outline-none"
+              >
+                <span class="block text-sm font-medium">{{ result.title }}</span>
+                <span
+                  class="search-excerpt mt-0.5 line-clamp-2 block text-xs text-muted-foreground"
+                  v-html="result.excerpt"
+                />
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </dialog>
   </div>
