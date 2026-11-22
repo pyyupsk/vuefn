@@ -4,23 +4,21 @@ import { expect, it } from 'vitest';
 
 import { DOCS } from '#content/docs/nav.ts';
 
-import { groupOf, neighborsOf, pageOf, slugOf } from './docs';
+import { PAGES, groupOf, neighborsOf, pageMarkdown, slugOf } from './docs';
 
 it('has one Markdown file for each page in the sidebar', () => {
   const files = readdirSync(new URL('../content/docs', import.meta.url)).filter((file) =>
     file.endsWith('.md'),
   );
-  const slugs = DOCS.flatMap((group) => group.pages.map((page) => `${page.slug}.md`));
-  expect(new Set(files)).toEqual(new Set(slugs));
+  expect(new Set(files)).toEqual(new Set(PAGES.map((page) => `${page.slug}.md`)));
 });
 
 it('finds the pages around a page', () => {
-  expect(neighborsOf('introduction')).toEqual({ prev: undefined, next: pageOf('quick-start') });
-  expect(neighborsOf('quick-start')).toEqual({
-    prev: pageOf('introduction'),
-    next: pageOf('route-block'),
-  });
-  expect(neighborsOf('limits')).toEqual({ prev: pageOf('cli'), next: undefined });
+  const [first, second, third] = PAGES;
+  const last = PAGES.at(-1);
+  expect(neighborsOf(first?.slug ?? '')).toEqual({ prev: undefined, next: second });
+  expect(neighborsOf(second?.slug ?? '')).toEqual({ prev: first, next: third });
+  expect(neighborsOf(last?.slug ?? '')).toEqual({ prev: PAGES.at(-2), next: undefined });
   expect(neighborsOf('missing')).toEqual({ prev: undefined, next: undefined });
 });
 
@@ -30,6 +28,16 @@ it('turns a heading into an id', () => {
 });
 
 it('finds the sidebar group of a page', () => {
-  expect(groupOf('quick-start')?.title).toBe('Getting started');
+  const group = DOCS.at(-1);
+  expect(groupOf(group?.pages[0]?.slug ?? '')).toBe(group);
   expect(groupOf('missing')).toBeUndefined();
+});
+
+it('writes a page as Markdown without its frontmatter', () => {
+  expect(
+    pageMarkdown(
+      { title: 'Quick start', description: 'Make an app.' },
+      '---\nsteps: true\n---\n\nYou need Node.\n',
+    ),
+  ).toBe('# Quick start\n\n> Make an app.\n\nYou need Node.\n');
 });

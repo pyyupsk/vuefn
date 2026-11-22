@@ -47,7 +47,6 @@ const template = computed(() => props.templates[active.value]);
       <div
         :key="template?.name"
         class="overflow-hidden rounded-2xl border border-border bg-card lg:col-span-7"
-        data-ui
       >
         <ul
           class="space-y-1 border-b border-border px-5 py-4 text-sm text-muted-foreground"

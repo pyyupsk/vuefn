@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+
+import { PAGES_DIR, routeFilePath, routeFileFor } from '#utils/route-file';
 
 type CodePart = string | readonly [string, string?, number?, unknown?];
 
@@ -13,7 +14,6 @@ type LanguagePlugin = (context: unknown) => {
 
 /** The call that has no path yet: `defineRoute(` followed by the options or by nothing. */
 const CALL = /defineRoute\s*\(\s*(?=[{)])/g;
-const ROUTE_PATH = /createFileRoute\(\s*(["'])(.*?)\1/;
 
 /**
  * Volar plugin that types `defineRoute({ ... })` without the path argument.
@@ -45,16 +45,11 @@ function partOf(part: CodePart): string {
 
 function routePathOf(fileName: string): string | null {
   const file = fileName.replaceAll('\\', '/');
-  const marker = '/pages/';
-  const at = file.lastIndexOf(marker);
+  const at = file.lastIndexOf(`/${PAGES_DIR}/`);
   if (at < 0) return null;
-  const routeFile = join(
-    file.slice(0, at),
-    '.vuefn/routes',
-    file.slice(at + marker.length).replace(/\.vue$/, '.ts'),
-  );
+  // the route file does not exist until the first vite dev or build
   try {
-    return ROUTE_PATH.exec(readFileSync(routeFile, 'utf8'))?.[2] ?? null;
+    return routeFilePath(readFileSync(routeFileFor(file.slice(0, at), file), 'utf8'));
   } catch {
     return null;
   }
@@ -76,15 +71,10 @@ function withPath(content: CodePart[], path: string): CodePart[] {
     let seen = 0;
     for (const match of text.matchAll(CALL)) {
       const at = (match.index ?? 0) + match[0].length;
-      result.push([text.slice(seen, at), source, offset + seen, data], inserted, [
-        text.slice(at),
-        source,
-        offset + at,
-        data,
-      ]);
+      result.push([text.slice(seen, at), source, offset + seen, data], inserted);
       seen = at;
     }
-    if (seen === 0) result.push(part);
+    result.push([text.slice(seen), source, offset + seen, data]);
   }
   return result;
 }

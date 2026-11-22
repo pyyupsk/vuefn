@@ -28,7 +28,7 @@ const active = ref(0);
       </ol>
     </div>
     <div class="lg:col-span-7">
-      <div class="overflow-hidden rounded-2xl bg-code shadow-2xl shadow-foreground/15" data-ui>
+      <div class="overflow-hidden rounded-2xl bg-code shadow-2xl shadow-foreground/15">
         <div class="flex h-10 items-center gap-1.5 border-b border-code-border bg-code-header px-4">
           <i v-for="dot in 3" :key="dot" class="size-2.5 rounded-full bg-code-border" />
           <span class="ml-3 font-mono text-xs text-code-muted-foreground">Terminal</span>

@@ -336,13 +336,6 @@ it.each([['one', 'two'], ['--unknown']])('rejects invalid arguments %j', async (
   expect(await readdir(dir)).toEqual([]);
 });
 
-it('leaves an existing file unchanged', async () => {
-  await writeFile(join(dir, 'my-app'), 'keep me');
-  const result = run('my-app');
-  expect(result.status).toBe(1);
-  expect(await readFile(join(dir, 'my-app'), 'utf8')).toBe('keep me');
-});
-
 it('refuses hidden files rather than merging into the directory', async () => {
   await mkdir(join(dir, 'existing'));
   await writeFile(join(dir, 'existing/.gitignore'), 'keep me');

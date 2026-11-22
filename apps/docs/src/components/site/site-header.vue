@@ -4,6 +4,7 @@ import { Link } from '@tanstack/vue-router';
 import SiteLogo from '@/components/site/site-logo.vue';
 import SiteSearch from '@/components/site/site-search.vue';
 import { REPO, VERSION } from '@/content/site';
+import { FIRST_PAGE } from '@/utils/docs';
 
 defineProps<{ current?: 'docs' }>();
 </script>
@@ -23,7 +24,7 @@ defineProps<{ current?: 'docs' }>();
           class="transition-colors hover:text-foreground"
           :class="{ 'font-medium text-foreground': current === 'docs' }"
           to="/docs/$slug"
-          :params="{ slug: 'introduction' }"
+          :params="{ slug: FIRST_PAGE }"
           >Docs</Link
         >
         <a class="transition-colors hover:text-foreground" :href="REPO">GitHub</a>

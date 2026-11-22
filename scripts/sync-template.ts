@@ -6,10 +6,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 
 const templates = join(here, '..', 'packages', 'create', 'template');
 
-export const TEMPLATE = join(templates, 'minimal', 'package.json');
-
 /** Points the starter at the version of `@vuefn/core` in the same release. */
-export function syncTemplate(version: string, template = TEMPLATE): void {
+export function syncTemplate(version: string, template: string): void {
   const manifest = JSON.parse(readFileSync(template, 'utf8')) as {
     dependencies?: Record<string, string>;
   };

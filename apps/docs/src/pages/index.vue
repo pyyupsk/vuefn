@@ -2,10 +2,9 @@
 import { createServerFn } from '@tanstack/vue-start';
 import { defineRoute } from '@vuefn/core';
 
-import { HERO_FILES, TEMPLATES, VITE_CONFIG } from '@/content/landing';
+import { HERO_FILES, TEMPLATES, VITE_CONFIG, whereOf } from '@/content/landing';
 import { SITE_URL } from '@/content/site';
 import { highlight } from '@/lib/highlight';
-import { whereOf } from '@/utils/where';
 
 // prerendering bakes the result into the HTML, so Shiki never reaches the browser
 export const getCode = createServerFn().handler(async () => ({
@@ -13,7 +12,7 @@ export const getCode = createServerFn().handler(async () => ({
     HERO_FILES.map((file) => highlight(file.code, file.lang, (line) => whereOf(file, line))),
   ),
   templates: await Promise.all(
-    TEMPLATES.map((template) => highlight(template.code, template.name === 'd1' ? 'ts' : 'vue')),
+    TEMPLATES.map((template) => highlight(template.code, template.lang)),
   ),
   config: await highlight(VITE_CONFIG, 'ts'),
 }));
@@ -48,7 +47,8 @@ import TemplatePicker from '@/components/landing/template-picker.vue';
 import SiteFooter from '@/components/site/site-footer.vue';
 import SiteHeader from '@/components/site/site-header.vue';
 import { API, CLI_FLAGS, CLI_STEPS, FEATURES, PROOF } from '@/content/landing';
-import { REPO } from '@/content/site';
+import { REPO, VERSION } from '@/content/site';
+import { FIRST_PAGE } from '@/utils/docs';
 
 const code = route.useLoaderData();
 </script>
@@ -65,11 +65,11 @@ const code = route.useLoaderData();
         <Link
           class="inline-flex items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
           to="/docs/$slug"
-          :params="{ slug: 'introduction' }"
+          :params="{ slug: FIRST_PAGE }"
         >
           <span
             class="inline-flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground"
-            ><i class="size-1.5 rounded-full bg-brand-500" />0.1.0</span
+            ><i class="size-1.5 rounded-full bg-brand-500" />{{ VERSION }}</span
           >
           TanStack Start for Vue on Cloudflare →
         </Link>
@@ -90,7 +90,7 @@ const code = route.useLoaderData();
           <Link
             class="inline-flex h-11 items-center rounded-full border border-border bg-card px-5 font-medium transition hover:bg-accent active:scale-98"
             to="/docs/$slug"
-            :params="{ slug: 'introduction' }"
+            :params="{ slug: FIRST_PAGE }"
             >Read the docs</Link
           >
         </div>
@@ -138,7 +138,8 @@ const code = route.useLoaderData();
     <section class="mx-auto max-w-page px-margin pb-section" aria-labelledby="cta-h">
       <div class="rounded-3xl bg-foreground px-8 py-14 text-background md:px-14">
         <h2 id="cta-h" class="max-w-xl text-section leading-tight font-semibold tracking-tight">
-          vuefn is 0.1.0. Start with a side project, and open an issue when something breaks.
+          vuefn is {{ VERSION }}. Start with a side project, and open an issue when something
+          breaks.
         </h2>
         <div class="mt-8 flex flex-wrap gap-3">
           <Link

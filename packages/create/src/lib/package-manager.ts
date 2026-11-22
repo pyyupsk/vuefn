@@ -9,16 +9,18 @@ function command(manager: Manager, action: 'install' | 'run', args: string[] = [
   return resolved;
 }
 
+const manager = (): Manager => getUserAgent() ?? 'npm';
+
 export function getInstall() {
-  return command(getUserAgent() ?? 'npm', 'install');
+  return command(manager(), 'install');
 }
 
-export function getNextSteps(template: string, installed = false) {
-  const manager = getUserAgent() ?? 'npm';
+export function getNextSteps(setup: readonly string[], installed = false) {
+  const agent = manager();
   const steps = [
-    ...(installed ? [] : [command(manager, 'install')]),
-    ...(template === 'd1' ? [command(manager, 'run', ['db:migrate'])] : []),
-    command(manager, 'run', ['dev']),
+    ...(installed ? [] : [command(agent, 'install')]),
+    ...setup.map((script) => command(agent, 'run', [script])),
+    command(agent, 'run', ['dev']),
   ];
   return steps.map((step) => `  ${[step.command, ...step.args].join(' ')}`).join('\n');
 }

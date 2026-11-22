@@ -1,19 +1,13 @@
 import type { Options } from 'unplugin-vue-markdown/types';
 
 import { slugOf } from '#utils/docs.ts';
+import type { Heading } from '#utils/docs.ts';
 import { MANAGERS, forManager, hasNpmCommand } from '#utils/package-manager.ts';
 
 import { load } from './highlight.ts';
 
 type Markdown = Parameters<NonNullable<Options['markdownSetup']>>[0];
 
-export interface Heading {
-  id: string;
-  text: string;
-  depth: 2 | 3;
-}
-
-/** Gives h2 and h3 an id and exports them from the page as `toc`. */
 function headings(md: Markdown) {
   md.core.ruler.push('vuefn-headings', (state) => {
     const toc: Heading[] = [];
@@ -35,9 +29,11 @@ function headings(md: Markdown) {
   });
 }
 
-const copyButton = '<button type="button" class="code-copy" data-copy>Copy</button>';
+/** A code card: its head (a file name or the manager tabs), a copy button, and the code. */
+function card(head: string, body: string) {
+  return `<figure class="code-block" data-pagefind-ignore><figcaption class="code-head">${head}<button type="button" class="code-copy" data-copy>Copy</button></figcaption>${body}</figure>`;
+}
 
-/** Wraps each fenced block in a card with its file name (or "Terminal") and a copy button. */
 function codeBlocks(md: Markdown, highlight: (code: string, lang: string) => string) {
   const fence = md.renderer.rules.fence;
   if (!fence) return;
@@ -48,14 +44,13 @@ function codeBlocks(md: Markdown, highlight: (code: string, lang: string) => str
       return managerTabs(token.content, highlight);
     }
     const title = md.utils.escapeHtml(rest.join(' ') || (lang === 'bash' ? 'Terminal' : lang));
-    const wrap = (html: string) =>
-      `<figure class="code-block" data-pagefind-ignore><figcaption class="code-head"><span>${title}</span>${copyButton}</figcaption>${html}</figure>`;
+    const wrap = (html: string) => card(`<span>${title}</span>`, html);
     const html = fence(tokens, index, options, env, self);
     return typeof html === 'string' ? wrap(html) : (async () => wrap(await html))();
   };
 }
 
-/** A shell block with one tab per package manager. The page switches them with `data-pm`. */
+/** A shell block with one tab per package manager. usePackageManager switches them with `data-pm`. */
 function managerTabs(code: string, highlight: (code: string, lang: string) => string) {
   const tabs = MANAGERS.map(
     (manager, index) =>
@@ -65,7 +60,7 @@ function managerTabs(code: string, highlight: (code: string, lang: string) => st
     (manager, index) =>
       `<div data-pm-panel="${manager}"${index === 0 ? '' : ' hidden'}>${highlight(forManager(code, manager), 'bash')}</div>`,
   ).join('');
-  return `<figure class="code-block" data-pm-block data-pagefind-ignore><figcaption class="code-head"><span class="pm-tabs">${tabs}</span>${copyButton}</figcaption>${panels}</figure>`;
+  return card(`<span class="pm-tabs">${tabs}</span>`, panels);
 }
 
 export async function setupMarkdown(md: Markdown) {

@@ -57,7 +57,7 @@ defineProps<{
       </p>
     </div>
     <div class="lg:col-span-6">
-      <figure class="overflow-hidden rounded-2xl bg-code text-code-foreground" data-ui>
+      <figure class="overflow-hidden rounded-2xl bg-code text-code-foreground">
         <figcaption
           class="border-b border-code-border bg-code-header px-4 py-2.5 font-mono text-xs text-code-muted-foreground"
         >

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-import type { Heading } from '@/lib/markdown';
+import type { Heading } from '@/utils/docs';
 
 const props = defineProps<{ headings: readonly Heading[] }>();
 

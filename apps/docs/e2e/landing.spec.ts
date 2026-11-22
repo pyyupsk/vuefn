@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import type { Response } from '@playwright/test';
 
 test('serves the landing page as prerendered HTML', async ({ request }) => {
   const response = await request.get('/');
@@ -6,7 +7,20 @@ test('serves the landing page as prerendered HTML', async ({ request }) => {
   const html = await response.text();
   expect(html).toContain('One .vue file');
   expect(html).toContain('data-where="worker"');
-  expect(html).not.toContain('createHighlighterCore');
+});
+
+test('ships no highlighter to the browser', async ({ page }) => {
+  const responses: Response[] = [];
+  page.on('response', (response) => {
+    if (response.request().resourceType() === 'script') responses.push(response);
+  });
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.getByRole('link', { name: 'Read the docs' }).click();
+  await page.waitForLoadState('networkidle');
+  const scripts = await Promise.all(responses.map((response) => response.text()));
+  expect(scripts.length).toBeGreaterThan(0);
+  // a grammar scope name, which survives minification
+  expect(scripts.filter((code) => code.includes('source.vue'))).toEqual([]);
 });
 
 test('starts no animation when the page loads', async ({ page }) => {
@@ -36,6 +50,7 @@ test('says where a line of the hero file runs', async ({ page }) => {
     'aria-selected',
     'true',
   );
+  await expect(page.getByRole('tab', { name: 'In the browser' })).toBeFocused();
 });
 
 test('switches the template sheet', async ({ page }) => {

@@ -2,6 +2,7 @@
 import { Link } from '@tanstack/vue-router';
 
 import SiteHeader from '@/components/site/site-header.vue';
+import { FIRST_PAGE } from '@/utils/docs';
 </script>
 
 <template>
@@ -16,7 +17,7 @@ import SiteHeader from '@/components/site/site-header.vue';
       <Link
         class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
         to="/docs/$slug"
-        :params="{ slug: 'introduction' }"
+        :params="{ slug: FIRST_PAGE }"
         >Open the docs</Link
       >
       <Link

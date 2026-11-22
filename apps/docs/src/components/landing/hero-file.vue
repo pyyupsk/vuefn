@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
 import type { HeroFile, Where } from '@/content/landing';
 
@@ -22,19 +22,21 @@ function onPoint(event: PointerEvent) {
   hovered.value = (line?.dataset.where as Where | undefined) ?? '';
 }
 
-function onKey(event: KeyboardEvent) {
+async function onKey(event: KeyboardEvent) {
   const next = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
   if (!next) return;
   event.preventDefault();
+  const list = event.currentTarget as HTMLElement;
   pick((active.value + next + props.files.length) % props.files.length);
-  (event.currentTarget as HTMLElement).querySelector<HTMLElement>('[aria-selected=true]')?.focus();
+  // the new tab is selected only after Vue renders
+  await nextTick();
+  list.querySelector<HTMLElement>('[aria-selected=true]')?.focus();
 }
 </script>
 
 <template>
   <figure
     class="w-full min-w-0 overflow-hidden rounded-2xl bg-code text-code-foreground shadow-2xl shadow-foreground/15"
-    data-ui
     :data-hover="hovered"
   >
     <div class="flex h-10 items-center gap-1.5 border-b border-code-border bg-code-header px-4">

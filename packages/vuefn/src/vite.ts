@@ -1,13 +1,13 @@
 import { resolve } from 'node:path';
 
 import { tanstackStart } from '@tanstack/vue-start/plugin/vite';
+import { normalizePath } from 'vite';
 import type { PluginOption } from 'vite';
 
-import { generateRoutes, routeFileFor } from '#lib/generate';
-import type { RoutePaths } from '#lib/generate';
-import { findRouteBlock, pageModule } from '#utils/sfc';
-
-const ROUTES_DIR = '.vuefn/routes';
+import { generateRoutes } from '#lib/generate';
+import type { RouteFiles } from '#lib/generate';
+import { PAGES_DIR, ROUTES_DIR } from '#utils/route-file';
+import { pageModule } from '#utils/sfc';
 
 /** The options of `vuefn()`: every TanStack Start option except `router.routesDirectory`. */
 export type VuefnOptions = NonNullable<Parameters<typeof tanstackStart>[0]>;
@@ -26,16 +26,15 @@ export type VuefnOptions = NonNullable<Parameters<typeof tanstackStart>[0]>;
 export function vuefn(options: VuefnOptions = {}): PluginOption {
   if (options.router?.routesDirectory) {
     throw new Error(
-      'vuefn: leave out router.routesDirectory, vuefn writes the routes to .vuefn/routes',
+      `vuefn: leave out router.routesDirectory, vuefn writes the routes to ${ROUTES_DIR}`,
     );
   }
   let root = '';
-  let pagesDir = '';
-  let routesDir = '';
-  let routes: RoutePaths = new Map();
+  let src = '';
+  let routes: RouteFiles = new Map();
   let warnings: string[] = [];
   const refresh = async () => {
-    ({ routes, warnings } = await generateRoutes(root, pagesDir, routesDir, options.router));
+    ({ routes, warnings } = await generateRoutes(root, src, options.router));
   };
   return [
     {
@@ -43,9 +42,7 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
       enforce: 'pre',
       async config(config) {
         root = resolve(config.root ?? process.cwd());
-        const src = resolve(root, options.srcDirectory ?? 'src');
-        pagesDir = resolve(src, 'pages');
-        routesDir = resolve(src, ROUTES_DIR);
+        src = resolve(root, options.srcDirectory ?? 'src');
         await refresh();
       },
       buildStart() {
@@ -65,9 +62,11 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
             server.config.logger.error(String(error instanceof Error ? error.message : error));
           }
         };
+        // the watcher gives native paths, with backslashes on Windows
+        const pages = `${normalizePath(resolve(src, PAGES_DIR))}/`;
         let timer: ReturnType<typeof setTimeout> | undefined;
         const update = (file: string) => {
-          if (!file.startsWith(`${pagesDir}/`) || !file.endsWith('.vue')) return;
+          if (!normalizePath(file).startsWith(pages) || !file.endsWith('.vue')) return;
           clearTimeout(timer);
           timer = setTimeout(() => void run(), 50);
         };
@@ -76,10 +75,8 @@ export function vuefn(options: VuefnOptions = {}): PluginOption {
         server.watcher.on('unlink', update);
       },
       transform(code, id) {
-        if (!routes.has(id)) return;
-        const block = findRouteBlock(code, id);
-        if (!block) return;
-        return pageModule(code, block, routeFileFor(pagesDir, routesDir, id), id);
+        const target = routes.get(id);
+        if (target) return pageModule(code, id, target);
       },
     },
     tanstackStart({ ...options, router: { ...options.router, routesDirectory: ROUTES_DIR } }),

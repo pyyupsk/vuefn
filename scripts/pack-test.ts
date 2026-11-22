@@ -6,21 +6,25 @@ import { join } from 'node:path';
 
 import { $ } from 'bun';
 
+import { TEMPLATE_NAMES } from '../packages/create/src/utils/templates';
+
 const pkg = join(import.meta.dir, '..', 'packages', 'vuefn');
 const dir = await mkdtemp(join(tmpdir(), 'vuefn-pack-'));
 try {
   // npm publish drops a package.json field it rejects (a bin path, for one), and npm pack does not.
-  // It warns before it checks the version, so the exit code, which fails once a version is out, is ignored.
+  // It warns before it checks the version, so it may still fail on a version that is already out.
   await Promise.all(
     ['vuefn', 'create'].map(async (name) => {
-      const warnings = (
-        await $`npm publish --dry-run`
-          .cwd(join(pkg, '..', name))
-          .quiet()
-          .nothrow()
-      ).stderr.toString();
+      const result = await $`npm publish --dry-run`
+        .cwd(join(pkg, '..', name))
+        .quiet()
+        .nothrow();
+      const warnings = result.stderr.toString();
       if (warnings.includes('auto-corrected')) {
         throw new Error(`npm publish would change packages/${name}/package.json:\n${warnings}`);
+      }
+      if (result.exitCode !== 0 && !warnings.includes('cannot publish over')) {
+        throw new Error(`npm publish --dry-run failed in packages/${name}:\n${warnings}`);
       }
     }),
   );
@@ -72,14 +76,7 @@ if (!vuefn().flat(Infinity).some((p) => p?.name === "vuefn")) throw new Error("v
     console.log(`${template}: builds and type-checks on Node ${node}`);
   }
 
-  async function testTemplates(list: string[]): Promise<void> {
-    const [first, ...rest] = list;
-    if (!first) return;
-    await testTemplate(first);
-    await testTemplates(rest);
-  }
-
-  await testTemplates(['minimal', 'tailwind', 'd1']);
+  await Promise.all(TEMPLATE_NAMES.map(testTemplate));
   console.log(`${cli}: every generated Workers app builds and type-checks on Node ${node}`);
 } finally {
   await rm(dir, { recursive: true, force: true });

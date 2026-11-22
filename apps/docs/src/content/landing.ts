@@ -1,3 +1,5 @@
+import type { Lang } from '#lib/highlight.ts';
+
 export type Where = 'worker' | 'both' | 'browser';
 
 export type HeroFile = Readonly<{
@@ -7,7 +9,7 @@ export type HeroFile = Readonly<{
   folder: string;
   name: string;
   tag?: string;
-  lang: 'vue' | 'ts';
+  lang: Lang;
   code: string;
   /** 1-based inclusive line ranges and where those lines run. */
   ranges: readonly (readonly [number, number, Where])[];
@@ -136,10 +138,17 @@ export const getPost = createServerFn().handler(
   },
 ];
 
+/** Where a 1-based line of a hero file runs, or '' when it is not marked. */
+export function whereOf(file: HeroFile, line: number): Where | '' {
+  return file.ranges.find(([from, to]) => line >= from && line <= to)?.[2] ?? '';
+}
+
 export type Template = Readonly<{
   name: 'minimal' | 'tailwind' | 'd1';
   description: string;
+  lang: Lang;
   files: readonly (readonly [path: string, why: string, main?: boolean])[];
+  /** A part of the main file. landing.test.ts checks that the template still holds it. */
   code: string;
 }>;
 
@@ -147,6 +156,7 @@ export const TEMPLATES: readonly Template[] = [
   {
     name: 'minimal',
     description: 'One page that says hello. The smallest app vuefn makes.',
+    lang: 'vue',
     files: [
       ['src/pages/__root.vue', 'the html shell'],
       ['src/pages/index.vue', 'the page', true],
@@ -162,6 +172,7 @@ export const TEMPLATES: readonly Template[] = [
   {
     name: 'tailwind',
     description: 'The same app with Tailwind CSS 4, wired through its Vite plugin.',
+    lang: 'vue',
     files: [
       ['src/app.css', '@import "tailwindcss"'],
       ['src/pages/__root.vue', 'imports app.css'],
@@ -170,7 +181,8 @@ export const TEMPLATES: readonly Template[] = [
     ],
     code: `<template>
   <main class="mx-auto max-w-xl p-8">
-    <h1 class="text-3xl font-semibold">Hello, vuefn!</h1>
+    <h1 class="text-3xl font-semibold tracking-tight">Hello, vuefn!</h1>
+    <p class="mt-2 text-base/7 text-gray-600">Styled with Tailwind CSS on Cloudflare Workers.</p>
   </main>
 </template>
 `,
@@ -179,6 +191,7 @@ export const TEMPLATES: readonly Template[] = [
     name: 'd1',
     description:
       'A notes page that reads and writes Cloudflare D1 through Drizzle, with its first migration.',
+    lang: 'ts',
     files: [
       ['migrations/0001_init.sql', 'the notes table'],
       ['src/db/schema.ts', 'Drizzle schema'],

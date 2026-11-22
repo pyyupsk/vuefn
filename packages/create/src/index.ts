@@ -20,12 +20,12 @@ import { createApp } from '#lib/create';
 import { getInstall, getNextSteps } from '#lib/package-manager';
 import { run } from '#lib/run';
 import { cdCommand } from '#utils/cd-command';
-import { TEMPLATES, isTemplate } from '#utils/templates';
+import { TEMPLATES, TEMPLATE_NAMES, isTemplate } from '#utils/templates';
 import type { TemplateName } from '#utils/templates';
 import { validateName } from '#utils/validate-name';
 
 async function main() {
-  const usage = `Usage: create-vuefn [directory] [--template ${TEMPLATES.join('|')}]`;
+  const usage = `Usage: create-vuefn [directory] [--template ${TEMPLATE_NAMES.join('|')}]`;
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     options: {
@@ -40,7 +40,7 @@ async function main() {
   if (positionals.length > 1) throw new Error(usage);
   const requested = values.template;
   if (requested !== undefined && !isTemplate(requested)) {
-    throw new Error(`Unknown template "${requested}". Use ${TEMPLATES.join(', ')}.`);
+    throw new Error(`Unknown template "${requested}". Use ${TEMPLATE_NAMES.join(', ')}.`);
   }
   let template: TemplateName = requested ?? 'minimal';
   const interactive = process.stdin.isTTY && process.stdout.isTTY;
@@ -68,11 +68,11 @@ async function main() {
   if (!requested && interactive) {
     const answer = await select({
       message: 'Template',
-      options: [
-        { value: 'minimal', label: 'Minimal', hint: 'one page' },
-        { value: 'tailwind', label: 'Tailwind', hint: 'with Tailwind CSS' },
-        { value: 'd1', label: 'D1', hint: 'with Drizzle and Cloudflare D1' },
-      ],
+      options: TEMPLATE_NAMES.map((value) => ({
+        value,
+        label: TEMPLATES[value].label,
+        hint: TEMPLATES[value].hint,
+      })),
     });
     if (isCancel(answer)) {
       cancel('Creation cancelled.');
@@ -125,7 +125,7 @@ async function main() {
     }
     installed = true;
   }
-  const commands = `${cd}${getNextSteps(template, installed)}`;
+  const commands = `${cd}${getNextSteps(TEMPLATES[template].setup, installed)}`;
   if (interactive) {
     log.success(`Created ${name}.`);
     outro(`Next steps:\n${commands}`);

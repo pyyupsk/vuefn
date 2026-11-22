@@ -69,15 +69,10 @@ export function load() {
 export type Lang = 'vue' | 'ts' | 'bash';
 
 /** Highlights code as HTML lines. `lineData` returns a data attribute value for a 1-based line. */
-export async function highlight(
-  code: string,
-  lang: Lang,
-  lineData?: (line: number) => string,
-  themeName: 'vuefn-dark' | 'vuefn-light' = 'vuefn-dark',
-) {
+export async function highlight(code: string, lang: Lang, lineData?: (line: number) => string) {
   return (await load()).codeToHtml(code.trimEnd(), {
     lang,
-    theme: themeName,
+    theme: 'vuefn-dark',
     transformers: lineData
       ? [
           {

@@ -4,8 +4,13 @@ export interface DocPage {
   description: string;
 }
 
+export interface DocGroup {
+  title: string;
+  pages: readonly DocPage[];
+}
+
 /** The sidebar, in reading order. Each slug has a `<slug>.md` next to this file. */
-export const DOCS: readonly { title: string; pages: readonly DocPage[] }[] = [
+export const DOCS: readonly DocGroup[] = [
   {
     title: 'Getting started',
     pages: [

@@ -1,34 +1,20 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-const commands = {
-  npm: 'npm create vuefn@latest',
-  pnpm: 'pnpm create vuefn@latest',
-  bun: 'bun create vuefn@latest',
-  yarn: 'yarn create vuefn@latest',
-} as const;
-type Manager = keyof typeof commands;
+import { copy } from '@/utils/copy';
+import { MANAGERS, forManager } from '@/utils/package-manager';
+import type { Manager } from '@/utils/package-manager';
 
-const manager = ref<Manager>('npm');
-const command = computed(() => commands[manager.value]);
+const manager = ref<Manager>(MANAGERS[0]);
+const command = computed(() => forManager('npm create vuefn@latest', manager.value));
 const copied = ref(false);
-
-async function copy() {
-  try {
-    await navigator.clipboard.writeText(command.value);
-    copied.value = true;
-    setTimeout(() => (copied.value = false), 1400);
-  } catch {
-    // the command stays on screen to copy by hand
-  }
-}
 </script>
 
 <template>
   <div class="max-w-md overflow-hidden rounded-2xl border border-border bg-card">
     <div class="flex gap-1 border-b border-border px-2 pt-2" aria-label="Package manager">
       <button
-        v-for="name in Object.keys(commands) as Manager[]"
+        v-for="name in MANAGERS"
         :key="name"
         type="button"
         :aria-pressed="name === manager"
@@ -44,7 +30,7 @@ async function copy() {
         type="button"
         class="h-8 flex-none cursor-pointer rounded-lg border border-border px-3 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         :aria-label="`Copy ${command}`"
-        @click="copy"
+        @click="copy(command, (on) => (copied = on))"
       >
         <span aria-live="polite">{{ copied ? 'Copied' : 'Copy' }}</span>
       </button>

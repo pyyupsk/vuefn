@@ -20,7 +20,7 @@ function plugin() {
   return instance;
 }
 
-function source(code: string, path = '/posts/') {
+function source(path = '/posts/') {
   const page = join(root, 'pages', 'posts', 'index.vue');
   const route = join(root, '.vuefn', 'routes', 'posts', 'index.ts');
   mkdirSync(dirname(page), { recursive: true });
@@ -36,7 +36,7 @@ function text(file: File): string {
 
 describe('volar plugin', () => {
   it('inserts the path into defineRoute before the type check', () => {
-    const fileName = source('');
+    const fileName = source();
     const file: File = {
       id: 'script_ts',
       lang: 'ts',
@@ -47,7 +47,7 @@ describe('volar plugin', () => {
   });
 
   it('reads the route file from a Windows path', () => {
-    const fileName = source('');
+    const fileName = source();
     const file: File = {
       id: 'script_ts',
       lang: 'ts',
@@ -57,13 +57,26 @@ describe('volar plugin', () => {
     expect(text(file)).toContain('defineRoute("/posts/", {');
   });
 
+  it('inserts the path into each path-less call of one part', () => {
+    const fileName = source();
+    const file: File = {
+      id: 'script_ts',
+      lang: 'ts',
+      content: [['// defineRoute({})\nexport const route = defineRoute({});', 'script', 0, {}]],
+    };
+    plugin().resolveEmbeddedCode(fileName, {}, file);
+    expect(text(file)).toBe(
+      '// defineRoute("/posts/", {})\nexport const route = defineRoute("/posts/", {});',
+    );
+  });
+
   it('leaves a call that already has a path alone', () => {
     const file: File = {
       id: 'script_ts',
       lang: 'ts',
       content: [['export const route = defineRoute("/posts/", {});', 'script', 0, {}]],
     };
-    plugin().resolveEmbeddedCode(source(''), {}, file);
+    plugin().resolveEmbeddedCode(source(), {}, file);
     expect(text(file)).toBe('export const route = defineRoute("/posts/", {});');
   });
 

@@ -41,9 +41,9 @@ import DocSidebar from '@/components/docs/doc-sidebar.vue';
 import DocToc from '@/components/docs/doc-toc.vue';
 import SiteHeader from '@/components/site/site-header.vue';
 import { usePackageManager } from '@/hooks/usePackageManager';
-import type { Heading } from '@/lib/markdown';
+import { copy } from '@/utils/copy';
 import { neighborsOf, pageMarkdown } from '@/utils/docs';
-import { isManager } from '@/utils/package-manager';
+import type { Heading } from '@/utils/docs';
 
 // shortcut: every page ships in one chunk, split with a lazy glob when the docs grow past a few dozen pages
 const docs = import.meta.glob<{ default: Component; toc: Heading[]; steps?: boolean }>(
@@ -60,27 +60,18 @@ const router = useRouter();
 const page = route.useLoaderData();
 const doc = computed(() => docs[`/src/content/docs/${page.value.slug}.md`]);
 const around = computed(() => neighborsOf(page.value.slug));
-const copied = ref(false);
 
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-}
+const copied = ref(false);
 
 async function copyPage() {
   const source = sources[`/src/content/docs/${page.value.slug}.md`] ?? '';
-  copied.value = await copyText(pageMarkdown(page.value, source));
-  if (copied.value) setTimeout(() => (copied.value = false), 1400);
+  await copy(pageMarkdown(page.value, source), (on) => (copied.value = on));
 }
 
 const article = useTemplateRef<HTMLElement>('article');
-const packageManager = usePackageManager(article, () => page.value.slug);
+usePackageManager(article, () => page.value.slug);
 
-// the copy buttons and the tabs come from the Markdown, so one listener handles them all
+// the links and the copy buttons come from the Markdown, so one listener handles them
 async function onArticleClick(event: MouseEvent) {
   const target = event.target as Element | null;
   // links in the Markdown are plain anchors, so internal ones go through the router here
@@ -90,19 +81,13 @@ async function onArticleClick(event: MouseEvent) {
     await router.navigate({ href: anchor.getAttribute('href') ?? '/' });
     return;
   }
-  const tab = target?.closest<HTMLElement>('[data-pm]');
-  if (tab && isManager(tab.dataset.pm)) {
-    packageManager.show(tab.dataset.pm);
-    return;
-  }
   const button = target?.closest<HTMLButtonElement>('[data-copy]');
   const figure = button?.closest('figure');
   const code = (
     figure?.querySelector('[data-pm-panel]:not([hidden]) pre') ?? figure?.querySelector('pre')
   )?.textContent;
-  if (!button || typeof code !== 'string' || !(await copyText(code))) return;
-  button.textContent = 'Copied';
-  setTimeout(() => (button.textContent = 'Copy'), 1400);
+  if (!button || typeof code !== 'string') return;
+  await copy(code, (on) => (button.textContent = on ? 'Copied' : 'Copy'));
 }
 </script>
 

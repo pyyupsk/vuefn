@@ -3,6 +3,7 @@ import { Link } from '@tanstack/vue-router';
 
 import SiteLogo from '@/components/site/site-logo.vue';
 import { REPO } from '@/content/site';
+import { FIRST_PAGE } from '@/utils/docs';
 </script>
 
 <template>
@@ -13,7 +14,7 @@ import { REPO } from '@/content/site';
       <SiteLogo class="text-foreground" />
       <span>One .vue file per route</span>
       <nav class="flex gap-5 md:ml-auto" aria-label="Footer">
-        <Link class="hover:text-foreground" to="/docs/$slug" :params="{ slug: 'introduction' }"
+        <Link class="hover:text-foreground" to="/docs/$slug" :params="{ slug: FIRST_PAGE }"
           >Docs</Link
         >
         <a class="hover:text-foreground" :href="REPO">GitHub</a>
