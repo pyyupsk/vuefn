@@ -61,6 +61,19 @@ test('opens the docs menu on a phone without errors', async ({ browser }) => {
   await context.close();
 });
 
+test('scrolls a wide table inside its box on a phone', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 375, height: 812 } });
+  const page = await context.newPage();
+  await page.goto('/docs/api');
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBe(0);
+  const wrap = page.locator('.table-wrap').first();
+  expect(await wrap.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+  await context.close();
+});
+
 test('sends /docs to the introduction', async ({ page }) => {
   await page.goto('/docs');
   await expect(page).toHaveURL('/docs/introduction');

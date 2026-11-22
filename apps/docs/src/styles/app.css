@@ -184,8 +184,12 @@
     @apply rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-snippet;
   }
 
+  .doc .table-wrap {
+    @apply my-5 overflow-x-auto rounded-xl border border-border bg-card;
+  }
+
   .doc table {
-    @apply my-5 w-full border-separate border-spacing-0 overflow-hidden rounded-xl border border-border bg-card text-sm;
+    @apply w-full border-separate border-spacing-0 text-sm;
   }
 
   .doc th {

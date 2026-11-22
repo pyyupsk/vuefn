@@ -79,4 +79,7 @@ export async function setupMarkdown(md: Markdown) {
   md.options.highlight = highlight;
   md.use(headings);
   codeBlocks(md, highlight);
+  // a wide table scrolls in its own box instead of past the edge of a phone
+  md.renderer.rules.table_open = () => '<div class="table-wrap"><table>';
+  md.renderer.rules.table_close = () => '</table></div>';
 }
