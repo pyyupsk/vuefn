@@ -1,31 +1,16 @@
+import type { Agent, Command } from 'package-manager-detector';
+import { resolveCommand } from 'package-manager-detector/commands';
+
 export const MANAGERS = ['npm', 'pnpm', 'bun', 'yarn'] as const;
 export type Manager = (typeof MANAGERS)[number];
 
-// pnpm has built-in commands such as `deploy`, so its scripts need `run`
-const RUN: Record<Manager, string> = {
-  npm: 'npm run',
-  pnpm: 'pnpm run',
-  bun: 'bun run',
-  yarn: 'yarn',
-};
-const EXEC: Record<Manager, string> = {
-  npm: 'npx',
-  pnpm: 'pnpm dlx',
-  bun: 'bunx',
-  yarn: 'yarn dlx',
-};
-const INSTALL: Record<Manager, string> = {
-  npm: 'npm install',
-  pnpm: 'pnpm install',
-  bun: 'bun install',
-  yarn: 'yarn',
-};
-const ADD: Record<Manager, string> = {
-  npm: 'npm install',
-  pnpm: 'pnpm add',
-  bun: 'bun add',
-  yarn: 'yarn add',
-};
+// the yarn tab shows Yarn 2 and later, which runs one-off packages with `yarn dlx`
+const AGENT: Record<Manager, Agent> = { npm: 'npm', pnpm: 'pnpm', bun: 'bun', yarn: 'yarn@berry' };
+
+function resolve(manager: Manager, command: Command, args: string[]) {
+  const resolved = resolveCommand(AGENT[manager], command, args);
+  return resolved ? [resolved.command, ...resolved.args].join(' ') : undefined;
+}
 
 function line(text: string, manager: Manager) {
   const create = /^npm create ([@\w-]+)@latest(.*)$/.exec(text);
@@ -35,11 +20,14 @@ function line(text: string, manager: Manager) {
     return `${manager} create ${pkg}${rest.replace(/ -- /, ' ')}`;
   }
   const install = /^npm install( .+)?$/.exec(text);
-  if (install) return install[1] ? `${ADD[manager]}${install[1]}` : INSTALL[manager];
+  if (install) {
+    const args = install[1]?.trim().split(' ') ?? [];
+    return resolve(manager, args.length ? 'add' : 'install', args) ?? text;
+  }
   const run = /^npm run (.+)$/.exec(text);
-  if (run) return `${RUN[manager]} ${run[1]}`;
+  if (run?.[1]) return resolve(manager, 'run', run[1].split(' ')) ?? text;
   const exec = /^npx (.+)$/.exec(text);
-  if (exec) return `${EXEC[manager]} ${exec[1]}`;
+  if (exec?.[1]) return resolve(manager, 'execute', exec[1].split(' ')) ?? text;
   return text;
 }
 

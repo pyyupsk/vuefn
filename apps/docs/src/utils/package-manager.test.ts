@@ -12,7 +12,7 @@ npx wrangler d1 create my-app-db`;
 it('rewrites npm commands for pnpm', () => {
   expect(forManager(block, 'pnpm')).toBe(`pnpm create vuefn my-app --template d1
 cd my-app
-pnpm install
+pnpm i
 pnpm add -D wrangler
 pnpm run db:migrate
 pnpm dlx wrangler d1 create my-app-db`);
@@ -25,14 +25,14 @@ it('rewrites npm commands for bun and yarn', () => {
     'bun install',
     'bun add -D wrangler',
     'bun run db:migrate',
-    'bunx wrangler d1 create my-app-db',
+    'bun x wrangler d1 create my-app-db',
   ]);
   expect(forManager(block, 'yarn').split('\n')).toEqual([
     'yarn create vuefn my-app --template d1',
     'cd my-app',
-    'yarn',
+    'yarn install',
     'yarn add -D wrangler',
-    'yarn db:migrate',
+    'yarn run db:migrate',
     'yarn dlx wrangler d1 create my-app-db',
   ]);
 });
