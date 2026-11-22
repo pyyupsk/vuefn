@@ -9,7 +9,7 @@ test('serves the landing page as prerendered HTML', async ({ request }) => {
   expect(html).not.toContain('createHighlighterCore');
 });
 
-test('plays the headline animation once through hydration', async ({ page }) => {
+test('starts no animation when the page loads', async ({ page }) => {
   await page.addInitScript(() => {
     const starts: string[] = [];
     Object.assign(window, { starts });
@@ -20,9 +20,7 @@ test('plays the headline animation once through hydration', async ({ page }) => 
     );
   });
   await page.goto('/', { waitUntil: 'networkidle' });
-  await expect
-    .poll(() => page.evaluate(() => (window as unknown as { starts: string[] }).starts))
-    .toEqual(['rise', 'rise', 'rise', 'rise', 'rise']);
+  expect(await page.evaluate(() => (window as unknown as { starts: string[] }).starts)).toEqual([]);
 });
 
 test('says where a line of the hero file runs', async ({ page }) => {

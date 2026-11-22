@@ -63,7 +63,7 @@ const code = route.useLoaderData();
     >
       <div class="lg:col-span-5">
         <Link
-          class="inline-flex animate-rise items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          class="inline-flex items-center gap-2 rounded-full border border-border bg-card py-1 pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
           to="/docs/$slug"
           :params="{ slug: 'introduction' }"
         >
@@ -73,17 +73,14 @@ const code = route.useLoaderData();
           >
           TanStack Start for Vue on Cloudflare →
         </Link>
-        <h1
-          id="hero-h"
-          class="mt-6 animate-rise text-display leading-none font-semibold tracking-display"
-        >
+        <h1 id="hero-h" class="mt-6 text-display leading-none font-semibold tracking-display">
           One .vue file<br /><span class="text-muted-foreground">per route.</span>
         </h1>
-        <p class="mt-6 max-w-lede animate-rise-late text-lg text-muted-foreground">
+        <p class="mt-6 max-w-lede text-lg text-muted-foreground">
           The loader, the server functions and the page live in one file. vuefn turns it into a
           TanStack Start route that runs on Cloudflare Workers.
         </p>
-        <div class="mt-8 flex animate-rise-late flex-wrap gap-3">
+        <div class="mt-8 flex flex-wrap gap-3">
           <Link
             class="inline-flex h-11 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition hover:bg-brand-700 active:scale-98"
             to="/docs/$slug"
@@ -97,7 +94,7 @@ const code = route.useLoaderData();
             >Read the docs</Link
           >
         </div>
-        <InstallBox class="mt-8 animate-rise-late" />
+        <InstallBox class="mt-8" />
       </div>
       <div class="min-w-0 lg:col-span-7">
         <HeroFile :files="HERO_FILES" :html="code.hero" />
