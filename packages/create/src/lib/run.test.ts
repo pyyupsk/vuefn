@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -14,12 +14,12 @@ it('resolves the exit code of the command it runs', async () => {
 });
 
 it('runs the command in the target directory', async () => {
-  const file = join(cwd, 'where.txt');
-  await run(
-    process.execPath,
-    ['-e', `require('node:fs').writeFileSync(${JSON.stringify(file)}, process.cwd())`],
-    cwd,
+  // a script file, because cmd.exe on Windows would rewrite the quotes of an inline script
+  writeFileSync(
+    join(cwd, 'where.cjs'),
+    "require('node:fs').writeFileSync('where.txt', process.cwd())",
   );
-  expect(readFileSync(file, 'utf8')).toBe(cwd);
-  rmSync(file, { force: true });
+  await run(process.execPath, ['where.cjs'], cwd);
+  expect(readFileSync(join(cwd, 'where.txt'), 'utf8')).toBe(cwd);
+  rmSync(join(cwd, 'where.txt'), { force: true });
 });

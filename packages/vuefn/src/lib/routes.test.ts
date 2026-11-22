@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { normalizePath } from 'vite';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { readPages } from '#lib/routes';
@@ -75,7 +76,7 @@ describe('readPages', () => {
   it('marks the routes that render children, so a missing <Outlet /> is a warning', async () => {
     const dir = pages(['index.vue', 'posts/route.vue', 'posts/$id.vue', 'about.vue']);
     const found = await readPages(root, dir);
-    const layout = (file: string) => found.get(join(dir, file))?.layout;
+    const layout = (file: string) => found.get(normalizePath(join(dir, file)))?.layout;
     expect(layout('posts/route.vue')).toBe(true);
     expect(layout('index.vue')).toBe(false);
     expect(layout('about.vue')).toBe(false);

@@ -10,6 +10,7 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { normalizePath } from 'vite';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { generateRoutes } from '#lib/generate';
@@ -42,7 +43,8 @@ describe('generateRoutes', () => {
     const { routes: found } = await generateRoutes(root, pages, routes);
     const target = join(routes, 'posts', '$id.ts');
     expect(readFileSync(target, 'utf8')).toContain('createFileRoute("/posts/$id")');
-    expect(found.get(join(pages, 'posts', '$id.vue'))).toEqual({
+    // the route generator and Vite both name files with forward slashes, also on Windows
+    expect(found.get(normalizePath(join(pages, 'posts', '$id.vue')))).toEqual({
       target,
       path: '/posts/$id',
       layout: false,
@@ -91,7 +93,7 @@ describe('generateRoutes', () => {
     write('posts/$id.vue', page('/posts/$id'));
     const warning = (await generateRoutes(root, pages, routes)).warnings;
     expect(warning).toEqual([
-      `${join(pages, 'posts', 'route.vue')}: this route renders child routes, so its template needs <Outlet />`,
+      `${normalizePath(join(pages, 'posts', 'route.vue'))}: this route renders child routes, so its template needs <Outlet />`,
     ]);
   });
 

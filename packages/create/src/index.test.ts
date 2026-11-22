@@ -14,6 +14,14 @@ async function coreRange() {
   const manifest = new URL('../../vuefn/package.json', import.meta.url);
   return `^${JSON.parse(await readFile(manifest, 'utf8')).version}`;
 }
+// Windows env names ignore case, so every spelling of the inherited user agent must go first
+function agentEnv(agent?: string) {
+  const rest = Object.fromEntries(
+    Object.entries(env).filter(([key]) => key.toLowerCase() !== 'npm_config_user_agent'),
+  );
+  return agent === undefined ? rest : { ...rest, npm_config_user_agent: agent };
+}
+
 let dir: string;
 
 beforeEach(async () => {
@@ -28,7 +36,7 @@ function run(...args: string[]) {
   return spawnSync(process.execPath, [cli, ...args], {
     cwd: dir,
     encoding: 'utf8',
-    env: { ...env, npm_config_user_agent: undefined },
+    env: agentEnv(),
     timeout: 5000,
   });
 }
@@ -39,7 +47,7 @@ async function runTerminal(...steps: [string, string][]) {
     .join(' ');
   const child = spawn('script', ['-qefc', `stty cols 100 rows 30; exec ${command}`, '/dev/null'], {
     cwd: dir,
-    env: { ...env, npm_config_user_agent: undefined },
+    env: agentEnv(),
     timeout: 20000,
   });
   let stdout = '';
@@ -157,7 +165,7 @@ it.each([
   const result = spawnSync(process.execPath, [cli, 'my-app'], {
     cwd: dir,
     encoding: 'utf8',
-    env: { ...env, npm_config_user_agent: agent },
+    env: agentEnv(agent),
     timeout: 5000,
   });
   expect(result.status, result.stderr).toBe(0);
@@ -291,16 +299,20 @@ it('creates missing parent directories', async () => {
   );
 });
 
-it('prints a usable cd command when a parent path contains shell characters', () => {
-  const path = "it's $HOME/my-app";
-  const result = run(path);
-  expect(result.status, result.stderr).toBe(0);
-  const command = result.stdout.split('\n').find((line) => line.startsWith('  cd '));
-  expect(command).toBeDefined();
-  const shell = spawnSync('sh', ['-c', `${command} && pwd`], { cwd: dir, encoding: 'utf8' });
-  expect(shell.status, shell.stderr).toBe(0);
-  expect(shell.stdout.trim()).toBe(join(dir, path));
-});
+// the printed cd quotes for a POSIX shell, and sh on Windows prints its own form of the path
+it.skipIf(process.platform === 'win32')(
+  'prints a usable cd command when a parent path contains shell characters',
+  () => {
+    const path = "it's $HOME/my-app";
+    const result = run(path);
+    expect(result.status, result.stderr).toBe(0);
+    const command = result.stdout.split('\n').find((line) => line.startsWith('  cd '));
+    expect(command).toBeDefined();
+    const shell = spawnSync('sh', ['-c', `${command} && pwd`], { cwd: dir, encoding: 'utf8' });
+    expect(shell.status, shell.stderr).toBe(0);
+    expect(shell.stdout.trim()).toBe(join(dir, path));
+  },
+);
 
 it.each(['--help', '-h'])('prints help for %s without writing files', async (flag) => {
   const result = run(flag);
