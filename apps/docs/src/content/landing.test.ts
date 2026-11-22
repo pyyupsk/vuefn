@@ -36,6 +36,8 @@ it('shows each template of the CLI with code that it still holds', () => {
       `../../../../packages/create/template/${template.name}/${main}`,
       import.meta.url,
     );
-    expect(readFileSync(file, 'utf8'), template.name).toContain(template.code);
+    // git on Windows checks the template out with CRLF line endings
+    const code = readFileSync(file, 'utf8').replaceAll('\r\n', '\n');
+    expect(code, template.name).toContain(template.code);
   }
 });
