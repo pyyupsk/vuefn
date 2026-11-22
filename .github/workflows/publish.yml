@@ -1,12 +1,15 @@
 name: Publish
 
 # Run it by hand from main after the versions in package.json are ready.
-# Each package is published only when its version is not on npm yet, so a rerun finishes a partial publish.
+# Each package is published only when its version is not on npm yet, and gets its own tag and
+# GitHub release, <name>@<version>, only when that release does not exist yet. So a rerun
+# finishes a partial publish or a missing release.
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  # contents: write lets gh create the tags and the GitHub releases
+  contents: write
   id-token: write
 
 concurrency:
@@ -22,6 +25,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # changelogithub reads the history since the last tag of each package
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: package.json
@@ -38,25 +43,41 @@ jobs:
       - run: bun run typecheck
       - run: bun run test:pack
       - name: Release plan
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           for dir in vuefn create; do
-            name=$(jq -r .name "packages/$dir/package.json")
-            version=$(jq -r .version "packages/$dir/package.json")
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "$name@$version: already on npm"
-            else
-              echo "$name@$version: publish"
-            fi
+            tag="$(jq -r .name "packages/$dir/package.json")@$(jq -r .version "packages/$dir/package.json")"
+            npm view "$tag" version >/dev/null 2>&1 && npm=on || npm=publish
+            gh release view "$tag" >/dev/null 2>&1 && release=on || release=create
+            echo "$tag: npm $npm, release $release"
           done
       # @vuefn/core first: the starter that create-vuefn writes points at its version
-      - name: Publish
+      - name: Publish and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           for dir in vuefn create; do
             name=$(jq -r .name "packages/$dir/package.json")
-            version=$(jq -r .version "packages/$dir/package.json")
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "$name@$version is already on npm."
+            tag="$name@$(jq -r .version "packages/$dir/package.json")"
+            if npm view "$tag" version >/dev/null 2>&1; then
+              echo "$tag is already on npm."
             else
               (cd "packages/$dir" && npm publish)
             fi
+            if gh release view "$tag" >/dev/null 2>&1; then
+              echo "$tag already has a release."
+              continue
+            fi
+            # the notes start at the last release of this package, or at the first commit
+            from=$(git tag --list "$name@*" --sort=-v:refname | grep -vxF "$tag" | head -n 1 || true)
+            from=${from:-$(git rev-list --max-parents=0 HEAD | tail -n 1)}
+            git tag --force "$tag" "$GITHUB_SHA"
+            # the path twice: changelogithub 15.0.5 splits a single path into letters
+            bun x changelogithub@15.0.5 --from "$from" --to "$tag" --output notes.md \
+              --commit-filter-by-paths "packages/$dir" --commit-filter-by-paths "packages/$dir"
+            latest=false
+            if [ "$dir" = vuefn ]; then latest=true; fi
+            gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md --latest="$latest"
           done
