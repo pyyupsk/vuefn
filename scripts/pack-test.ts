@@ -9,11 +9,15 @@ import { $ } from 'bun';
 const pkg = join(import.meta.dir, '..', 'packages', 'vuefn');
 const dir = await mkdtemp(join(tmpdir(), 'vuefn-pack-'));
 try {
-  // npm publish drops a package.json field it rejects (a bin path, for one), and npm pack does not
+  // npm publish drops a package.json field it rejects (a bin path, for one), and npm pack does not.
+  // It warns before it checks the version, so the exit code, which fails once a version is out, is ignored.
   await Promise.all(
     ['vuefn', 'create'].map(async (name) => {
       const warnings = (
-        await $`npm publish --dry-run`.cwd(join(pkg, '..', name)).quiet()
+        await $`npm publish --dry-run`
+          .cwd(join(pkg, '..', name))
+          .quiet()
+          .nothrow()
       ).stderr.toString();
       if (warnings.includes('auto-corrected')) {
         throw new Error(`npm publish would change packages/${name}/package.json:\n${warnings}`);
