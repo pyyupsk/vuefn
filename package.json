@@ -22,16 +22,16 @@
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
-    "@types/bun": "latest",
-    "@types/node": "^26.6.5",
-    "@vitest/coverage-v8": "^5.0.5",
-    "eslint-plugin-jsdoc": "^65.4.1",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
-    "oxlint-tsgolint": "^7.0.2005",
-    "vitest": "^5.0.5"
+    "@types/bun": "^1.4.5",
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "^5.1.1",
+    "eslint-plugin-jsdoc": "^65.5.2",
+    "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2008",
+    "vitest": "^5.1.1"
   },
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "patchedDependencies": {
     "@tanstack/vue-router@1.170.42": "patches/@tanstack%2Fvue-router@1.170.42.patch"
   }
