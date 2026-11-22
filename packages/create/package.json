@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "prepack": "cp ../../LICENSE .",
+    "prepack": "node -e \"require('node:fs').copyFileSync('../../LICENSE', 'LICENSE')\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

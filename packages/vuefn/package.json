@@ -37,7 +37,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "prepack": "cp ../../LICENSE ../../README.md .",
+    "prepack": "node -e \"for (const f of ['LICENSE', 'README.md']) require('node:fs').copyFileSync('../../' + f, f)\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
